@@ -87,9 +87,15 @@ describe('validarFecha', () => {
   })
 
   it('rechaza el año 0, los años negativos y los años con decimales', () => {
-    expect(validarFecha(f(0, 1, 1))).toBe('El año debe ser 1 o más')
-    expect(validarFecha(f(-5, 1, 1))).toBe('El año debe ser 1 o más')
-    expect(validarFecha(f(1640.5, 1, 1))).toBe('El año debe ser 1 o más')
+    expect(validarFecha(f(0, 1, 1))).toBe('El año debe estar entre 1 y 9999')
+    expect(validarFecha(f(-5, 1, 1))).toBe('El año debe estar entre 1 y 9999')
+    expect(validarFecha(f(1640.5, 1, 1))).toBe('El año debe estar entre 1 y 9999')
+  })
+
+  it('el año es como mucho 9999', () => {
+    expect(validarFecha(f(9999, 12, 31))).toBeNull()
+    expect(validarFecha(f(10000, 1, 1))).toBe('El año debe estar entre 1 y 9999')
+    expect(validarFecha(f(1e17, 1, 1))).toBe('El año debe estar entre 1 y 9999')
   })
 
   it('rechaza el mes 0, el 13 y los meses con decimales', () => {
@@ -99,7 +105,7 @@ describe('validarFecha', () => {
   })
 
   it('con varios errores, da primero el del año y después el del mes', () => {
-    expect(validarFecha(f(0, 13, 40))).toBe('El año debe ser 1 o más')
+    expect(validarFecha(f(0, 13, 40))).toBe('El año debe estar entre 1 y 9999')
     expect(validarFecha(f(1640, 13, 40))).toBe('El mes debe estar entre 1 y 12')
   })
 })

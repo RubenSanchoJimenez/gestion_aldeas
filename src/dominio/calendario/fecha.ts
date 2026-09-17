@@ -36,10 +36,10 @@ export function diasDelMes(anio: number, mes: number): number {
   return DIAS_POR_MES[mes - 1]
 }
 
-/** null si es válida; si no, el mensaje: «El año debe ser 1 o más», «El mes debe estar entre 1 y 12», «Abril de 1640 tiene 30 días». */
+/** null si es válida; si no, el mensaje: «El año debe estar entre 1 y 9999», «El mes debe estar entre 1 y 12», «Abril de 1640 tiene 30 días». */
 export function validarFecha(f: Fecha): string | null {
-  if (!Number.isInteger(f.anio) || f.anio < 1) {
-    return 'El año debe ser 1 o más'
+  if (!Number.isInteger(f.anio) || f.anio < 1 || f.anio > 9999) {
+    return 'El año debe estar entre 1 y 9999'
   }
   if (!Number.isInteger(f.mes) || f.mes < 1 || f.mes > 12) {
     return 'El mes debe estar entre 1 y 12'

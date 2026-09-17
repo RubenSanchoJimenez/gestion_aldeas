@@ -427,7 +427,9 @@ describe('validarRecurrencia', () => {
     expect(validarRecurrencia({ tipo: 'cadaNDias', n: 10, primera: f(1640, 4, 31) })).toEqual([
       'Abril de 1640 tiene 30 días',
     ])
-    expect(validarRecurrencia({ tipo: 'quincenal', primera: f(0, 4, 10) })).toEqual(['El año debe ser 1 o más'])
+    expect(validarRecurrencia({ tipo: 'quincenal', primera: f(0, 4, 10) })).toEqual([
+      'El año debe estar entre 1 y 9999',
+    ])
     expect(validarRecurrencia({ tipo: 'cadaNMeses', n: 2, diaMes: 1, primera: f(1640, 13, 1) })).toEqual([
       'El mes debe estar entre 1 y 12',
     ])
@@ -462,7 +464,7 @@ describe('validarRecurrencia', () => {
     ])
     expect(validarRecurrencia({ tipo: 'cadaNDias', n: 0, primera: f(0, 1, 1) })).toEqual([
       'N debe ser un número entero de 2 a 366',
-      'El año debe ser 1 o más',
+      'El año debe estar entre 1 y 9999',
     ])
     expect(validarRecurrencia({ tipo: 'anual', mes: 13, diaMes: 0 })).toEqual([
       'El mes debe estar entre 1 y 12',
