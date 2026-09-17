@@ -5,7 +5,14 @@ export interface Fecha {
   dia: number
 }
 
-/** Nombres de los meses con mayúscula inicial, para empezar el mensaje de error de validarFecha. */
+/**
+ * Todas las funciones de este módulo, salvo validarFecha, dan por hecho que la fecha es válida (validarFecha sin
+ * error). aNumeroDeDia, compararFechas y diasEntre no comprueban que la fecha exista: el 29 de febrero de 1641 (que
+ * no existe, 1641 no es bisiesto) da el mismo número de día que el 1 de marzo de 1641, así que no sirven para
+ * validar una fecha.
+ */
+
+/** Nombres de los meses con mayúscula inicial, para empezar mensajes de error (validarFecha, recurrencia.ts). */
 const MESES_EN_MENSAJE = [
   'Enero',
   'Febrero',
@@ -51,7 +58,7 @@ export function validarFecha(f: Fecha): string | null {
   }
   const dias = diasDelMes(f.anio, f.mes)
   if (!Number.isInteger(f.dia) || f.dia < 1 || f.dia > dias) {
-    return `${MESES_EN_MENSAJE[f.mes - 1]} de ${f.anio} tiene ${dias} días`
+    return `${nombreDeMesEnMensaje(f.mes)} de ${f.anio} tiene ${dias} días`
   }
   return null
 }

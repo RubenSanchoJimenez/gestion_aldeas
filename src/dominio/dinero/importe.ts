@@ -31,6 +31,8 @@ function dividirMitadArriba(numerador: bigint, denominador: bigint): bigint {
  * Convierte el texto tecleado («6», «0,6», «12,345») en unidades base. Admite coma o punto decimal y como mucho
  * 6 decimales; sin signo; redondea al mh con las mitades hacia arriba. Error si el texto no es un número válido
  * o si el resultado no cabe exacto en un número de JavaScript: lanza Error('Cantidad no válida').
+ *
+ * Precondición: eq son equivalencias válidas (validarEquivalencias).
  */
 export function aBase(cantidadTexto: string, moneda: Moneda, eq: Equivalencias): number {
   const partes = PATRON_CANTIDAD.exec(cantidadTexto.trim())
@@ -62,6 +64,9 @@ export function importeDesde(cantidadTexto: string, moneda: Moneda, eq: Equivale
 /**
  * pct en tanto por ciento (10 = 10 %), con hasta 6 decimales; resultado redondeado al mh con las mitades hacia
  * arriba. (§7, impuestos de locales, intereses)
+ *
+ * Precondiciones: base es un entero en mh dentro de los enteros seguros (Number.isSafeInteger); pct es un número
+ * finito, con hasta 6 decimales. Con porcentajes de 100 o menos, el resultado no supera la base.
  */
 export function porcentajeDe(base: number, pct: number): number {
   // pct en millonésimas de punto: 12,25 % → 12250000. base × millonésimas ÷ (100 × 1000000).

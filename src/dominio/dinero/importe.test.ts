@@ -45,6 +45,7 @@ describe('aBase', () => {
     expect(aBase('1', 'mm', EQ)).toBe(10000000)
     expect(aBase('18', 'mc', EQ)).toBe(1800)
     expect(aBase('7', 'mh', EQ)).toBe(7)
+    expect(aBase('0', 'mo', EQ)).toBe(0)
   })
 
   it('admite punto decimal además de coma', () => {
@@ -146,6 +147,8 @@ describe('porcentajeDe', () => {
     expect(porcentajeDe(5, 10)).toBe(1)
     expect(porcentajeDe(4, 10)).toBe(0)
     expect(porcentajeDe(-25, 10)).toBe(-2)
+    expect(porcentajeDe(-26, 10)).toBe(-3)
+    expect(porcentajeDe(-24, 10)).toBe(-2)
   })
 
   it('es exacto donde la coma flotante falla', () => {

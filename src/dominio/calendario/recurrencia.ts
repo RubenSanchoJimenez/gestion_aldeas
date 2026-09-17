@@ -153,7 +153,7 @@ export function siguienteOcurrencia(r: Recurrencia, despuesDe: Fecha): Fecha | n
   }
 }
 
-/** Ocurrencias con desde ≤ fecha ≤ hasta, en orden; ninguna anterior a `primera` ni a `inicio` (los dos, si los hay). */
+/** Ocurrencias con desde ≤ fecha ≤ hasta, en orden; ninguna anterior a `primera` o a `inicio`, según el tipo. */
 export function ocurrenciasEntre(r: Recurrencia, desde: Fecha, hasta: Fecha): Fecha[] {
   const fechas: Fecha[] = []
   // Empezar en la víspera de desde incluye desde si es ocurrencia.
@@ -169,6 +169,9 @@ export function ocurrenciasEntre(r: Recurrencia, desde: Fecha, hasta: Fecha): Fe
  * Ocurrencia teórica estrictamente anterior a `antesDe` (puede ser anterior a `primera`, contando hacia atrás: la primera
  * vez menos uno o más periodos, §6.4 y §6.5). Ignora `inicio`, igual que ignora `primera`: la ocurrencia teórica sirve
  * para los periodos de producción (§7). null solo con 'unica', si su fecha no es anterior.
+ *
+ * El resultado puede quedar antes del año 1: la anterior al 1 de enero del año 1 con «mensual, día 1» es el 1 de
+ * diciembre del año 0. Solo sirve para calcular periodos, no para mostrarse ni validarse (validarFecha la rechazaría).
  */
 export function anteriorOcurrencia(r: Recurrencia, antesDe: Fecha): Fecha | null {
   const p = patron(r)
@@ -234,6 +237,10 @@ function conInicio(errores: (string | null)[], inicio: Fecha | undefined): (stri
  * en cadaNMeses y trimestral la primera vez en el día del mes elegido, en anual que el mes tenga ese día en algún
  * año (el 29 de febrero se admite) y, si hay fecha de inicio (diaria, semanal, mensual y anual), que sea válida.
  * Lista vacía si todo es válido.
+ *
+ * No comprueba que «Primera vez» (`primera`), la fecha de inicio (`inicio`) ni la fecha de «Una sola vez» (`fecha`)
+ * sean posteriores a la fecha actual, porque esta función no la recibe: esa comprobación la hace el formulario, solo
+ * al crear la recurrencia o al cambiar de frecuencia.
  */
 export function validarRecurrencia(r: Recurrencia): string[] {
   let errores: (string | null)[]

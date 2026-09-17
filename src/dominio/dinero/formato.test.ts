@@ -53,6 +53,7 @@ describe('formatearNumero', () => {
   it('escribe entero lo que JavaScript expresa con exponente', () => {
     expect(formatearNumero(0.0000005, 7)).toBe('0,0000005')
     expect(formatearNumero(1e21, 0)).toBe('1.000.000.000.000.000.000.000')
+    expect(formatearNumero(1.5e-7, 8)).toBe('0,00000015')
   })
 })
 
@@ -140,6 +141,7 @@ describe('formatearIntroducido', () => {
 
   it('conserva los decimales tecleados, también los ceros finales', () => {
     expect(formatearIntroducido({ cantidad: '0,50', moneda: 'mo' })).toBe('0,50 mo')
+    expect(formatearIntroducido({ cantidad: '1234,5', moneda: 'mo' })).toBe('1.234,5 mo')
   })
 
   it('separa los miles y quita los ceros de la izquierda y el separador sin decimales', () => {

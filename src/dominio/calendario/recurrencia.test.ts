@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { aNumeroDeDia, desdeNumeroDeDia, diaEnMes, diasEntre, sumarDias, type Fecha } from './fecha'
+import { aNumeroDeDia, desdeNumeroDeDia, diaDeLaSemana, diaEnMes, diasEntre, sumarDias, type Fecha } from './fecha'
 import {
   anteriorOcurrencia,
   ocurreEl,
@@ -86,6 +86,17 @@ describe('ocurreEl', () => {
     expect(ocurreEl(UNICA_12_ABRIL, f(1640, 4, 12))).toBe(true)
     expect(ocurreEl(UNICA_12_ABRIL, f(1640, 4, 13))).toBe(false)
     expect(ocurreEl(UNICA_12_ABRIL, f(1641, 4, 12))).toBe(false)
+  })
+
+  it('semanal: para cada día de la semana, ocurre exactamente cuando diaDeLaSemana coincide (4 semanas de 1640)', () => {
+    const inicio = f(1640, 4, 1)
+    for (let diaSemana = 0; diaSemana <= 6; diaSemana++) {
+      const r: Recurrencia = { tipo: 'semanal', diaSemana }
+      for (let i = 0; i < 28; i++) {
+        const dia = sumarDias(inicio, i)
+        expect(ocurreEl(r, dia)).toBe(diaDeLaSemana(dia) === diaSemana)
+      }
+    }
   })
 })
 
@@ -540,5 +551,13 @@ describe('fecha de inicio (no antes de)', () => {
       'El año debe estar entre 1 y 9999',
     ])
     expect(validarRecurrencia({ tipo: 'mensual', diaMes: 1, inicio: f(1640, 4, 15) })).toEqual([])
+    expect(validarRecurrencia({ tipo: 'semanal', diaSemana: 7, inicio: f(1640, 2, 30) })).toEqual([
+      'El día de la semana debe estar entre lunes y domingo',
+      'Febrero de 1640 tiene 29 días',
+    ])
+    expect(validarRecurrencia({ tipo: 'anual', mes: 4, diaMes: 31, inicio: f(0, 1, 1) })).toEqual([
+      'Abril no tiene 31 días',
+      'El año debe estar entre 1 y 9999',
+    ])
   })
 })

@@ -268,7 +268,7 @@ describe('diaDeLaSemana (0 = lunes … 6 = domingo)', () => {
     expect(diaDeLaSemana(f(1, 1, 1))).toBe(0)
   })
 
-  it('del año 1 al 2400 avanza de uno en uno y vuelve a 0 tras el domingo, sin salir de 0 a 6', () => {
+  it('del 1 de enero del año 1 al 1 de enero de 2401 avanza de uno en uno y vuelve a 0 tras el domingo, sin salir de 0 a 6', () => {
     const inicio = aNumeroDeDia(f(1, 1, 1))
     const fin = aNumeroDeDia(f(2401, 1, 1))
     let esperado = 0 // el 1 de enero del año 1 fue lunes

@@ -34,6 +34,8 @@ export function factorMensual(r: Recurrencia): number {
 /**
  * Importe equivalente al mes, en mh, redondeado con redondearMitadArriba: base × factor. Multiplica y divide con
  * BigInt la fracción exacta del factor, sin coma flotante. Supone una recurrencia válida (validarRecurrencia).
+ *
+ * Precondiciones: base es un entero en mh; el resultado debe caber en los enteros seguros (Number.isSafeInteger).
  */
 export function alMes(base: number, r: Recurrencia): number {
   const { numerador, denominador } = fraccionMensual(r)

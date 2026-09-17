@@ -41,10 +41,13 @@ const CAMPOS: readonly (keyof Equivalencias)[] = ['mmEnMo', 'moEnMp', 'mpEnMb', 
  * valorEnBase('mm', eq) a 1e18, muy por encima de Number.MAX_SAFE_INTEGER (≈9.007e15), y con eso los
  * saldos guardados en hierro dejan de ser enteros exactos. 1.000.000.000 deja margen amplio a los
  * saldos de la partida sin acercarse a MAX_SAFE_INTEGER.
+ *
+ * El mensaje de error de validarEquivalencias repite esta cifra en formato español («1.000.000.000»): si cambias
+ * este valor, actualiza también ese mensaje para que no se desincronicen.
  */
 const VALOR_MAXIMO_MM_EN_MH = 1_000_000_000
 
-/** Valor de 1 unidad de la moneda en hierro (mh), entero. Por defecto: mo = 100000, mm = 10000000, mh = 1. */
+/** Valor de 1 unidad de la moneda en hierro (mh), entero si las equivalencias son válidas (validarEquivalencias). Por defecto: mo = 100000, mm = 10000000, mh = 1. */
 export function valorEnBase(moneda: Moneda, eq: Equivalencias): number {
   let valor = 1
   for (let i = MONEDAS.indexOf(moneda); i < CAMPOS.length; i++) {

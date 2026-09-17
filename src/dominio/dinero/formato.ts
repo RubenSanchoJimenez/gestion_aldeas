@@ -1,4 +1,5 @@
-import { valorEnBase, type Equivalencias, type Moneda } from './monedas'
+import type { Importe } from './importe'
+import { valorEnBase, type Equivalencias } from './monedas'
 
 /** Signo menos de presentación (U+2212), no el guion. */
 const SIGNO_MENOS = '−'
@@ -29,7 +30,12 @@ function ponerMas(cifra: string, signo: boolean | undefined): string {
   return signo === true && cifra !== '0' && !cifra.startsWith(SIGNO_MENOS) ? `+${cifra}` : cifra
 }
 
-/** «46,518 mo», «0,6 mo», «1.200 mo». Todos los decimales necesarios, hasta la precisión del mh, sin ceros finales. Con signo: «+12 mo», «−0,6 mo»; el cero no lleva signo. */
+/**
+ * «46,518 mo», «0,6 mo», «1.200 mo». Todos los decimales necesarios, hasta la precisión del mh, sin ceros finales. Con
+ * signo: «+12 mo», «−0,6 mo»; el cero no lleva signo.
+ *
+ * Precondición: base es un entero en mh.
+ */
 export function formatearOro(
   base: number,
   eq: Equivalencias,
@@ -42,14 +48,18 @@ export function formatearOro(
   return opciones.conUnidad === false ? cifra : `${cifra} mo`
 }
 
-/** Cifras prorrateadas (al mes, balance): 1 decimal como mucho y sin ceros finales: «+12,9 mo», «−11,5 mo», «+44 mo». (§3) */
+/**
+ * Cifras prorrateadas (al mes, balance): 1 decimal como mucho y sin ceros finales: «+12,9 mo», «−11,5 mo», «+44 mo». (§3)
+ *
+ * Precondición: base es un entero en mh.
+ */
 export function formatearOroProrrateado(base: number, eq: Equivalencias, opciones: { signo?: boolean } = {}): string {
   const valorOro = BigInt(valorEnBase('mo', eq))
   return `${ponerMas(formatearFraccion(BigInt(base), valorOro, 1), opciones.signo)} mo`
 }
 
 /** «6 mp», «0,5 mo»: la cantidad tal como se tecleó (con coma) y la abreviatura. */
-export function formatearIntroducido(introducido: { cantidad: string; moneda: Moneda }): string {
+export function formatearIntroducido(introducido: NonNullable<Importe['introducido']>): string {
   const [entera, decimales = ''] = introducido.cantidad.trim().split(/[.,]/)
   const enteraSinCeros = entera.replace(/^0+/, '') || '0'
   const cifra = agruparMiles(enteraSinCeros) + (decimales === '' ? '' : `,${decimales}`)
@@ -59,6 +69,9 @@ export function formatearIntroducido(introducido: { cantidad: string; moneda: Mo
 /**
  * Formato de número español: miles con «.» siempre desde 1.000, decimales con «,», «−» como signo; hasta maxDecimales,
  * sin ceros finales. Es la misma presentación que la de los importes (formatearFraccion), para números que no son dinero.
+ *
+ * Precondiciones: valor es un número finito; maxDecimales es un entero de 0 o más. Cuando una cantidad de recursos
+ * mayor que 0 se redondea a 0, la pantalla debe mostrar «menos de 1» en su lugar (§3); esta función no lo hace.
  */
 export function formatearNumero(valor: number, maxDecimales: number): string {
   // Se parte de la cifra que escribe JavaScript («1.005», «5e-7»), no del binario de la coma flotante.

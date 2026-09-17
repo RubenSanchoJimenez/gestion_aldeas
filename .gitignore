@@ -6,3 +6,5 @@ design/.vistas-preview/
 node_modules
 # Compilación de la app (npm run build)
 dist
+# Informe JSON de vitest si se lanza con --reporter=json sin outputFile (vitest 5)
+.vitest/
