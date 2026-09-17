@@ -35,6 +35,16 @@ export const EQUIVALENCIAS_POR_DEFECTO: Equivalencias = {
 /** Campo de cada moneda, en el orden de MONEDAS: CAMPOS[i] dice cuánto vale MONEDAS[i] en MONEDAS[i + 1]. */
 const CAMPOS: readonly (keyof Equivalencias)[] = ['mmEnMo', 'moEnMp', 'mpEnMb', 'mbEnMc', 'mcEnMe', 'meEnMh']
 
+/**
+ * Cota superior provisional para el valor de 1 mithril en hierro (P1, validación de equivalencias).
+ * La especificación (§3, §6.1) no fija un límite superior: seis equivalencias de 1000 cada una ya
+ * llevan valorEnBase('mm', eq) a 1e18, muy por encima de Number.MAX_SAFE_INTEGER (≈9.007e15), y con
+ * eso los saldos guardados en hierro dejan de ser enteros exactos. 1.000.000.000 deja margen amplio a
+ * los saldos de la partida sin acercarse a MAX_SAFE_INTEGER. Es una decisión pendiente de la
+ * especificación: el valor exacto lo debe fijar el usuario.
+ */
+const VALOR_MAXIMO_MM_EN_MH = 1_000_000_000
+
 /** Valor de 1 unidad de la moneda en hierro (mh), entero. Por defecto: mo = 100000, mm = 10000000, mh = 1. */
 export function valorEnBase(moneda: Moneda, eq: Equivalencias): number {
   let valor = 1
@@ -44,7 +54,10 @@ export function valorEnBase(moneda: Moneda, eq: Equivalencias): number {
   return valor
 }
 
-/** Errores de validación (P1): cada equivalencia es un entero ≥ 2. Lista vacía si todo es válido. */
+/**
+ * Errores de validación (P1): cada equivalencia es un entero ≥ 2, y combinadas no pueden llevar 1
+ * mithril por encima de VALOR_MAXIMO_MM_EN_MH hierro. Lista vacía si todo es válido.
+ */
 export function validarEquivalencias(eq: Equivalencias): string[] {
   const errores: string[] = []
   CAMPOS.forEach((campo, i) => {
@@ -54,5 +67,10 @@ export function validarEquivalencias(eq: Equivalencias): string[] {
       errores.push(`La equivalencia de ${nombre} debe ser un número entero de 2 o más`)
     }
   })
+  if (errores.length === 0 && valorEnBase('mm', eq) > VALOR_MAXIMO_MM_EN_MH) {
+    errores.push(
+      `Con estas equivalencias, 1 mithril vale demasiado hierro (más de ${VALOR_MAXIMO_MM_EN_MH.toLocaleString('es-ES')} mh); reduce alguna equivalencia`,
+    )
+  }
   return errores
 }

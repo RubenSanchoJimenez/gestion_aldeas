@@ -110,4 +110,22 @@ describe('validarEquivalencias', () => {
       'La equivalencia de estaño debe ser un número entero de 2 o más',
     ])
   })
+
+  it('acepta unas equivalencias que llevan 1 mithril justo al límite de hierro', () => {
+    expect(validarEquivalencias({ ...EQUIVALENCIAS_POR_DEFECTO, mmEnMo: 10000 })).toEqual([])
+  })
+
+  it('rechaza unas equivalencias que llevan 1 mithril justo por encima del límite de hierro', () => {
+    expect(validarEquivalencias({ ...EQUIVALENCIAS_POR_DEFECTO, mmEnMo: 10001 })).toEqual([
+      'Con estas equivalencias, 1 mithril vale demasiado hierro (más de 1.000.000.000 mh); reduce alguna equivalencia',
+    ])
+  })
+
+  it('rechaza equivalencias que, sin exceder el límite cada una por separado, se disparan al multiplicarse', () => {
+    expect(
+      validarEquivalencias({ mmEnMo: 1000, moEnMp: 1000, mpEnMb: 1000, mbEnMc: 1000, mcEnMe: 1000, meEnMh: 1000 }),
+    ).toEqual([
+      'Con estas equivalencias, 1 mithril vale demasiado hierro (más de 1.000.000.000 mh); reduce alguna equivalencia',
+    ])
+  })
 })
