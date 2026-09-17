@@ -243,7 +243,7 @@ Las pantallas marcadas con ◆ son diálogos sobre la pantalla indicada. Cada pa
 - **P1**:
   - Ejemplo: fecha inicial **1 de enero de 1640 T.E.** (domingo).
   - Edad con segmentos «Segunda · Tercera · Cuarta»; en las fechas se abrevia S.E., T.E. y C.E. Día y año validados (sección 4).
-  - «Editar equivalencias» vuelve editable la tabla en el propio paso: enteros ≥ 2, con vista del resultado. Después de crear la partida quedan fijas.
+  - «Editar equivalencias» vuelve editable la tabla en el propio paso: enteros ≥ 2 y, combinadas, 1 mm no puede valer más de 1.000.000.000 mh (100 veces lo normal), para que los saldos guardados en hierro sigan siendo enteros exactos; si se pasa: «Con estas equivalencias, 1 mithril vale demasiado hierro (más de 1.000.000.000 mh); reduce alguna equivalencia» (decidido por el usuario el 2026-09-17), con vista del resultado. Después de crear la partida quedan fijas.
   - Sin enlace «Cambiar ración»: la ración es fija, 1 saco de 30 kg por persona durante 30 días (propuesta aceptada por el usuario el 2026-09-17).
 - **P1b**: bolsa inicial del ejemplo: 38 mo + 25 mp + 40 mb + 18 mc = **40,918 mo**.
 - **P2**:
@@ -623,7 +623,7 @@ No tienen artboard propio, salvo «Edificio», que se dibuja en A7b, y «Producc
 | Añadir evento o pago | Calendario | Elige entre evento narrativo y pago o cobro programado (abre J2b con fecha futura). El evento puede ser de la partida (nombre, inicio, duración y notas, sin efectos) o de un asentamiento (abre A11b). Evento de partida (propuesta aceptada por el usuario el 2026-09-17) | Dominio, Fecha |
 | Avanzar días «Otro…» | P4 | Número de días (de 1 a 366, aviso ámbar si pasa de 90) o fecha de destino | Fecha |
 | Editar partida | P0 | Nombre; fecha inicial y Edad (segmentos), editables mientras no haya ningún avance; «Eliminar partida» (J2d) | Mes, Fecha |
-| Equivalencias (P1) | P1, «Editar equivalencias» | La tabla de P6 editable en el propio paso: enteros ≥ 2, con vista del resultado. Fijas después de crear la partida | — |
+| Equivalencias (P1) | P1, «Editar equivalencias» | La tabla de P6 editable en el propio paso: enteros ≥ 2 y, combinadas, 1 mm no puede valer más de 1.000.000.000 mh (100 veces lo normal), para que los saldos guardados en hierro sigan siendo enteros exactos; si se pasa: «Con estas equivalencias, 1 mithril vale demasiado hierro (más de 1.000.000.000 mh); reduce alguna equivalencia» (decidido por el usuario el 2026-09-17), con vista del resultado. Fijas después de crear la partida | — |
 | Editar personaje | J1 | Nombre y descripción | — |
 | Objeto | J3 | Nombre, cantidad, valor unitario (importe), ubicación y notas. Si es el objeto de un pergamino, la cantidad es 1 | Ubicación, Moneda |
 | Deuda o préstamo | J4, A2b | Sentido (debo / me deben, segmentos), contraparte, fecha de alta, principal (importe), «El dinero entra en / sale de» (con «Ninguno: solo anotar la deuda»), interés % y su frecuencia, vencimiento y notas. Lista «Pagos» (fecha, importe y editar, que abre J4b con «Eliminar») | Contraparte, Dominio, Frecuencia, Fecha, Moneda |
