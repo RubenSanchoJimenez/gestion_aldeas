@@ -2,3 +2,7 @@
 design/gestion-aldeas.html
 # Vistas combinadas temporales para medir los artboards
 design/.vistas-preview/
+# Dependencias instaladas por npm
+node_modules
+# Compilación de la app (npm run build)
+dist
