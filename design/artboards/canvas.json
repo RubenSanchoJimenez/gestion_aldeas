@@ -1,0 +1,745 @@
+{
+  "pages": [
+    {
+      "id": "page-1",
+      "name": "Partida"
+    },
+    {
+      "id": "page-2",
+      "name": "Personaje"
+    },
+    {
+      "id": "page-3",
+      "name": "Asentamiento"
+    }
+  ],
+  "artboards": [
+    {
+      "file": "SelectorPartidas.dc.html",
+      "title": "Selector de partidas",
+      "x": 0,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-1"
+    },
+    {
+      "file": "NuevaPartida.dc.html",
+      "title": "Nueva partida · paso 1",
+      "x": 1300,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-1"
+    },
+    {
+      "file": "NuevaPartidaPersonaje.dc.html",
+      "title": "Nueva partida · paso 2",
+      "x": 2600,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-1"
+    },
+    {
+      "file": "Main.dc.html",
+      "title": "Inicio",
+      "x": 3900,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-1"
+    },
+    {
+      "file": "Calendario.dc.html",
+      "title": "Calendario",
+      "x": 0,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-1"
+    },
+    {
+      "file": "AvanzarDiasPrevia.dc.html",
+      "title": "Avanzar días · vista previa",
+      "x": 1300,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-1"
+    },
+    {
+      "file": "AvanzarDiasResumen.dc.html",
+      "title": "Avanzar días · resumen",
+      "x": 2600,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-1"
+    },
+    {
+      "file": "Ajustes.dc.html",
+      "title": "Ajustes y copias",
+      "x": 3900,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-1"
+    },
+    {
+      "file": "ListasYCatalogos.dc.html",
+      "title": "Listas y catálogos",
+      "x": 0,
+      "y": 2640,
+      "w": 1180,
+      "h": 820,
+      "page": "page-1"
+    },
+    {
+      "file": "ListasEliminarCategoria.dc.html",
+      "title": "Listas · eliminar opción en uso",
+      "x": 1300,
+      "y": 2640,
+      "w": 1180,
+      "h": 820,
+      "page": "page-1"
+    },
+    {
+      "file": "PersonajeResumen.dc.html",
+      "title": "Personaje · resumen",
+      "x": 0,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeBolsa.dc.html",
+      "title": "Personaje · bolsa y movimientos",
+      "x": 1300,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeNuevoMovimiento.dc.html",
+      "title": "Personaje · nuevo movimiento",
+      "x": 2600,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeTransferencia.dc.html",
+      "title": "Personaje · transferencia con saldo negativo",
+      "x": 3900,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeEditarMovimiento.dc.html",
+      "title": "Personaje · editar movimiento",
+      "x": 0,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeNuevaCategoria.dc.html",
+      "title": "Personaje · nueva categoría (alta rápida)",
+      "x": 1300,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeEliminarMovimiento.dc.html",
+      "title": "Eliminar · doble confirmación",
+      "x": 2600,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeInventario.dc.html",
+      "title": "Personaje · inventario",
+      "x": 3900,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeVenderObjeto.dc.html",
+      "title": "Personaje · vender objeto",
+      "x": 0,
+      "y": 2640,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeDeudas.dc.html",
+      "title": "Personaje · deudas y préstamos",
+      "x": 1300,
+      "y": 2640,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeRegistrarPago.dc.html",
+      "title": "Personaje · registrar pago",
+      "x": 2600,
+      "y": 2640,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeGastos.dc.html",
+      "title": "Personaje · gastos e ingresos recurrentes",
+      "x": 3900,
+      "y": 2640,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeInversiones.dc.html",
+      "title": "Personaje · inversiones",
+      "x": 0,
+      "y": 3960,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeHechizos.dc.html",
+      "title": "Personaje · hechizos",
+      "x": 1300,
+      "y": 3960,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "PersonajeRegistrarIntento.dc.html",
+      "title": "Personaje · registrar intento",
+      "x": 2600,
+      "y": 3960,
+      "w": 1180,
+      "h": 820,
+      "page": "page-2"
+    },
+    {
+      "file": "NuevoAsentamiento.dc.html",
+      "title": "Nuevo asentamiento",
+      "x": 0,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeResumen.dc.html",
+      "title": "Asentamiento · resumen",
+      "x": 1300,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeTesoreria.dc.html",
+      "title": "Tesorería · caja y movimientos",
+      "x": 2600,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeImpuestos.dc.html",
+      "title": "Tesorería · impuestos y rentas",
+      "x": 3900,
+      "y": 0,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeLocales.dc.html",
+      "title": "Tesorería · locales comerciales",
+      "x": 0,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeProduccionLocal.dc.html",
+      "title": "Tesorería · producción del mes de un local",
+      "x": 1300,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeDeudas.dc.html",
+      "title": "Tesorería · deudas",
+      "x": 2600,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreePoblacion.dc.html",
+      "title": "Población",
+      "x": 3900,
+      "y": 1320,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeTrabajadores.dc.html",
+      "title": "Personal · trabajadores",
+      "x": 0,
+      "y": 2640,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeGuarnicion.dc.html",
+      "title": "Personal · guarnición",
+      "x": 1300,
+      "y": 2640,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeArmeria.dc.html",
+      "title": "Personal · armería",
+      "x": 2600,
+      "y": 2640,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeEdificios.dc.html",
+      "title": "Producción · edificios",
+      "x": 3900,
+      "y": 2640,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeEditarEdificio.dc.html",
+      "title": "Producción · editar edificio",
+      "x": 0,
+      "y": 3960,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeAlmacen.dc.html",
+      "title": "Producción · almacén",
+      "x": 1300,
+      "y": 3960,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeAnadirViveres.dc.html",
+      "title": "Producción · añadir víveres",
+      "x": 2600,
+      "y": 3960,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeObras.dc.html",
+      "title": "Producción · obras",
+      "x": 3900,
+      "y": 3960,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeNuevaObra.dc.html",
+      "title": "Producción · nueva obra",
+      "x": 0,
+      "y": 5280,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeAnimales.dc.html",
+      "title": "Animales",
+      "x": 1300,
+      "y": 5280,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeNuevoAnimal.dc.html",
+      "title": "Animales · añadir animales",
+      "x": 2600,
+      "y": 5280,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeComercio.dc.html",
+      "title": "Comercio",
+      "x": 3900,
+      "y": 5280,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeNuevaCaravana.dc.html",
+      "title": "Comercio · nueva caravana",
+      "x": 0,
+      "y": 6600,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeNuevoMercado.dc.html",
+      "title": "Comercio · nuevo mercado (alta completa)",
+      "x": 1300,
+      "y": 6600,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeEventos.dc.html",
+      "title": "Eventos narrativos",
+      "x": 2600,
+      "y": 6600,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    },
+    {
+      "file": "BreeNuevoEvento.dc.html",
+      "title": "Eventos · nuevo evento",
+      "x": 3900,
+      "y": 6600,
+      "w": 1180,
+      "h": 820,
+      "page": "page-3"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "nota-SelectorPartidas",
+      "x": 0,
+      "y": 860,
+      "w": 1180,
+      "text": "Sin partidas: «Nueva partida» e «Importar copia» destacados. Importar desde aquí añade la partida; si ya existe, pregunta «Reemplazar» o «Importar como copia». La app abre la última partida usada.",
+      "page": "page-1"
+    },
+    {
+      "id": "nota-Main",
+      "x": 3900,
+      "y": 860,
+      "w": 1180,
+      "text": "Avisos: hasta 4 en dos columnas, primero los rojos; con más, «Ver todos (N)». Rojo: falta ocurrida durante un avance o prevista en 7 días o menos, impago, deuda vencida, saldo negativo, obra que no pudo empezar, y caravana o compra que no pudo salir. Ámbar: falta entre 8 y 30 días, deuda que vence en 10 días o menos, pago que el saldo no cubrirá, edificio terminado sin producción y recurso perdido por capacidad. Tocar una tarjeta abre el Resumen de su dominio.",
+      "page": "page-1"
+    },
+    {
+      "id": "nota-Calendario",
+      "x": 0,
+      "y": 2180,
+      "w": 1180,
+      "text": "Editar en el detalle del día: elemento pasado → su movimiento (o el formulario de su origen); ocurrencia futura de una regla → la regla, con el aviso «Cambia esta y las próximas ocurrencias»; evento → su formulario; intento → J8; vencimiento → su deuda; producción futura → «Editar edificio» (la pasada no se edita: se corrige con un ajuste de existencias). La producción es una marca por asentamiento y día, y el detalle muestra una tarjeta por edificio con sus productos («Cantera · piedra 17 · arcilla 7 carretadas»); las producciones diarias y las de 0 no se marcan. Se marcan las obras y caravanas al empezar o salir y al terminar o volver, y los eventos al empezar y terminar; los movimientos manuales y las transferencias no se marcan. «Añadir evento o pago» admite eventos de partida, sin efectos (propuesta aceptada por el usuario el 2026-09-17).",
+      "page": "page-1"
+    },
+    {
+      "id": "nota-AvanzarDiasPrevia",
+      "x": 1300,
+      "y": 2180,
+      "w": 1180,
+      "text": "Se abre sobre la pantalla actual. «Otro…» admite de 1 a 366 días, con aviso si pasa de 90. El cuerpo se desplaza por grupos de dominio. Si un impago necesita una contraparte nueva, avisa «Se añadirá «Trabajadores de Bree» a Personas y entidades».",
+      "page": "page-1"
+    },
+    {
+      "id": "nota-AvanzarDiasResumen",
+      "x": 2600,
+      "y": 2180,
+      "w": 1180,
+      "text": "«Deshacer avance» restaura la partida de antes del avance y descarta lo hecho después; si hubo cambios, avisa «Se perderán 3 cambios hechos después del avance».",
+      "page": "page-1"
+    },
+    {
+      "id": "nota-ListasYCatalogos",
+      "x": 0,
+      "y": 3500,
+      "w": 1180,
+      "text": "Otras listas, con el grupo bajo el nombre: oficios, tipos de edificio, de unidad y de animal; tipos de defensa sin grupo; Recursos con la unidad debajo («carretada / carretadas»), Se usa en «Bree 180 · Archet —» y candado en Víveres, Cerveza, Madera, Piedra y Arcilla; Ubicaciones (Posada El Poney Pisador y Establo de Bree, 1 objeto cada una; Encima y las cajas y almacenes de cada asentamiento en tono suave, «Sale del dominio», sin editar); Personas y entidades: Gremio de mercaderes de Bree · 2 deudas · 72 mo pendientes: 42 de Tharan y 30 de Bree; Hobart Brezal, herrero · 1 deuda · 4 mo · titular de 1 local; Dalen, mercader de Esgaroth · 1 préstamo · 15 mo; Corona de Arthedain · 2 tributos: Bree y Archet; Joyero de Bree · sin usos; Barnabás Mantecona, posadero · 1 deuda saldada, de Bree · titular de 1 local.\n«Editar» abre el alta rápida como «Editar categoría»: «Se usa en 1 movimiento de Tharan», Grupo (solo en las tuyas, con un selector de los 5 grupos), «Eliminar», «Cancelar» y «Guardar cambios». En Recursos abre «Recurso del catálogo»: nombre y unidad en singular y plural.",
+      "page": "page-1"
+    },
+    {
+      "id": "nota-ListasEliminarCategoria",
+      "x": 1300,
+      "y": 3500,
+      "w": 1180,
+      "text": "Variantes. Recién abierto: «Sus registros pasan a» vacío con «Elige una categoría» y botón rojo desactivado. Sin usos: J2d normal, sin campo ni aviso. Uso opcional (Corona de Arthedain, solo tributos): trae «Dejarlos sin destinatario». Bloqueos en «Editar …», con el motivo bajo «Eliminar»: «Salarios la pone la app al pagar a los trabajadores: puedes renombrarla, pero no eliminarla»; «Madera es una reserva del almacén: puedes renombrarla, pero no eliminarla»; «Hierro tiene 64 lingotes en Bree: déjalo a 0 antes de eliminarlo». Tipo de animal con la misma combinación en el destino: las 6 cabras montesas hembra de Bree se suman a «Cabra · Hembra», que pasa a 12; segmentos «1 mo (Cabra) · 1,2 mo (Cabra montés)» y «Valor anotado de los animales: 486,8 → 485,6 mo». Opción de la app usada en otras partidas: «También cambian 3 movimientos de Los Senderos del Norte».",
+      "page": "page-1"
+    },
+    {
+      "id": "nota-page-1",
+      "x": 0,
+      "y": -220,
+      "w": 620,
+      "text": "Partida: selector, alta de partida en 2 pasos, inicio, calendario, «Avanzar días» (vista previa y resumen), ajustes, y listas y catálogos (P7) con la eliminación de una opción en uso (P7b). Tablet horizontal 1180×820.\nDatos de ejemplo: la partida empieza el 1 de enero de 1640 T.E. y está el 12 de abril; «Avanzar días» la lleva al 19. Todas las cifras cuadran entre pantallas. Los estados sin artboard van anotados bajo su vista.\nAltas desde los desplegables: acción en el pie del buscador (J2c), alta rápida sobre el teclado (J2e), alta completa apilada (A10c), y gestión y reasignación en P7 y P7b.",
+      "page": "page-1"
+    },
+    {
+      "id": "nota-PersonajeNuevoMovimiento",
+      "x": 2600,
+      "y": 860,
+      "w": 1180,
+      "text": "«Añadir también al inventario» solo existe con «Gasto». El patrimonio no cambia: los 12 mo pasan de la bolsa al inventario. Si ya hay un objeto con el mismo nombre, ubicación y valor por unidad, se suma a su fila. Con fecha futura el movimiento queda «Programado» (grupo encima del libro, no cuenta en el saldo) y el objeto se crea al aplicarse.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-PersonajeTransferencia",
+      "x": 3900,
+      "y": 860,
+      "w": 1180,
+      "text": "Saldo negativo en una acción manual (decidido por el usuario el 2026-09-16): el resumen lo marca en lacre y, al pulsar «Transferir», el pie pide confirmación; «Revisar» vuelve al formulario. Tras guardar, Inicio muestra en rojo «La bolsa de Tharan está en negativo: −3,482 mo». Sin saldo negativo, el pie es «Cancelar» y «Transferir». Editar cualquiera de los dos movimientos abre este formulario; eliminar borra los dos.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-PersonajeEditarMovimiento",
+      "x": 0,
+      "y": 2180,
+      "w": 1180,
+      "text": "Pie del buscador. «posada»: «Nada coincide con “posada”», «Busca en todas las categorías y grupos.» y botón principal «+ Nueva categoría “posada”». «alojamiento»: pie «“Alojamiento” ya existe», sin acción. En los filtros (J2, A2, J3, A12) no hay pie. El artboard dibuja el panel con el teclado cerrado para enseñar la lista; con teclado, el diálogo sube hasta dejar el campo a 88 px del borde y el panel mide como mucho 296 px. J2c no cambia el tipo (sin segmentos) y solo edita movimientos sueltos: los vinculados abren el formulario de su origen.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-PersonajeNuevaCategoria",
+      "x": 1300,
+      "y": 2180,
+      "w": 1180,
+      "text": "Teclado de la tablet: 380 px; quedan 440 px visibles y el diálogo acaba hacia y = 360. Estados: vacío → «Escribe un nombre» y «Crear y elegir» desactivado; duplicado («alojamiento») → «Ya existe «Alojamiento» en Gastos del personaje.» y el botón pasa a «Elegir «Alojamiento»»; parecida («Salario») → línea ámbar «Parecida: «Salarios» (Asentamientos)» con «Elegir esa». Con grupo («Nuevo tipo de animal» desde A12b): Nombre «Cabra montés», «Parecido: «Cabra» (Ovino y caprino)» y Grupo «Ovino y caprino» en un selector sin altas; mide unos 440 px y con teclado el cuerpo se desplaza unos 50 px. Oficio: Nombre «Tonelero» y Plural «Toneleros», con 4 segmentos de grupo. Tras crear, J2c muestra «Posadas del camino» con borde oro 2 s, la ayuda «Categoría nueva · la gestionas en Listas y catálogos», el foco en la cantidad, «Importe anterior −0,2 mo», «Importe nuevo −0,6 mo» y «La bolsa queda en 46,118 mo»; el selector cuenta 28 categorías. La categoría queda creada aunque se cancele J2c.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-PersonajeEliminarMovimiento",
+      "x": 2600,
+      "y": 2180,
+      "w": 1180,
+      "text": "«Cancelar» vuelve a «Editar movimiento» con sus datos. Si con el movimiento se compró un objeto, aparece la casilla «Quitar también las 3 athelas del inventario». Casillas de devolución, marcadas por defecto: obra en curso, «Devolver 85 mo a la caja» y «Devolver los materiales al almacén»; caravana en ruta, devolver el pago (compra) o la carga (venta o traslado). Qué se borra con cada registro: tabla «Al eliminar» de la especificación.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-PersonajeInventario",
+      "x": 3900,
+      "y": 2180,
+      "w": 1180,
+      "text": "Con un filtro activo el pie dice «Valor de lo filtrado: X mo de 81,6 mo» (con «Encima», 43,6 mo). Los objetos vendidos del todo quedan archivados y se ven con el filtro «Vendidos». La lupa busca en nombre y notas.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-PersonajeVenderObjeto",
+      "x": 0,
+      "y": 3500,
+      "w": 1180,
+      "text": "Cantidad mayor que la que tienes (3): error en lacre bajo el campo, «Tienes 2», y «Vender» desactivado. Editar la venta desde el libro abre este diálogo con los datos cargados y «Eliminar», que borra su movimiento y devuelve las unidades (si el objeto estaba archivado como «Vendido», se restaura).",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-PersonajeDeudas",
+      "x": 1300,
+      "y": 3500,
+      "w": 1180,
+      "text": "Deuda vencida: badge lacre «Vencida hace 2 días», aviso rojo en Inicio y los intereses siguen corriendo. Grupo «Saldadas» desplegado: tarjetas atenuadas con badge «Saldada el …» y editar (Tharan no tiene; se ve en A2b). El formulario de la deuda tiene fecha de alta, lista sus pagos (editar → J4b con «Eliminar») y tiene «El dinero entra en / sale de» para anotar el préstamo con su movimiento.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-PersonajeGastos",
+      "x": 3900,
+      "y": 3500,
+      "w": 1180,
+      "text": "Formulario: segmento Gasto o Ingreso, concepto, importe, categoría, «Sale de / Entra en», frecuencia y primer cobro (propuesta aceptada por el usuario el 2026-09-17). Los interruptores guardan al instante; al reanudar, el próximo cobro se calcula desde hoy.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-PersonajeInversiones",
+      "x": 0,
+      "y": 4820,
+      "w": 1180,
+      "text": "Negocio en «Nueva inversión»: al buscar «molino de entibo» sin coincidencias, botón «+ Nuevo negocio “molino de entibo”»; el campo queda «Molino de Entibo» con la etiqueta «nuevo» y el foco pasa a Descripción. No se guarda nada hasta «Guardar inversión». El formulario tiene «El capital sale de» y «Los beneficios entran en». «Ver los 4 cobros» abre el historial completo.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-PersonajeHechizos",
+      "x": 1300,
+      "y": 4820,
+      "w": 1180,
+      "text": "Estudio por hechizo (decidido por el usuario el 2026-09-17): varios hechizos en estudio a la vez; no se cuentan días. Formulario «Hechizo»: Nombre (obligatorio, de 2 a 60 caracteres y único; si es de otra lista, añádela al nombre: «Luz (Caminos de la luz)»), Lista (texto opcional), Reino (segmentos opcionales: Sin reino · Esencia · Canalización · Mentalismo · Híbrido), Nivel (opcional, de 1 a 50), Estado (En estudio · Aprendido), «Aprendido el» (obligatorio con Aprendido, hoy o antes y no antes del último intento; se borra al volver a «En estudio») y Notas. «Eliminar» borra sus intentos; sus pergaminos conservan su nombre y sus objetos siguen en el inventario.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-PersonajeRegistrarIntento",
+      "x": 2600,
+      "y": 4820,
+      "w": 1180,
+      "text": "Solo ofrece hechizos «En estudio»; al editar un intento incluye también su hechizo aunque esté Aprendido, y el pie trae «Eliminar» (si el intento consumió un pergamino, este vuelve a «poseído»). La fecha no puede ser posterior a hoy. Si la búsqueda coincide con un hechizo aprendido, el pie dice «“Hablar con los animales” está aprendido», sin acción. «El pergamino se consume» se activa al elegir un pergamino («De este hechizo · Otros»). «+ Nuevo hechizo “…”» abre el alta rápida: solo el nombre; va a «En estudio», y lista, reino y nivel se completan después en el hechizo.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-page-2",
+      "x": 0,
+      "y": -220,
+      "w": 620,
+      "text": "Personaje (Tharan): 7 entradas en el menú. Diálogos: nuevo movimiento (compra que entra en el inventario), transferencia con saldo negativo, editar movimiento con el desplegable abierto (buscador «al», «5 de 27» y la acción «+ Nueva categoría “al”» en el pie del buscador), nueva categoría (alta rápida sobre el teclado), eliminar con doble confirmación, vender objeto, registrar pago y registrar intento. El estudio va por hechizo: varios a la vez, con sus intentos buenos y malos y sin contar días. Todo importe se introduce con cantidad y moneda y se calcula en oro. Los movimientos vinculados se editan desde su origen.",
+      "page": "page-2"
+    },
+    {
+      "id": "nota-BreeTesoreria",
+      "x": 2600,
+      "y": 860,
+      "w": 1180,
+      "text": "Primera fila del libro (inicio de la partida): «Saldo inicial», editable y sin «Eliminar». Los movimientos programados salen en un grupo encima del libro. Estado vacío (asentamiento recién creado): solo la fila «Saldo inicial», la frase «Aún no hay movimientos en la caja» y «Nuevo movimiento» centrado.",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeLocales",
+      "x": 0,
+      "y": 2180,
+      "w": 1180,
+      "text": "Locales comerciales (decidido por el usuario el 2026-09-17): negocios de terceros que pagan impuestos a la caja; su producción es dinero y no entra en el almacén. Formulario «Local comercial»: Nombre, Tipo (con altas), Titular (opcional, de Personas y entidades), Producción habitual al mes, Estado (Abierto · Cerrado: cerrado no paga) y Notas; «Eliminar» borra sus producciones anotadas y conserva los cobros pasados. Formulario «Tipo de local»: Nombre, Impuesto % sobre lo producido, Mínimo al mes y Día de cobro; eliminarlo se bloquea mientras tenga locales («Herrería tiene 1 local: cámbialo de tipo antes»). Ejemplo: Herrería 1 produce 10 mo → paga 1 mo (10 %); si un mes se anota 1 mo o 0, el 10 % no llega al mínimo y paga 2 mp = 0,2 mo. Cada local paga cada mes una sola vez; el mes de su alta se cobra entero y, si estuvo cerrado todo el mes, no paga.",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeProduccionLocal",
+      "x": 1300,
+      "y": 2180,
+      "w": 1180,
+      "text": "Producción vacía: cuenta la habitual (10 % de 10 mo = 1 mo, se cobra +1 mo). Anotar 0 si no produjo nada: paga el mínimo (+0,2 mo). Cerrado todo el mes: «no paga». «Usar la habitual» borra la anotación. Solo se anotan meses sin cobrar; un mes ya cobrado se corrige editando su movimiento. El cobro agrupa todos los locales del día: «Impuestos de locales · abril (4)», categoría Impuestos.",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeDeudas",
+      "x": 2600,
+      "y": 2180,
+      "w": 1180,
+      "text": "Pestaña «Deudas» (decidido por el usuario el 2026-09-16). «Registrar pago» abre J4b con «Sale de: caja de Bree». Las deudas de un asentamiento no cuentan en el patrimonio de Tharan. Impago: el motor crea en «Lo que debe Bree» una deuda con «Trabajadores de Bree» (o «Guarnición de Bree», o el destinatario del tributo), sin interés ni vencimiento, que acumula los impagos sucesivos mientras esté abierta; sale un aviso rojo que lleva a esta pestaña y la cifra «Impagos» cuenta las abiertas.",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeTrabajadores",
+      "x": 0,
+      "y": 3500,
+      "w": 1180,
+      "text": "Sobredotación (sin artboard): si un edificio tiene más trabajadores de los necesarios, aviso ámbar; por ejemplo, con 4 canteros, «La cantera tiene 1 cantero de más». La producción no pasa del 100 %.",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeEditarEdificio",
+      "x": 0,
+      "y": 4820,
+      "w": 1180,
+      "text": "Producción recurrente (decidido por el usuario el 2026-09-17): solo extracción, sin gastar recursos; varios productos por edificio, cada uno con su frecuencia; cantidad proporcional a los días del periodo según trabajadores, estado y eventos. Ejemplo: una mina con «Piedra · 10 carretadas · Mensual · día 1» y 3 mineros necesarios; si el mes tiene 15 días con 2 mineros y 15 con 3, el día 1 entran 10 × (15 × 2/3 + 15 × 1) ÷ 30 ≈ 8,3 carretadas. Un producto nuevo, o con otro recurso o frecuencia, empieza a sumar el día siguiente y su primera vez sale en proporción al periodo completo (de semanal a mensual el 29 de abril: el 1 de mayo, unas 0,4 carretadas). Cambiar solo la cantidad conserva lo acumulado. Quitar un producto (x): el resumen dice «Se descartan 11 días acumulados de arcilla» y se confirma con «Guardar cambios» (propuesta aceptada por el usuario el 2026-09-17). Si la próxima vez no cabe en el almacén, el resumen añade en ámbar «caben N». Con «Alquilado», Producción se oculta y conserva lo acumulado; la renta se ve en solo lectura con el enlace «en Impuestos y rentas» o, sin renta, «Sin renta · Añádela en Impuestos y rentas». Sin «Una sola vez»: una entrada única se anota con «Añadir existencias».",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeAlmacen",
+      "x": 1300,
+      "y": 4820,
+      "w": 1180,
+      "text": "Editar una fila abre «Recurso y ajuste de existencias»: unidad en solo lectura con «Cambiar en Listas y catálogos», existencias y capacidad; el ajuste pide motivo; debajo, la lista de ajustes y de entradas. «Añadir existencias» con «+ Nuevo recurso» crea el recurso del catálogo; su fila del almacén aparece al guardar la entrada. Con un mercado que no es el local, crea una caravana («Enviar caravana»). Las entradas manuales no pueden superar la capacidad («Caben 890 sacos más»); lo que excede al producir o llegar una caravana se pierde con aviso ámbar.",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeAnadirViveres",
+      "x": 2600,
+      "y": 4820,
+      "w": 1180,
+      "text": "1 saco de 30 kg alimenta a 1 persona durante 30 días: 100 personas × 30 días ÷ 30 = 100 sacos. Con «Sacos» se escribe directamente la cantidad («100 sacos»). Con un mercado que no es el local (Fornost · 4 días) el botón pasa a «Enviar caravana», se crea la caravana y los víveres entran al volver, el 20 de abril.",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeObras",
+      "x": 3900,
+      "y": 4820,
+      "w": 1180,
+      "text": "Programadas: «Empezar obra» con inicio futuro deja la obra con badge «Programada». No descuenta nada hasta su inicio; si ese día falta dinero o materiales, no empieza y da aviso rojo.",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeNuevaObra",
+      "x": 0,
+      "y": 6140,
+      "w": 1180,
+      "text": "«Nuevo recurso» (alta completa de 700 px sobre la obra): Nombre «Cal», Unidad «carretada / carretadas» con chips (saco, haz, carretada, lingote, barril, fardo), Existencias en Bree 0 y Capacidad «Sin límite»; sin precio, porque la obra no tiene mercado. Tras crear, la fila dice «Cal · 20 carretadas · Hay 0» en lacre, «Faltan 20 carretadas de cal» y «Empezar obra» se desactiva (queda «Guardar como planificada»); la fila de Cal en el almacén se crea al guardar la obra. Desde una caravana de compra, Existencias no aparece y sale «Entrarán al volver la caravana: 20 carretadas». Si el coste deja la caja por debajo de 0, el pie pasa a «La caja quedará en −X mo» con «Revisar» y «Empezar igualmente». Otros resultados: Mejorar edificio → Edificio; Ampliar almacén → Recurso y capacidad añadida; Construir defensa → Tipo de defensa; Reparar defensa o edificio → cuál.",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeNuevoAnimal",
+      "x": 2600,
+      "y": 6140,
+      "w": 1180,
+      "text": "Si ya tienes el mismo animal y género, el resumen dice «Se sumarán 6 a tus 24 vacas» y pide qué valor por cabeza queda (mantener, sustituir o media ponderada). «+ Nuevo tipo de animal “cabr”» abre el alta rápida con Grupo.",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeNuevaCaravana",
+      "x": 0,
+      "y": 7460,
+      "w": 1180,
+      "text": "Traslado (con 2 o más asentamientos; propuesta aceptada por el usuario el 2026-09-17): destino, días de viaje entre ambos, carga y salida; los recursos salen al salir y entran al llegar, sin dinero. Venta: la carga no puede superar las existencias. Con el mercado local (0 días) se cobra o se paga y los recursos se mueven al momento.",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-BreeNuevoMercado",
+      "x": 1300,
+      "y": 7460,
+      "w": 1180,
+      "text": "Tras crear, «Nueva caravana» muestra «Cavada Grande · 5 días de viaje» («Mercado nuevo · edítalo en Comercio»), Recurso «Víveres · 0,28 mo el saco», «Vuelve el 22 de abril», «Se paga al salir −28 mo», «La caja queda en 312,6 mo» y «Días con falta de víveres hasta el 25: de 3 a 0 días»; A10 gana la columna «Cavada Grande», con víveres a 0,28 mo y «5 días». El selector de recurso de «Añadir precio» no ofrece «Nuevo recurso». Errores: «fornost» → «Ya existe «Fornost» · 4 días desde Bree.» y el botón pasa a «Elegir «Fornost»»; 0 días → «0 días es el mercado local de Bree, que ya existe»; precio vacío → «Anota el precio de los víveres en Cavada Grande para calcular la caravana». Cancelar con cambios: el pie pasa a «Hay cambios sin guardar» con «Seguir editando» y «Descartar».",
+      "page": "page-3"
+    },
+    {
+      "id": "nota-page-3",
+      "x": 0,
+      "y": -220,
+      "w": 620,
+      "text": "Asentamiento (Bree): 8 entradas en el menú. Tesorería (caja, impuestos y rentas con los locales comerciales, y deudas), Personal (trabajadores, guarnición y armería) y Producción (edificios, almacén y obras) agrupan pantallas en pestañas. El almacén guarda víveres, madera, piedra, arcilla, hierro, cerveza y lana. Los edificios pueden tener varios productos, cada uno con su frecuencia (la cantera da piedra cada semana y arcilla cada mes); solo extraen, sin gastar recursos. Diálogos: producción del mes de un local, nuevo asentamiento, editar edificio, añadir víveres, nueva obra (desplegable de materiales abierto), añadir animales (57 tipos), nueva caravana (compra, venta o traslado), nuevo mercado (alta completa apilada) y nuevo evento.\nAltas desde los desplegables: acción en el pie del buscador («+ Nuevo recurso» en Nueva obra, «+ Nuevo tipo de animal “cabr”» en Añadir animales) y alta completa apilada (Nuevo mercado sobre Nueva caravana). El alta rápida sobre el teclado y la gestión y reasignación se ven en J2e y P7.",
+      "page": "page-3"
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "page-1"
+  }
+}
