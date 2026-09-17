@@ -10,16 +10,23 @@ import {
   type Fecha,
 } from './fecha'
 
-/** Frecuencia de un pago, un cobro o una producción (§4). diaSemana: 0 = lunes … 6 = domingo. */
+/**
+ * Frecuencia de un pago, un cobro o una producción (§4). diaSemana: 0 = lunes … 6 = domingo.
+ *
+ * `primera` (cadaNDias, quincenal, cadaNMeses y trimestral) es una ocurrencia: ancla la cuenta de los periodos, y las
+ * demás ocurrencias salen de contar periodos completos desde ella. `inicio` (diaria, semanal, mensual y anual) solo
+ * impide ocurrencias anteriores a esa fecha: no tiene que caer en el día elegido, y sin él todo funciona igual que
+ * antes.
+ */
 export type Recurrencia =
-  | { tipo: 'diaria' }
+  | { tipo: 'diaria'; inicio?: Fecha }
   | { tipo: 'cadaNDias'; n: number; primera: Fecha }
-  | { tipo: 'semanal'; diaSemana: number } // 0 = lunes
+  | { tipo: 'semanal'; diaSemana: number; inicio?: Fecha } // 0 = lunes
   | { tipo: 'quincenal'; primera: Fecha } // cada 14 días
-  | { tipo: 'mensual'; diaMes: number } // 1–31; último día si no existe
+  | { tipo: 'mensual'; diaMes: number; inicio?: Fecha } // 1–31; último día si no existe
   | { tipo: 'cadaNMeses'; n: number; diaMes: number; primera: Fecha }
   | { tipo: 'trimestral'; diaMes: number; primera: Fecha }
-  | { tipo: 'anual'; mes: number; diaMes: number }
+  | { tipo: 'anual'; mes: number; diaMes: number; inicio?: Fecha }
   | { tipo: 'unica'; fecha: Fecha }
 
 /**
@@ -82,13 +89,22 @@ function primeraVez(r: Recurrencia): Fecha | null {
   return 'primera' in r ? r.primera : null
 }
 
+/** La fecha de inicio opcional de diaria, semanal, mensual y anual; null si no la tiene o no está puesta. */
+function inicioDe(r: Recurrencia): Fecha | null {
+  return 'inicio' in r && r.inicio !== undefined ? r.inicio : null
+}
+
 /**
- * true si la recurrencia ocurre el día f; nunca antes de la primera vez (§6.4 y §6.5).
- * Supone una recurrencia válida (validarRecurrencia sin errores).
+ * true si la recurrencia ocurre el día f; nunca antes de la primera vez (§6.4 y §6.5) ni antes de la fecha de
+ * inicio, si la tiene. Supone una recurrencia válida (validarRecurrencia sin errores).
  */
 export function ocurreEl(r: Recurrencia, f: Fecha): boolean {
   const primera = primeraVez(r)
   if (primera !== null && compararFechas(f, primera) < 0) {
+    return false
+  }
+  const inicio = inicioDe(r)
+  if (inicio !== null && compararFechas(f, inicio) < 0) {
     return false
   }
   const p = patron(r)
@@ -104,33 +120,40 @@ export function ocurreEl(r: Recurrencia, f: Fecha): boolean {
   }
 }
 
-/** Primera ocurrencia estrictamente posterior a `despuesDe`, o null (única ya pasada). Antes de `primera`, `primera`. */
+/**
+ * Primera ocurrencia estrictamente posterior a `despuesDe`, o null (única ya pasada). Antes de `primera`, `primera`.
+ * Si hay `inicio` y `despuesDe` es anterior a su víspera, calcula como si `despuesDe` fuera esa víspera: así `inicio`
+ * mismo entra en el resultado cuando es ocurrencia.
+ */
 export function siguienteOcurrencia(r: Recurrencia, despuesDe: Fecha): Fecha | null {
   const primera = primeraVez(r)
   if (primera !== null && compararFechas(despuesDe, primera) < 0) {
     // Nada antes de la primera vez, que es una ocurrencia: validarRecurrencia comprueba que cae en el día del mes.
     return { ...primera }
   }
+  const inicio = inicioDe(r)
+  const visperaDeInicio = inicio !== null ? sumarDias(inicio, -1) : null
+  const desde = visperaDeInicio !== null && compararFechas(despuesDe, visperaDeInicio) < 0 ? visperaDeInicio : despuesDe
   const p = patron(r)
   switch (p.clase) {
     case 'dias': {
-      const numero = aNumeroDeDia(despuesDe)
-      // Lo que falta para completar el periodo en curso; si despuesDe es ocurrencia, un periodo entero.
+      const numero = aNumeroDeDia(desde)
+      // Lo que falta para completar el periodo en curso; si desde es ocurrencia, un periodo entero.
       return desdeNumeroDeDia(numero + p.cada - modulo(numero - p.inicial, p.cada))
     }
     case 'meses': {
-      const indice = indiceDeMes(despuesDe)
-      // Último mes del periodo que no es posterior al mes de despuesDe.
+      const indice = indiceDeMes(desde)
+      // Último mes del periodo que no es posterior al mes de desde.
       const mes = indice - modulo(indice - p.inicial, p.cada)
       const candidata = fechaDelMes(mes, p.diaMes)
-      return compararFechas(candidata, despuesDe) > 0 ? candidata : fechaDelMes(mes + p.cada, p.diaMes)
+      return compararFechas(candidata, desde) > 0 ? candidata : fechaDelMes(mes + p.cada, p.diaMes)
     }
     case 'unica':
-      return compararFechas(p.fecha, despuesDe) > 0 ? { ...p.fecha } : null
+      return compararFechas(p.fecha, desde) > 0 ? { ...p.fecha } : null
   }
 }
 
-/** Ocurrencias con desde ≤ fecha ≤ hasta, en orden; ninguna anterior a `primera`. */
+/** Ocurrencias con desde ≤ fecha ≤ hasta, en orden; ninguna anterior a `primera` ni a `inicio` (los dos, si los hay). */
 export function ocurrenciasEntre(r: Recurrencia, desde: Fecha, hasta: Fecha): Fecha[] {
   const fechas: Fecha[] = []
   // Empezar en la víspera de desde incluye desde si es ocurrencia.
@@ -144,8 +167,8 @@ export function ocurrenciasEntre(r: Recurrencia, desde: Fecha, hasta: Fecha): Fe
 
 /**
  * Ocurrencia teórica estrictamente anterior a `antesDe` (puede ser anterior a `primera`, contando hacia atrás: la primera
- * vez menos uno o más periodos, §6.4 y §6.5). null solo con 'unica', si su fecha no es anterior. Sirve para los periodos
- * de producción (§7).
+ * vez menos uno o más periodos, §6.4 y §6.5). Ignora `inicio`, igual que ignora `primera`: la ocurrencia teórica sirve
+ * para los periodos de producción (§7). null solo con 'unica', si su fecha no es anterior.
  */
 export function anteriorOcurrencia(r: Recurrencia, antesDe: Fecha): Fecha | null {
   const p = patron(r)
@@ -201,28 +224,37 @@ function erroresDiaMesYPrimera(diaMes: number, primera: Fecha): (string | null)[
   ]
 }
 
+/** Añade el error de validarFecha(inicio) tras `errores`, si la recurrencia tiene una fecha de inicio puesta. */
+function conInicio(errores: (string | null)[], inicio: Fecha | undefined): (string | null)[] {
+  return inicio === undefined ? errores : [...errores, validarFecha(inicio)]
+}
+
 /**
  * Errores: n entero ≥ 2 (cadaNDias ≤ 366, cadaNMeses ≤ 12), diaMes 1–31, diaSemana 0–6, mes 1–12, fechas válidas,
- * en cadaNMeses y trimestral la primera vez en el día del mes elegido y, en anual, que el mes tenga ese día en algún
- * año (el 29 de febrero se admite). Lista vacía si todo es válido.
+ * en cadaNMeses y trimestral la primera vez en el día del mes elegido, en anual que el mes tenga ese día en algún
+ * año (el 29 de febrero se admite) y, si hay fecha de inicio (diaria, semanal, mensual y anual), que sea válida.
+ * Lista vacía si todo es válido.
  */
 export function validarRecurrencia(r: Recurrencia): string[] {
   let errores: (string | null)[]
   switch (r.tipo) {
     case 'diaria':
-      errores = []
+      errores = conInicio([], r.inicio)
       break
     case 'cadaNDias':
       errores = [esEnteroEntre(r.n, 2, 366) ? null : 'N debe ser un número entero de 2 a 366', validarFecha(r.primera)]
       break
     case 'semanal':
-      errores = [esEnteroEntre(r.diaSemana, 0, 6) ? null : 'El día de la semana debe estar entre lunes y domingo']
+      errores = conInicio(
+        [esEnteroEntre(r.diaSemana, 0, 6) ? null : 'El día de la semana debe estar entre lunes y domingo'],
+        r.inicio,
+      )
       break
     case 'quincenal':
       errores = [validarFecha(r.primera)]
       break
     case 'mensual':
-      errores = [errorDiaMes(r.diaMes)]
+      errores = conInicio([errorDiaMes(r.diaMes)], r.inicio)
       break
     case 'cadaNMeses':
       errores = [
@@ -236,8 +268,9 @@ export function validarRecurrencia(r: Recurrencia): string[] {
     case 'anual': {
       const errorMes = esEnteroEntre(r.mes, 1, 12) ? null : 'El mes debe estar entre 1 y 12'
       const errorDia = errorDiaMes(r.diaMes)
-      errores =
+      const erroresPropios =
         errorMes !== null || errorDia !== null ? [errorMes, errorDia] : [errorDiaDelMesAnual(r.mes, r.diaMes)]
+      errores = conInicio(erroresPropios, r.inicio)
       break
     }
     case 'unica':

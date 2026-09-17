@@ -484,3 +484,61 @@ describe('validarRecurrencia', () => {
     ])
   })
 })
+
+describe('fecha de inicio (no antes de)', () => {
+  it('semanal viernes con inicio el viernes 20 de abril: nada antes, y ocurre ese mismo día', () => {
+    const r: Recurrencia = { tipo: 'semanal', diaSemana: 4, inicio: f(1640, 4, 20) }
+    expect(ocurreEl(r, f(1640, 4, 13))).toBe(false)
+    expect(ocurreEl(r, f(1640, 4, 20))).toBe(true)
+    expect(siguienteOcurrencia(r, f(1640, 4, 12))).toEqual(f(1640, 4, 20))
+    expect(ocurrenciasEntre(r, f(1640, 4, 1), f(1640, 4, 30))).toEqual([f(1640, 4, 20), f(1640, 4, 27)])
+  })
+
+  it('semanal viernes con inicio un lunes: como no cae en el día elegido, la primera ocurrencia es la siguiente', () => {
+    const r: Recurrencia = { tipo: 'semanal', diaSemana: 4, inicio: f(1640, 4, 16) }
+    expect(ocurreEl(r, f(1640, 4, 16))).toBe(false)
+    expect(siguienteOcurrencia(r, f(1640, 4, 12))).toEqual(f(1640, 4, 20))
+  })
+
+  it('mensual día 1 con inicio el 15 de abril: la primera ocurrencia es el 1 de mayo', () => {
+    const r: Recurrencia = { tipo: 'mensual', diaMes: 1, inicio: f(1640, 4, 15) }
+    expect(ocurreEl(r, f(1640, 4, 1))).toBe(false)
+    expect(siguienteOcurrencia(r, f(1640, 4, 12))).toEqual(f(1640, 5, 1))
+    expect(ocurrenciasEntre(r, f(1640, 4, 1), f(1640, 6, 30))).toEqual([f(1640, 5, 1), f(1640, 6, 1)])
+  })
+
+  it('diaria con inicio el 14 de abril: nada antes de esa fecha', () => {
+    const r: Recurrencia = { tipo: 'diaria', inicio: f(1640, 4, 14) }
+    expect(siguienteOcurrencia(r, f(1640, 4, 12))).toEqual(f(1640, 4, 14))
+    expect(ocurrenciasEntre(r, f(1640, 4, 12), f(1640, 4, 16))).toEqual([
+      f(1640, 4, 14),
+      f(1640, 4, 15),
+      f(1640, 4, 16),
+    ])
+  })
+
+  it('anual 1 de mayo con inicio el 2 de mayo: la primera ocurrencia es la del año siguiente', () => {
+    const r: Recurrencia = { tipo: 'anual', mes: 5, diaMes: 1, inicio: f(1640, 5, 2) }
+    expect(siguienteOcurrencia(r, f(1640, 4, 12))).toEqual(f(1641, 5, 1))
+  })
+
+  it('después de la fecha de inicio no cambia nada', () => {
+    const r: Recurrencia = { tipo: 'semanal', diaSemana: 4, inicio: f(1640, 4, 20) }
+    expect(siguienteOcurrencia(r, f(1640, 4, 20))).toEqual(f(1640, 4, 27))
+  })
+
+  it('anteriorOcurrencia ignora la fecha de inicio, igual que ya ignora la primera vez', () => {
+    const r: Recurrencia = { tipo: 'semanal', diaSemana: 4, inicio: f(1640, 4, 20) }
+    expect(anteriorOcurrencia(r, f(1640, 4, 20))).toEqual(f(1640, 4, 13))
+  })
+
+  it('validarRecurrencia: añade el error de la fecha de inicio después de los errores propios del tipo', () => {
+    expect(validarRecurrencia({ tipo: 'semanal', diaSemana: 4, inicio: f(1640, 2, 30) })).toEqual([
+      'Febrero de 1640 tiene 29 días',
+    ])
+    expect(validarRecurrencia({ tipo: 'diaria', inicio: f(10000, 1, 1) })).toEqual([
+      'El año debe estar entre 1 y 9999',
+    ])
+    expect(validarRecurrencia({ tipo: 'mensual', diaMes: 1, inicio: f(1640, 4, 15) })).toEqual([])
+  })
+})
