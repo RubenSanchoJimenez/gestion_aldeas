@@ -499,7 +499,7 @@ Las pantallas marcadas con ◆ son diálogos sobre la pantalla indicada. Cada pa
 
 - **A0**: crea la fila de víveres (0 sacos, sin capacidad = sin límite) y el mercado local sin precios (Mercado.localDe), con el nombre del asentamiento, que cambia con él y no se elimina. Es estructura, no plantilla. Tras crear se abre el Resumen del asentamiento.
 - **A1**:
-  - Balance **−11,5 mo** con el subtítulo «entran 44 · salen 55,4» (39,2571 + 4,7 − 18 − 12,4286 − 25 = −11,4714; en mh, 4.395.714 − 5.542.857 = −1.147.143, es decir −11,47143 mo). Los +4,7 mo son los impuestos de locales al mes con la producción habitual (decidido por el usuario el 2026-09-17).
+  - Balance **−11,5 mo** con el subtítulo «entran 44 · salen 55,4» (39,2571 + 4,7 − 18 − 12,4286 − 25 ≈ −11,4714; en mh, 4.395.714 − 5.542.857 = −1.147.143, es decir −11,47143 mo). Los +4,7 mo son los impuestos de locales al mes con la producción habitual (decidido por el usuario el 2026-09-17).
   - Caja con el subtítulo «debe 30 mo al Gremio».
   - Botón «Transferir» (antes «Transferir con Tharan»), que abre J2f.
   - Almacén crítico: víveres «Se agota el 23 de abril» en ámbar; cerveza «Unos 105 días»; madera «Unos 85 días».
@@ -1054,7 +1054,7 @@ Cómo se crea una opción nueva desde un selector y dónde se gestiona después.
 
 - **Dinero**: ver sección 3. Toda cifra monetaria se calcula en unidades base y se muestra en mo.
 - **Patrimonio** del personaje = bolsa + inventario (sin objetos archivados) + inversiones activas (capital completo; la participación es informativa) + lo que te deben − lo que debes (pendiente con intereses). Solo cuenta las deudas del personaje: las de un asentamiento van en A2b y no entran (decidido por el usuario el 2026-09-16).
-- **Balance mensual** de un asentamiento = ingresos recurrentes (también los impuestos de locales, con la producción habitual) − gastos recurrentes (salarios, soldadas, tributos), prorrateados a 30 días con la tabla de la sección 3 y con 1 decimal. No incluye comercio ni movimientos manuales. Bree: entran 44 · salen 55,4 → −11,5 mo (39,2571 + 4,7 − 55,4286 = −11,4714; en mh, 4.395.714 − 5.542.857 = −1.147.143, es decir −11,47143 mo).
+- **Balance mensual** de un asentamiento = ingresos recurrentes (también los impuestos de locales, con la producción habitual) − gastos recurrentes (salarios, soldadas, tributos), prorrateados a 30 días con la tabla de la sección 3 y con 1 decimal. No incluye comercio ni movimientos manuales. Bree: entran 44 · salen 55,4 → −11,5 mo (39,2571 + 4,7 − 55,4286 ≈ −11,4714; en mh, 4.395.714 − 5.542.857 = −1.147.143, es decir −11,47143 mo).
   - Inicio muestra solo el balance; el desglose «entran · salen» va solo en A1.
   - Los impuestos de locales suman +4,7 mo al balance y a los ingresos de A3 (decidido por el usuario el 2026-09-17). A3 no tiene fila de cifras:
     - Cabecera del panel Ingresos: «+44 mo al mes» (39,2571 + 4,7 = 43,9571).
