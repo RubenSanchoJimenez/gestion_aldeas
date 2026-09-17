@@ -607,12 +607,13 @@ describe('campos sobrantes: la recurrencia decide por r.tipo, no por si el campo
     // Objeto con un campo `primera` que 'semanal' no tiene, como al copiar con spread desde otro tipo.
     const r = { tipo: 'semanal', diaSemana: 4, primera: f(1640, 4, 16) } as Recurrencia
     expect(siguienteOcurrencia(r, f(1640, 4, 12))).toEqual(f(1640, 4, 13))
-    expect(ocurreEl(r, f(1640, 4, 16))).toBe(false)
+    expect(ocurreEl(r, f(1640, 4, 13))).toBe(true)
   })
 
   it('un campo `inicio` sobrante en una recurrencia sin fecha de inicio se ignora', () => {
     // Objeto con un campo `inicio` que 'cadaNDias' no tiene.
     const r = { tipo: 'cadaNDias', n: 10, primera: f(1640, 4, 20), inicio: f(1640, 6, 1) } as Recurrencia
     expect(siguienteOcurrencia(r, f(1640, 4, 25))).toEqual(f(1640, 4, 30))
+    expect(ocurreEl(r, f(1640, 4, 30))).toBe(true)
   })
 })

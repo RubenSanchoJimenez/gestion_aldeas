@@ -31,7 +31,7 @@ const MESES_EN_MENSAJE = [
 /** Días de cada mes en un año no bisiesto; febrero se corrige en diasDelMes. */
 const DIAS_POR_MES = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-/** Año máximo de una fecha (§4). La fase 3 lo usa para limitar «Avanzar días» y cortar las previsiones. */
+/** Año máximo de una fecha (§4). Es también el tope de «Avanzar días» y de las previsiones (§4, «Fecha máxima»). */
 export const ANIO_MAXIMO = 9999
 
 /** Nombre del mes con mayúscula inicial; mes debe ser un entero de 1 (enero) a 12 (diciembre). */
