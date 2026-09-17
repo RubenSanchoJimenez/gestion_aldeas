@@ -36,12 +36,11 @@ export const EQUIVALENCIAS_POR_DEFECTO: Equivalencias = {
 const CAMPOS: readonly (keyof Equivalencias)[] = ['mmEnMo', 'moEnMp', 'mpEnMb', 'mbEnMc', 'mcEnMe', 'meEnMh']
 
 /**
- * Cota superior provisional para el valor de 1 mithril en hierro (P1, validación de equivalencias).
- * La especificación (§3, §6.1) no fija un límite superior: seis equivalencias de 1000 cada una ya
- * llevan valorEnBase('mm', eq) a 1e18, muy por encima de Number.MAX_SAFE_INTEGER (≈9.007e15), y con
- * eso los saldos guardados en hierro dejan de ser enteros exactos. 1.000.000.000 deja margen amplio a
- * los saldos de la partida sin acercarse a MAX_SAFE_INTEGER. Es una decisión pendiente de la
- * especificación: el valor exacto lo debe fijar el usuario.
+ * Cota superior para el valor de 1 mithril en hierro (P1, validación de equivalencias), decidida por
+ * el usuario el 2026-09-17. Sin ella, seis equivalencias de 1000 cada una ya llevan
+ * valorEnBase('mm', eq) a 1e18, muy por encima de Number.MAX_SAFE_INTEGER (≈9.007e15), y con eso los
+ * saldos guardados en hierro dejan de ser enteros exactos. 1.000.000.000 deja margen amplio a los
+ * saldos de la partida sin acercarse a MAX_SAFE_INTEGER.
  */
 const VALOR_MAXIMO_MM_EN_MH = 1_000_000_000
 
@@ -69,7 +68,7 @@ export function validarEquivalencias(eq: Equivalencias): string[] {
   })
   if (errores.length === 0 && valorEnBase('mm', eq) > VALOR_MAXIMO_MM_EN_MH) {
     errores.push(
-      `Con estas equivalencias, 1 mithril vale demasiado hierro (más de ${VALOR_MAXIMO_MM_EN_MH.toLocaleString('es-ES')} mh); reduce alguna equivalencia`,
+      'Con estas equivalencias, 1 mithril vale demasiado hierro (más de 1.000.000.000 mh); reduce alguna equivalencia',
     )
   }
   return errores

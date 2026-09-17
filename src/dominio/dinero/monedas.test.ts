@@ -128,4 +128,17 @@ describe('validarEquivalencias', () => {
       'Con estas equivalencias, 1 mithril vale demasiado hierro (más de 1.000.000.000 mh); reduce alguna equivalencia',
     ])
   })
+
+  it('no evalúa el tope cuando ya hay errores por campo', () => {
+    expect(
+      validarEquivalencias({
+        mmEnMo: 1.5,
+        moEnMp: 1000000,
+        mpEnMb: 1000000,
+        mbEnMc: 1000000,
+        mcEnMe: 1000000,
+        meEnMh: 1000000,
+      }),
+    ).toEqual(['La equivalencia de mithril debe ser un número entero de 2 o más'])
+  })
 })
