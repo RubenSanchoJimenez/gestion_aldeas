@@ -24,6 +24,11 @@ const MESES_EN_MENSAJE = [
 /** Días de cada mes en un año no bisiesto; febrero se corrige en diasDelMes. */
 const DIAS_POR_MES = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
+/** Nombre del mes con mayúscula inicial; mes debe ser un entero de 1 (enero) a 12 (diciembre). */
+export function nombreDeMesEnMensaje(mes: number): string {
+  return MESES_EN_MENSAJE[mes - 1]
+}
+
 /** Bisiesto gregoriano: múltiplo de 4, salvo los múltiplos de 100 que no lo son de 400. */
 export function esBisiesto(anio: number): boolean {
   return (anio % 4 === 0 && anio % 100 !== 0) || anio % 400 === 0

@@ -1,4 +1,14 @@
-import { aNumeroDeDia, compararFechas, desdeNumeroDeDia, diaEnMes, sumarDias, validarFecha, type Fecha } from './fecha'
+import {
+  aNumeroDeDia,
+  compararFechas,
+  desdeNumeroDeDia,
+  diaEnMes,
+  diasDelMes,
+  nombreDeMesEnMensaje,
+  sumarDias,
+  validarFecha,
+  type Fecha,
+} from './fecha'
 
 /** Frecuencia de un pago, un cobro o una producción (§4). diaSemana: 0 = lunes … 6 = domingo. */
 export type Recurrencia =
@@ -164,6 +174,15 @@ function errorDiaMes(diaMes: number): string | null {
   return esEnteroEntre(diaMes, 1, 31) ? null : 'El día del mes debe estar entre 1 y 31'
 }
 
+/** Año bisiesto usado como referencia: así el mes de la frecuencia anual tiene sus 29 días de febrero. */
+const ANIO_BISIESTO_DE_REFERENCIA = 2000
+
+/** Error de la frecuencia anual si el mes y el día ya son válidos: el día debe existir en el mes en algún año. */
+function errorDiaDelMesAnual(mes: number, diaMes: number): string | null {
+  const diasEnAnioBisiesto = diasDelMes(ANIO_BISIESTO_DE_REFERENCIA, mes)
+  return diaMes > diasEnAnioBisiesto ? `${nombreDeMesEnMensaje(mes)} no tiene ${diaMes} días` : null
+}
+
 /** Día del mes, primera vez y, si los dos son válidos, que la primera vez caiga en ese día (o el último del mes). */
 function erroresDiaMesYPrimera(diaMes: number, primera: Fecha): (string | null)[] {
   const errorDia = errorDiaMes(diaMes)
@@ -183,8 +202,9 @@ function erroresDiaMesYPrimera(diaMes: number, primera: Fecha): (string | null)[
 }
 
 /**
- * Errores: n entero ≥ 2 (cadaNDias ≤ 366, cadaNMeses ≤ 12), diaMes 1–31, diaSemana 0–6, mes 1–12, fechas válidas y,
- * en cadaNMeses y trimestral, la primera vez en el día del mes elegido. Lista vacía si todo es válido.
+ * Errores: n entero ≥ 2 (cadaNDias ≤ 366, cadaNMeses ≤ 12), diaMes 1–31, diaSemana 0–6, mes 1–12, fechas válidas,
+ * en cadaNMeses y trimestral la primera vez en el día del mes elegido y, en anual, que el mes tenga ese día en algún
+ * año (el 29 de febrero se admite). Lista vacía si todo es válido.
  */
 export function validarRecurrencia(r: Recurrencia): string[] {
   let errores: (string | null)[]
@@ -213,9 +233,13 @@ export function validarRecurrencia(r: Recurrencia): string[] {
     case 'trimestral':
       errores = erroresDiaMesYPrimera(r.diaMes, r.primera)
       break
-    case 'anual':
-      errores = [esEnteroEntre(r.mes, 1, 12) ? null : 'El mes debe estar entre 1 y 12', errorDiaMes(r.diaMes)]
+    case 'anual': {
+      const errorMes = esEnteroEntre(r.mes, 1, 12) ? null : 'El mes debe estar entre 1 y 12'
+      const errorDia = errorDiaMes(r.diaMes)
+      errores =
+        errorMes !== null || errorDia !== null ? [errorMes, errorDia] : [errorDiaDelMesAnual(r.mes, r.diaMes)]
       break
+    }
     case 'unica':
       errores = [validarFecha(r.fecha)]
       break

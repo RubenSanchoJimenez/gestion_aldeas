@@ -423,6 +423,18 @@ describe('validarRecurrencia', () => {
     expect(validarRecurrencia({ tipo: 'anual', mes: 2.5, diaMes: 1 })).toEqual(error)
   })
 
+  it('anual: rechaza los días que el mes no tiene nunca y admite el 29 de febrero', () => {
+    expect(validarRecurrencia({ tipo: 'anual', mes: 4, diaMes: 31 })).toEqual(['Abril no tiene 31 días'])
+    expect(validarRecurrencia({ tipo: 'anual', mes: 2, diaMes: 30 })).toEqual(['Febrero no tiene 30 días'])
+    expect(validarRecurrencia({ tipo: 'anual', mes: 2, diaMes: 31 })).toEqual(['Febrero no tiene 31 días'])
+    expect(validarRecurrencia({ tipo: 'anual', mes: 2, diaMes: 29 })).toEqual([])
+    expect(validarRecurrencia({ tipo: 'anual', mes: 12, diaMes: 31 })).toEqual([])
+    expect(validarRecurrencia({ tipo: 'anual', mes: 4, diaMes: 32 })).toEqual([
+      'El día del mes debe estar entre 1 y 31',
+    ])
+    expect(validarRecurrencia({ tipo: 'mensual', diaMes: 31 })).toEqual([])
+  })
+
   it('las fechas deben existir, con el mensaje de validarFecha', () => {
     expect(validarRecurrencia({ tipo: 'cadaNDias', n: 10, primera: f(1640, 4, 31) })).toEqual([
       'Abril de 1640 tiene 30 días',
