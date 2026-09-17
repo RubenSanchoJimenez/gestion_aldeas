@@ -31,6 +31,9 @@ const MESES_EN_MENSAJE = [
 /** Días de cada mes en un año no bisiesto; febrero se corrige en diasDelMes. */
 const DIAS_POR_MES = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
+/** Año máximo de una fecha (§4). La fase 3 lo usa para limitar «Avanzar días» y cortar las previsiones. */
+export const ANIO_MAXIMO = 9999
+
 /** Nombre del mes con mayúscula inicial; mes debe ser un entero de 1 (enero) a 12 (diciembre). */
 export function nombreDeMesEnMensaje(mes: number): string {
   return MESES_EN_MENSAJE[mes - 1]
@@ -50,8 +53,8 @@ export function diasDelMes(anio: number, mes: number): number {
 
 /** null si es válida; si no, el mensaje: «El año debe estar entre 1 y 9999», «El mes debe estar entre 1 y 12», «Abril de 1640 tiene 30 días». */
 export function validarFecha(f: Fecha): string | null {
-  if (!Number.isInteger(f.anio) || f.anio < 1 || f.anio > 9999) {
-    return 'El año debe estar entre 1 y 9999'
+  if (!Number.isInteger(f.anio) || f.anio < 1 || f.anio > ANIO_MAXIMO) {
+    return `El año debe estar entre 1 y ${ANIO_MAXIMO}`
   }
   if (!Number.isInteger(f.mes) || f.mes < 1 || f.mes > 12) {
     return 'El mes debe estar entre 1 y 12'

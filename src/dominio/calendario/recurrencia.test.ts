@@ -371,6 +371,46 @@ describe('coherencia de las cuatro funciones, día a día de 1639 a 1642', () =>
   })
 })
 
+describe('coherencia con fecha de inicio, día a día de 1639 a 1642', () => {
+  const INICIO = f(1639, 1, 1)
+  const FIN = f(1642, 12, 31)
+
+  it.each<[string, Recurrencia]>([
+    ['semanal viernes con inicio', { tipo: 'semanal', diaSemana: 4, inicio: f(1640, 4, 16) }],
+    ['mensual día 31 con inicio', { tipo: 'mensual', diaMes: 31, inicio: f(1640, 4, 15) }],
+    ['anual 29 de febrero con inicio', { tipo: 'anual', mes: 2, diaMes: 29, inicio: f(1640, 3, 1) }],
+    ['diaria con inicio', { tipo: 'diaria', inicio: f(1640, 4, 14) }],
+  ])('%s', (_nombre, r) => {
+    const inicio = aNumeroDeDia(INICIO)
+    const fin = aNumeroDeDia(FIN)
+
+    // Lista de referencia: los números de día en que ocurreEl dice que sí.
+    const ocurrencias: number[] = []
+    for (let n = inicio; n <= fin; n++) {
+      if (ocurreEl(r, desdeNumeroDeDia(n))) {
+        ocurrencias.push(n)
+      }
+    }
+    expect(ocurrencias.length).toBeGreaterThan(0)
+    expect(ocurrenciasEntre(r, INICIO, FIN)).toEqual(ocurrencias.map(desdeNumeroDeDia))
+
+    // siguienteOcurrencia de cada día del rango es la primera de `ocurrencias` posterior a él, si la hay en el rango
+    // (anteriorOcurrencia se deja fuera a propósito: ignora `inicio`).
+    let posteriores = 0
+    for (let n = inicio; n <= fin; n++) {
+      while (posteriores < ocurrencias.length && ocurrencias[posteriores] <= n) {
+        posteriores++
+      }
+      const siguienteEsperada: number | undefined = ocurrencias[posteriores]
+      if (siguienteEsperada !== undefined) {
+        const siguiente = siguienteOcurrencia(r, desdeNumeroDeDia(n))
+        expect(siguiente).not.toBeNull()
+        expect(aNumeroDeDia(siguiente as Fecha)).toBe(siguienteEsperada)
+      }
+    }
+  })
+})
+
 describe('validarRecurrencia', () => {
   it('acepta recurrencias válidas de todos los tipos, con los valores límite', () => {
     const validas: Recurrencia[] = [
@@ -559,5 +599,20 @@ describe('fecha de inicio (no antes de)', () => {
       'Abril no tiene 31 días',
       'El año debe estar entre 1 y 9999',
     ])
+  })
+})
+
+describe('campos sobrantes: la recurrencia decide por r.tipo, no por si el campo existe', () => {
+  it('un campo `primera` sobrante en una recurrencia sin primera vez se ignora', () => {
+    // Objeto con un campo `primera` que 'semanal' no tiene, como al copiar con spread desde otro tipo.
+    const r = { tipo: 'semanal', diaSemana: 4, primera: f(1640, 4, 16) } as Recurrencia
+    expect(siguienteOcurrencia(r, f(1640, 4, 12))).toEqual(f(1640, 4, 13))
+    expect(ocurreEl(r, f(1640, 4, 16))).toBe(false)
+  })
+
+  it('un campo `inicio` sobrante en una recurrencia sin fecha de inicio se ignora', () => {
+    // Objeto con un campo `inicio` que 'cadaNDias' no tiene.
+    const r = { tipo: 'cadaNDias', n: 10, primera: f(1640, 4, 20), inicio: f(1640, 6, 1) } as Recurrencia
+    expect(siguienteOcurrencia(r, f(1640, 4, 25))).toEqual(f(1640, 4, 30))
   })
 })

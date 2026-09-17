@@ -84,14 +84,45 @@ function patron(r: Recurrencia): Patron {
   }
 }
 
-/** La primera vez de cadaNDias, quincenal, cadaNMeses y trimestral; null en los tipos que no la tienen. */
+/**
+ * La primera vez de cadaNDias, quincenal, cadaNMeses y trimestral; null en los tipos que no la tienen. Decide por
+ * r.tipo, no por si el objeto tiene un campo `primera`: un campo sobrante (de un spread al cambiar de tipo, por
+ * ejemplo) se ignora.
+ */
 function primeraVez(r: Recurrencia): Fecha | null {
-  return 'primera' in r ? r.primera : null
+  switch (r.tipo) {
+    case 'cadaNDias':
+    case 'quincenal':
+    case 'cadaNMeses':
+    case 'trimestral':
+      return r.primera
+    case 'diaria':
+    case 'semanal':
+    case 'mensual':
+    case 'anual':
+    case 'unica':
+      return null
+  }
 }
 
-/** La fecha de inicio opcional de diaria, semanal, mensual y anual; null si no la tiene o no está puesta. */
+/**
+ * La fecha de inicio opcional de diaria, semanal, mensual y anual; null si no la tiene o no está puesta. Decide por
+ * r.tipo, no por si el objeto tiene un campo `inicio`: un campo sobrante se ignora, igual que en primeraVez.
+ */
 function inicioDe(r: Recurrencia): Fecha | null {
-  return 'inicio' in r && r.inicio !== undefined ? r.inicio : null
+  switch (r.tipo) {
+    case 'diaria':
+    case 'semanal':
+    case 'mensual':
+    case 'anual':
+      return r.inicio ?? null
+    case 'cadaNDias':
+    case 'quincenal':
+    case 'cadaNMeses':
+    case 'trimestral':
+    case 'unica':
+      return null
+  }
 }
 
 /**
@@ -124,6 +155,10 @@ export function ocurreEl(r: Recurrencia, f: Fecha): boolean {
  * Primera ocurrencia estrictamente posterior a `despuesDe`, o null (única ya pasada). Antes de `primera`, `primera`.
  * Si hay `inicio` y `despuesDe` es anterior a su víspera, calcula como si `despuesDe` fuera esa víspera: así `inicio`
  * mismo entra en el resultado cuando es ocurrencia.
+ *
+ * El resultado puede caer después del 31 de diciembre de ANIO_MAXIMO: la anual 31 de diciembre después de esa fecha
+ * da el 31 de diciembre de ANIO_MAXIMO + 1, que validarFecha rechaza. Quien la use para previsiones debe cortar en
+ * ANIO_MAXIMO (§4 «Fecha máxima»).
  */
 export function siguienteOcurrencia(r: Recurrencia, despuesDe: Fecha): Fecha | null {
   const primera = primeraVez(r)
