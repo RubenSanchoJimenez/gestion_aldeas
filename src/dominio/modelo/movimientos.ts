@@ -104,7 +104,6 @@ export const EsquemaMovimiento = z
       (m) => (m.tipo === 'transferencia') === (m.vinculo?.tipo === 'transferencia'),
       'Solo un movimiento de transferencia lleva el vínculo «transferencia», y al revés',
     ),
-    exige((m) => m.vinculo === undefined || m.regla === undefined, 'Un movimiento vinculado no sale de una regla'),
     exige(
       (m) => m.detalleLocales === undefined || m.regla?.tipo === 'locales',
       'El detalle por local solo va en el cobro agrupado de impuestos de locales',
@@ -114,8 +113,8 @@ export const EsquemaMovimiento = z
       'El detalle por trabajador solo va en el pago agrupado de salarios o de soldadas',
     ),
     exige(
-      (m) => (m.inversionId !== undefined) === (m.regla?.tipo === 'beneficio'),
-      'Los beneficios de una inversión guardan su inversionId',
+      (m) => m.inversionId === undefined || m.regla?.tipo === 'beneficio',
+      'inversionId solo va en los beneficios de una inversión',
     ),
     exige(
       (m) => m.objetoPendiente === undefined || (m.tipo === 'gasto' && m.programado),
