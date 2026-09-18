@@ -96,14 +96,24 @@ Cada fase deja software que funciona y se puede probar por sí solo. Solo la fas
 
 ### Fase 6 · Interfaz base y PWA
 
-- **Objetivo**: la app se instala en la tablet y muestra la partida con el motor real.
+El usuario decidió el 2026-09-18 partirla en dos: la 6a se hace en paralelo con el motor (fases 3 a 5), en su propia rama, y la 6b al terminar la fase 5.
+
+#### Fase 6a · Base de la interfaz (en paralelo con el motor)
+
+- **Objetivo**: la app se instala en la tablet, funciona sin conexión y gestiona las partidas, sin nada del motor todavía.
 - **Alcance**:
   - vite-plugin-pwa (manifiesto, service worker, uso sin conexión) y fuentes incluidas en la app (Cormorant Garamond, Source Sans 3 y Cinzel), sin depender de Google Fonts;
   - sistema visual «pergamino legible» (§10) como variables CSS;
-  - marco: barra superior con el próximo aviso y «Avanzar días», y menú lateral (§5);
+  - marco: barra superior (sin el próximo aviso ni «Avanzar días») y menú lateral (§5);
   - componentes comunes: botón, panel, tabla, campo de importe, selector con buscador (§6.5), segmentos, diálogo y diálogo apilado, confirmación de borrado J2d, aviso, campo de fecha y campo de frecuencia (§6.4);
-  - pantallas P0–P6: selector de partidas, alta en 2 pasos, Inicio, Calendario, vista previa y resumen del avance, y Ajustes.
-- **Entregable**: pruebas de componentes con Testing Library y la app instalada en Chrome para Android, funcionando sin conexión con la partida de ejemplo; P4 y P5 coinciden con las vistas.
+  - pantallas P0 (selector de partidas), «Editar partida», P1 y P1b (alta en 2 pasos) y P6 (ajustes y copias).
+- **Entregable**: pruebas de componentes con Testing Library y la app instalada en Chrome para Android, funcionando sin conexión: lista las partidas, crea una, abre la de ejemplo y exporta e importa copias.
+
+#### Fase 6b · Pantallas del motor (tras la fase 5)
+
+- **Objetivo**: la partida se ve y se juega con el motor real.
+- **Alcance**: barra superior con el próximo aviso y «Avanzar días»; pantallas P2 (Inicio), P3 (Calendario), P4 (vista previa del avance) y P5 (resumen del avance).
+- **Entregable**: la partida de ejemplo avanza días en la tablet; P4 y P5 coinciden con las vistas.
 
 ### Fase 7 · Personaje
 
