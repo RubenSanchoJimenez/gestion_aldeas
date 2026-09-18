@@ -6379,7 +6379,7 @@ Error: Cannot find module './ids' imported from C:/Proyectos/GA/gestion_aldeas/s
 Crea `src/datos/baseDeDatos.ts` con este contenido:
 
 ```ts
-import { Dexie, type DexieOptions, type EntityTable, type Table } from 'dexie'
+import { Dexie, type DexieOptions, type Table } from 'dexie'
 import type { OpcionCatalogo, RecursoCatalogo } from '../dominio/modelo/catalogos'
 import type { DocumentoPartida } from '../dominio/modelo/documento'
 import type { ResumenPartida } from '../dominio/modelo/resumen'
@@ -6402,10 +6402,10 @@ export interface Ajuste {
  */
 export class BaseDeDatos extends Dexie {
   declare partidas: Table<DocumentoPartida, string>
-  declare resumenes: EntityTable<ResumenPartida, 'id'>
-  declare opcionesCatalogo: EntityTable<OpcionCatalogo, 'id'>
-  declare recursosCatalogo: EntityTable<RecursoCatalogo, 'id'>
-  declare ajustes: EntityTable<Ajuste, 'clave'>
+  declare resumenes: Table<ResumenPartida, string>
+  declare opcionesCatalogo: Table<OpcionCatalogo, string>
+  declare recursosCatalogo: Table<RecursoCatalogo, string>
+  declare ajustes: Table<Ajuste, string>
 
   /** En la app: new BaseDeDatos(). En las pruebas: baseDePrueba(), que inyecta una IDBFactory nueva. */
   constructor(nombre: string = NOMBRE_BASE, opciones?: DexieOptions) {
@@ -6422,7 +6422,7 @@ export class BaseDeDatos extends Dexie {
 ```
 
 - En `stores`, lo que va antes de la primera coma es la clave primaria y lo demás son índices. `partidas` no declara ninguno: siempre se lee por su id.
-- `partidas` es `Table<DocumentoPartida, string>` y no `EntityTable` porque el documento no tiene `id` de primer nivel: su clave es la anidada `partida.id`.
+- Las cinco tablas se declaran con `Table<T, string>` (decisión D-017). `partidas` no puede ser `EntityTable` porque el documento no tiene `id` de primer nivel: su clave es la anidada `partida.id`. En las otras cuatro, `EntityTable<T, 'id'>` haría opcional la clave al insertar, y aquí los ids no los genera la base: los escribe la app.
 
 Crea `src/datos/pruebas/baseDePrueba.ts` con este contenido:
 
