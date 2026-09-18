@@ -30,6 +30,12 @@ describe('leerAjuste y guardarAjuste', () => {
     expect(await leerAjuste(db, 'versionCatalogo')).toBe(2)
     expect(await db.ajustes.count()).toBe(1)
   })
+
+  it('descarta un valor guardado con otro tipo, como ya hace leerAjustes', async () => {
+    // Una versión futura de la app puede haber dejado ahí otra cosa; leerAjuste no se la cree.
+    await db.ajustes.put({ clave: 'versionCatalogo', valor: 'uno' })
+    expect(await leerAjuste(db, 'versionCatalogo')).toBeUndefined()
+  })
 })
 
 describe('leerAjustes', () => {

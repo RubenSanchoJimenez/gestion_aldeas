@@ -49,12 +49,22 @@ describe('tipos de apoyo', () => {
     expect(EsquemaInstante.safeParse('2026-09-17T20:15:00.000Z').success).toBe(true)
     expect(EsquemaInstante.safeParse('2026-09-17').success).toBe(false)
     expect(EsquemaInstante.safeParse('12 de abril de 1640').success).toBe(false)
+    expect(EsquemaInstante.safeParse('2026-09-17T20:15:00.000+02:00').success).toBe(false)
+    expect(EsquemaInstante.safeParse('2026-09-17T20:15:00.000-05:00').success).toBe(false)
+    expect(EsquemaInstante.safeParse('2026-09-17T20:15:00.000').success).toBe(false)
   })
 
   it('EsquemaAnioMes acepta un año y un mes, y rechaza el mes 13', () => {
     expect(EsquemaAnioMes.parse({ anio: 1640, mes: 4 })).toEqual({ anio: 1640, mes: 4 })
     expect(EsquemaAnioMes.safeParse({ anio: 1640, mes: 13 }).success).toBe(false)
     expect(EsquemaAnioMes.safeParse({ anio: 1640, mes: 4.5 }).success).toBe(false)
+    expect(EsquemaAnioMes.safeParse({ anio: 9999, mes: 12 }).success).toBe(true)
+    expect(EsquemaAnioMes.safeParse({ anio: 10000, mes: 1 }).success).toBe(false)
+  })
+
+  it('los campos desconocidos se descartan en vez de viajar en el estado', () => {
+    expect(EsquemaAnioMes.parse({ anio: 1640, mes: 4, sobra: 'lo que sea' })).toEqual({ anio: 1640, mes: 4 })
+    expect(EsquemaEquivalencias.parse({ ...EQUIVALENCIAS_POR_DEFECTO, mxEnMy: 7 })).toEqual(EQUIVALENCIAS_POR_DEFECTO)
   })
 
   it('EsquemaUbicacionObjeto admite las cuatro formas y rechaza las demás', () => {
@@ -84,6 +94,10 @@ describe('tipos de apoyo', () => {
     expect(EsquemaPorcentaje.safeParse(12.25).success).toBe(true)
     expect(mensajes(EsquemaPorcentaje.safeParse(12.345))).toEqual(['Usa como mucho 2 decimales'])
     expect(EsquemaPorcentaje.safeParse(101).success).toBe(false)
+    // La notación exponencial no lleva punto decimal: se colaba mirando solo el texto del número.
+    expect(mensajes(EsquemaPorcentaje.safeParse(1e-7))).toEqual(['Usa como mucho 2 decimales'])
+    expect(EsquemaPorcentaje.safeParse(0.6).success).toBe(true)
+    expect(EsquemaPorcentaje.safeParse(1e2).success).toBe(true)
     expect(EsquemaCantidadRecurso.safeParse(8.3333).success).toBe(true)
     expect(EsquemaCantidadRecurso.safeParse(-1).success).toBe(false)
   })

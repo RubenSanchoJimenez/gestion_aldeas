@@ -1,5 +1,5 @@
 import * as z from 'zod'
-import { validarFecha, type Fecha } from '../calendario/fecha'
+import { ANIO_MAXIMO, validarFecha, type Fecha } from '../calendario/fecha'
 import { validarRecurrencia } from '../calendario/recurrencia'
 import { validarEquivalencias } from '../dinero/monedas'
 
@@ -18,7 +18,7 @@ export type Instante = z.infer<typeof EsquemaInstante>
 
 /** «Año-mes» de LocalComercial.cobradoHasta y de las producciones anotadas por mes (§8, decisión 18). */
 export const EsquemaAnioMes = z.object({
-  anio: z.int().min(1).max(9999),
+  anio: z.int().min(1).max(ANIO_MAXIMO),
   mes: z.int().min(1).max(12),
 })
 export type AnioMes = z.infer<typeof EsquemaAnioMes>
@@ -42,14 +42,14 @@ export function exige<T>(condicion: (valor: T) => boolean, mensaje: string) {
 }
 
 /**
- * Comprueba que un número no trae más decimales de los permitidos, sin depender de la coma flotante
+ * Comprueba que un número no trae más decimales de los permitidos
  * (§3: las cantidades por habitante se guardan con hasta 4 decimales; los porcentajes, con 2).
+ * Redondea y compara en vez de mirar el texto del número, porque la notación exponencial («1e-7»)
+ * no lleva punto decimal y se colaba por esa puerta.
  */
 export function decimalesComoMucho(decimales: number) {
   return (ctx: z.core.ParsePayload<number>) => {
-    const texto = String(ctx.value)
-    const punto = texto.indexOf('.')
-    if (punto !== -1 && texto.length - punto - 1 > decimales) {
+    if (Number(ctx.value.toFixed(decimales)) !== ctx.value) {
       ctx.issues.push({ code: 'custom', message: `Usa como mucho ${decimales} decimales`, input: ctx.value })
     }
   }

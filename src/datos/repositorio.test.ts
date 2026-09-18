@@ -153,6 +153,19 @@ describe('crear una partida', () => {
     expect((await db.resumenes.get('p.sombra-del-este'))?.abiertaEl).toBe(SESION_1)
     expect(await db.partidas.count()).toBe(1)
   })
+
+  it('conserva el error de la base en «cause» al traducir el ConstraintError', async () => {
+    await crearPartida(db, sombraDelEste(), SESION_1)
+    const repetida = documentoDePrueba('p.sombra-del-este', 'Otra partida', 'Otro')
+    const error = await crearPartida(db, repetida, SESION_2).then(
+      () => undefined,
+      (fallo: unknown) => fallo,
+    )
+    expect(error).toBeInstanceOf(Error)
+    expect((error as Error).message).toBe('Ya hay una partida con el id «p.sombra-del-este»')
+    expect((error as Error).cause).toBeInstanceOf(Error)
+    expect(((error as Error).cause as Error).name).toBe('ConstraintError')
+  })
 })
 
 describe('abrir y leer una partida', () => {
@@ -181,6 +194,16 @@ describe('abrir y leer una partida', () => {
 })
 
 describe('guardar una partida', () => {
+  it('sobre una base vacía guarda el documento y estrena el resumen con abiertaEl = ahora', async () => {
+    const guardado = await guardarPartida(db, sombraDelEste(), GUARDADO)
+    expect(guardado.partida.actualizada).toBe(GUARDADO)
+    expect(await db.partidas.count()).toBe(1)
+    const resumen = await db.resumenes.get('p.sombra-del-este')
+    expect(resumen?.abiertaEl).toBe(GUARDADO)
+    expect(resumen?.actualizada).toBe(GUARDADO)
+    expect(resumen?.exportadaEl).toBeUndefined()
+  })
+
   it('pone actualizada y no muta el documento que recibe', async () => {
     await crearPartida(db, sombraDelEste(), SESION_1)
     const documento = sombraDelEste()

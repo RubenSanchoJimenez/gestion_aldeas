@@ -7,13 +7,21 @@ export interface AjustesApp {
 
 export type ClaveAjuste = keyof AjustesApp
 
-/** Valor de un ajuste, o undefined si nunca se ha guardado. */
+/** Si el valor guardado es del tipo que la app espera para esa clave; la fase 9 añadirá los «Recientes» (§6.5). */
+function esDelTipoEsperado(clave: ClaveAjuste, valor: unknown): boolean {
+  return clave === 'versionCatalogo' && typeof valor === 'number'
+}
+
+/** Valor de un ajuste, o undefined si nunca se ha guardado o si lo guardado no es del tipo que toca. */
 export async function leerAjuste<C extends ClaveAjuste>(
   db: BaseDeDatos,
   clave: C,
 ): Promise<AjustesApp[C] | undefined> {
   const fila = await db.ajustes.get(clave)
-  return fila === undefined ? undefined : (fila.valor as AjustesApp[C])
+  if (fila === undefined || !esDelTipoEsperado(clave, fila.valor)) {
+    return undefined
+  }
+  return fila.valor as AjustesApp[C]
 }
 
 /** Guarda (o reemplaza) el valor de un ajuste. */

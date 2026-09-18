@@ -32,7 +32,7 @@ export async function crearPartida(
     })
   } catch (error) {
     if (esClaveRepetida(error)) {
-      throw new Error(`Ya hay una partida con el id «${documento.partida.id}»`)
+      throw new Error(`Ya hay una partida con el id «${documento.partida.id}»`, { cause: error })
     }
     throw error
   }

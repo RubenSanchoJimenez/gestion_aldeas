@@ -265,6 +265,56 @@ describe('validarReferencias', () => {
     ])
   })
 
+  it('el efecto de una obra no puede mejorar un edificio de otro asentamiento', () => {
+    const documento = documentoMinimo()
+    documento.dominios.push({
+      id: 'dom.archet',
+      tipo: 'asentamiento',
+      nombre: 'Archet',
+      categoria: 'aldea',
+      alta: { anio: 1640, mes: 3, dia: 31 },
+    })
+    documento.cajas.push({ dominioId: 'dom.archet', saldoInicial: { base: 0 } })
+    documento.poblaciones.push({ dominioId: 'dom.archet', habitantesIniciales: 26, cambios: [], consumos: [] })
+    documento.existencias.push({ dominioId: 'dom.archet', recursoId: 'recurso.viveres', cantidad: 10 })
+    documento.mercados.push({ id: 'mer.archet', nombre: 'Archet', localDe: 'dom.archet', precios: [] })
+    documento.edificios = [
+      {
+        id: 'ed.molino',
+        dominioId: 'dom.bree',
+        tipoId: 'edificio.molino',
+        nombre: 'Molino',
+        estado: 'activo',
+        trabajadoresNecesarios: 1,
+        producciones: [],
+      },
+    ]
+    documento.obras = [
+      {
+        id: 'obra.molino',
+        dominioId: 'dom.archet',
+        nombre: 'Mejora del molino',
+        estado: 'programada',
+        coste: { base: 1000000 },
+        materiales: { 'recurso.viveres': 10 },
+        inicio: { anio: 1640, mes: 4, dia: 20 },
+        diasTotales: 30,
+        efecto: { tipo: 'mejorarEdificio', objetivoId: 'ed.molino' },
+      },
+    ]
+    const catalogos = catalogosMinimos()
+    catalogos.opciones.push({
+      id: 'edificio.molino',
+      nombre: 'Molino',
+      propia: false,
+      lista: 'tiposEdificio',
+      grupo: 'alimentos',
+    })
+    expect(validarReferencias(documento, catalogos)).toEqual([
+      { ruta: 'obras[0].efecto.objetivoId', mensaje: 'No existe el edificio «ed.molino» en este asentamiento' },
+    ])
+  })
+
   it('una producción realizada apunta a una producción que su edificio tiene', () => {
     const documento = documentoMinimo()
     documento.edificios = [

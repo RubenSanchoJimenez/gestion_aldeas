@@ -373,6 +373,91 @@ describe('validarCoherenciaInterna', () => {
       { ruta: 'caravanas[0]', mensaje: 'El estado de la caravana «car.viveres» no cuadra con sus fechas' },
     ])
   })
+
+  it('pilla una transferencia cuyos dos movimientos no cuadran con ella', () => {
+    const documento = documentoMinimo()
+    documento.movimientos = [
+      {
+        ...movimientoBase('mov.sale', 'dom.tharan'),
+        tipo: 'transferencia',
+        importe: { base: -60000 },
+        vinculo: { tipo: 'transferencia', id: 'tr.1' },
+      },
+      {
+        ...movimientoBase('mov.entra', 'dom.bree'),
+        tipo: 'transferencia',
+        importe: { base: 50000 },
+        vinculo: { tipo: 'transferencia', id: 'tr.1' },
+      },
+    ]
+    documento.transferencias = [
+      {
+        id: 'tr.1',
+        fecha: { anio: 1640, mes: 4, dia: 12 },
+        importe: { base: 60000 },
+        saleDeId: 'dom.tharan',
+        entraEnId: 'dom.bree',
+        movimientoSaleId: 'mov.sale',
+        movimientoEntraId: 'mov.entra',
+      },
+    ]
+    expect(validarCoherenciaInterna(documento)).toEqual([
+      { ruta: 'transferencias[0]', mensaje: 'La transferencia «tr.1» no cuadra con sus movimientos' },
+    ])
+  })
+
+  it('pilla una caravana terminada cuya vuelta todavía no ha llegado', () => {
+    const documento = documentoMinimo()
+    documento.caravanas = [
+      {
+        id: 'car.viveres',
+        dominioId: 'dom.bree',
+        operacion: 'compra',
+        mercadoId: 'mer.bree',
+        carga: { recursoId: 'recurso.viveres', cantidad: 30 },
+        precioUnidad: { base: 25000 },
+        importe: { base: 750000 },
+        salida: { anio: 1640, mes: 4, dia: 5 },
+        vuelta: { anio: 1640, mes: 4, dia: 20 },
+        estado: 'terminada',
+      },
+    ]
+    expect(validarCoherenciaInterna(documento)).toEqual([
+      { ruta: 'caravanas[0]', mensaje: 'El estado de la caravana «car.viveres» no cuadra con sus fechas' },
+    ])
+  })
+
+  it('pilla un local cobrado hasta el mes en curso: el mes se cobra cuando ha terminado', () => {
+    const documento = documentoMinimo()
+    documento.tiposLocal = [
+      {
+        id: 'tipo.taberna',
+        dominioId: 'dom.bree',
+        nombre: 'Taberna',
+        pct: 10,
+        minimo: { base: 10000 },
+        diaCobro: 1,
+      },
+    ]
+    const local = {
+      id: 'local.pony',
+      dominioId: 'dom.bree',
+      nombre: 'El Poney Pisador',
+      tipoId: 'tipo.taberna',
+      produccionHabitual: { base: 200000 },
+      cambiosEstado: [{ desde: { anio: 1640, mes: 3, dia: 31 }, estado: 'abierto' as const }],
+      alta: { anio: 1640, mes: 3, dia: 31 },
+      cobradoHasta: { anio: 1640, mes: 3 },
+      producciones: [],
+    }
+    documento.localesComerciales = [local]
+    expect(validarCoherenciaInterna(documento)).toEqual([])
+
+    documento.localesComerciales = [{ ...local, cobradoHasta: { anio: 1640, mes: 4 } }]
+    expect(validarCoherenciaInterna(documento)).toEqual([
+      { ruta: 'localesComerciales[0]', mensaje: 'El estado o el cobro de «local.pony» no cuadran con su alta' },
+    ])
+  })
 })
 
 describe('validarCopia', () => {

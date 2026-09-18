@@ -100,9 +100,12 @@ export async function leerRecursos(db: BaseDeDatos): Promise<RecursoCatalogo[]> 
 
 /** El catálogo entero, también lo borrado: lo que necesitan la fusión al importar y la resolución de ids. */
 export async function leerCatalogo(db: BaseDeDatos): Promise<CatalogoApp> {
-  const opciones = await db.opcionesCatalogo.toArray()
-  const recursos = await db.recursosCatalogo.toArray()
-  return { opciones, recursos }
+  // Una sola transacción de lectura: las dos tablas se leen de la misma foto de la base.
+  return db.transaction('r', db.opcionesCatalogo, db.recursosCatalogo, async () => {
+    const opciones = await db.opcionesCatalogo.toArray()
+    const recursos = await db.recursosCatalogo.toArray()
+    return { opciones, recursos }
+  })
 }
 
 /** Escribe altas y reactivaciones del catálogo; la usa la importación dentro de su transacción (decisión 7). */
