@@ -486,3 +486,91 @@ describe('validarCopia', () => {
     ])
   })
 })
+
+describe('lo que la fase 3 necesita de la validación (técnicas 4 y 6)', () => {
+  /** El cobro de locales del 1 de abril en Bree: 4,7 mo, con dos locales en el detalle que suman eso. */
+  function cobroDeLocales(): Movimiento {
+    return {
+      ...movimientoBase('mov.locales', 'dom.bree'),
+      fecha: { anio: 1640, mes: 4, dia: 1 },
+      importe: { base: 470000 },
+      concepto: 'Impuestos de locales · marzo (2)',
+      origen: 'avance',
+      avanceId: 'av.1',
+      regla: { tipo: 'locales', id: 'dom.bree' },
+      detalleLocales: [
+        {
+          localId: 'loc.herreria',
+          nombre: 'Herrería 1',
+          mes: { anio: 1640, mes: 3 },
+          produccion: { base: 1500000 },
+          anotada: false,
+          impuesto: { base: 150000 },
+        },
+        {
+          localId: 'loc.posada',
+          nombre: 'Posada El Poney Pisador',
+          mes: { anio: 1640, mes: 3 },
+          produccion: { base: 4000000 },
+          anotada: false,
+          impuesto: { base: 320000 },
+        },
+      ],
+    }
+  }
+
+  /** Los salarios del 6 de abril en Bree: −4,2 mo, con dos filas en el detalle que suman eso. */
+  function pagoDeSalarios(): Movimiento {
+    return {
+      ...movimientoBase('mov.salarios', 'dom.bree'),
+      fecha: { anio: 1640, mes: 4, dia: 6 },
+      tipo: 'gasto',
+      importe: { base: -420000 },
+      concepto: 'Salarios de 14 trabajadores',
+      origen: 'avance',
+      avanceId: 'av.1',
+      regla: { tipo: 'salarios', id: 'dom.bree' },
+      detalleTrabajo: [
+        { origenId: 'trab.granjeros', nombre: 'Granjeros', numero: 6, importe: { base: 180000 } },
+        { origenId: 'trab.lenadores', nombre: 'Leñadores', numero: 8, importe: { base: 240000 } },
+      ],
+    }
+  }
+
+  it('sigue pillando el detalle que no cuadra con el total cuando nadie lo ha editado', () => {
+    const documento = documentoMinimo()
+    documento.movimientos = [
+      { ...cobroDeLocales(), importe: { base: 500000 } },
+      { ...pagoDeSalarios(), importe: { base: -400000 } },
+    ]
+    expect(validarCoherenciaInterna(documento)).toEqual([
+      { ruta: 'movimientos[0].detalleLocales', mensaje: 'El cobro de locales «mov.locales» no cuadra con su detalle' },
+      { ruta: 'movimientos[1].detalleTrabajo', mensaje: 'El pago agrupado «mov.salarios» no cuadra con su detalle' },
+    ])
+  })
+
+  it('admite el total corregido con J2c: con editadoEl ya no se compara con el detalle (técnica 4)', () => {
+    const documento = documentoMinimo()
+    documento.movimientos = [
+      { ...cobroDeLocales(), importe: { base: 500000 }, editadoEl: '2026-09-18T10:00:00.000Z' },
+      { ...pagoDeSalarios(), importe: { base: -400000 }, editadoEl: '2026-09-18T10:05:00.000Z' },
+    ]
+    expect(validarCoherenciaInterna(documento)).toEqual([])
+  })
+
+  it('admite un edificio alquilado sin renta: la renta es un ingreso aparte (D-036, técnica 6)', () => {
+    const documento = documentoMinimo()
+    documento.edificios = [
+      {
+        id: 'ed.molino',
+        dominioId: 'dom.bree',
+        tipoId: 'tipoed.molino',
+        nombre: 'Molino',
+        estado: 'alquilado',
+        trabajadoresNecesarios: 0,
+        producciones: [],
+      },
+    ]
+    expect(validarCoherenciaInterna(documento)).toEqual([])
+  })
+})

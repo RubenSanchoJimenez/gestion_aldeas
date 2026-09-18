@@ -364,3 +364,52 @@ describe('validarReferencias', () => {
     ])
   })
 })
+
+describe('las deudas de impago de la fase 3 (técnica 5)', () => {
+  /** Una deuda de impago de la caja de Bree con un cargo de 1,2 mo del 13 de abril. */
+  function deudaDeImpago(
+    id: string,
+    origenImpago: NonNullable<DocumentoPartida['deudas'][number]['origenImpago']>,
+  ): DocumentoPartida['deudas'][number] {
+    return {
+      id,
+      dominioId: 'dom.bree',
+      sentido: 'debo',
+      contraparteId: 'persona.trabajadores-de-bree',
+      fecha: { anio: 1640, mes: 4, dia: 13 },
+      principal: { base: 120000 },
+      interesPct: 0,
+      estado: 'abierta',
+      impago: true,
+      origenImpago,
+      cargos: [{ fecha: { anio: 1640, mes: 4, dia: 13 }, importe: { base: 120000 }, avanceId: 'av.1' }],
+      pagos: [],
+      devengos: [],
+    }
+  }
+
+  it('admite una deuda de impago cuyo tributo, gasto recurrente o pago programado ya se borró: el origen solo agrupa', () => {
+    const documento = documentoMinimo()
+    documento.personas = [{ id: 'persona.trabajadores-de-bree', nombre: 'Trabajadores de Bree' }]
+    documento.deudas = [
+      deudaDeImpago('deuda.tributo', { tipo: 'tributo', id: 'imp.tributo-borrado' }),
+      deudaDeImpago('deuda.recurrente', { tipo: 'recurrente', id: 'rec.posada-borrada' }),
+      deudaDeImpago('deuda.programado', { tipo: 'programado', id: 'mov.pago-borrado' }),
+    ]
+    expect(validarReferencias(documento, catalogosMinimos())).toEqual([])
+  })
+
+  it('sigue exigiendo el dominio y la contraparte de una deuda de impago', () => {
+    const documento = documentoMinimo()
+    documento.deudas = [
+      { ...deudaDeImpago('deuda.salarios', { tipo: 'salarios', id: 'dom.bree' }), dominioId: 'dom.borrado' },
+    ]
+    expect(validarReferencias(documento, catalogosMinimos())).toEqual([
+      { ruta: 'deudas[0].dominioId', mensaje: 'No existe el dominio «dom.borrado»' },
+      {
+        ruta: 'deudas[0].contraparteId',
+        mensaje: 'No existe la persona o entidad «persona.trabajadores-de-bree»',
+      },
+    ])
+  })
+})

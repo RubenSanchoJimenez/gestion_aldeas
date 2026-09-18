@@ -253,18 +253,11 @@ function problemasDelEstado(documento: DocumentoPartida): ProblemaDeCoherencia[]
       `El mercado local de «${localDe}» no lleva su nombre`,
     )
   })
-  documento.edificios.forEach((e, i) => {
-    if (e.estado !== 'alquilado') {
-      return
-    }
-    const tiene = documento.impuestosRentas.some(
-      (imp) => imp.dominioId === e.dominioId && imp.edificioId === e.id && imp.sentido === 'ingreso',
-    )
-    exige(tiene, `edificios[${i}]`, `El edificio alquilado «${e.id}» no tiene su renta`)
-  })
   documento.movimientos.forEach((m, i) => {
     const regla = m.regla
-    if (regla === undefined) {
+    // Un total corregido con J2c lleva editadoEl y ya no tiene por qué cuadrar con su detalle, que J2c enseña
+    // en solo lectura (§6.2 l.385; técnica 4 de la fase 3). Lo que escribe el motor, sin editadoEl, sí se vigila.
+    if (regla === undefined || m.editadoEl !== undefined) {
       return
     }
     if (regla.tipo === 'locales' && m.detalleLocales !== undefined) {

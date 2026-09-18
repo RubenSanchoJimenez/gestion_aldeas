@@ -252,25 +252,8 @@ export function validarReferencias(documento: DocumentoPartida, catalogos: Catal
         `No existe el movimiento «${p.movimientoId}» del pago`,
       )
     })
-    if (d.origenImpago !== undefined) {
-      const o = d.origenImpago
-      const ruta = `${r}.origenImpago.id`
-      switch (o.tipo) {
-        case 'salarios':
-        case 'soldadas':
-          exige(asentamientos.has(o.id), ruta, `No existe el asentamiento «${o.id}»`)
-          break
-        case 'tributo':
-          exige(impuestosRentas.has(o.id), ruta, `No existe el impuesto o tributo «${o.id}»`)
-          break
-        case 'recurrente':
-          exige(recurrentes.has(o.id), ruta, `No existe el gasto o ingreso recurrente «${o.id}»`)
-          break
-        case 'programado':
-          exige(movimientos.has(o.id), ruta, `No existe el movimiento «${o.id}»`)
-          break
-      }
-    }
+    // origenImpago no se comprueba: solo agrupa los impagos de un mismo origen, y ese tributo, gasto recurrente
+    // o pago programado puede haberse borrado después (§6.4 l.775 y l.782; técnica 5 de la fase 3).
   })
 
   // ---- Recurrentes --------------------------------------------------------
