@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { aBase, importeDesde, porcentajeDe, redondearMitadArriba } from './importe'
+import { EsquemaImporte } from '../modelo/comunes'
+import { aBase, importeDesde, normalizarCantidad, porcentajeDe, redondearMitadArriba } from './importe'
 import { EQUIVALENCIAS_POR_DEFECTO, type Equivalencias } from './monedas'
 
 const EQ = EQUIVALENCIAS_POR_DEFECTO
@@ -109,6 +110,34 @@ describe('aBase', () => {
   })
 })
 
+describe('normalizarCantidad', () => {
+  it('pone el 0 que falta delante de los decimales: «,6» → «0,6»', () => {
+    expect(normalizarCantidad(',6')).toBe('0,6')
+    expect(normalizarCantidad(',25')).toBe('0,25')
+  })
+
+  it('quita el separador que no lleva decimales: «6,» → «6» y «6.» → «6»', () => {
+    expect(normalizarCantidad('6,')).toBe('6')
+    expect(normalizarCantidad('6.')).toBe('6')
+  })
+
+  it('respeta el separador que se tecleó: «.5» → «0.5», con punto', () => {
+    expect(normalizarCantidad('.5')).toBe('0.5')
+  })
+
+  it('quita los espacios de alrededor: « 12,5 » → «12,5»', () => {
+    expect(normalizarCantidad(' 12,5 ')).toBe('12,5')
+    expect(normalizarCantidad('\t,6 ')).toBe('0,6')
+  })
+
+  it('no toca lo que EsquemaImporte ya admite: «0.5», «007», «12,345» y «6»', () => {
+    expect(normalizarCantidad('0.5')).toBe('0.5')
+    expect(normalizarCantidad('007')).toBe('007')
+    expect(normalizarCantidad('12,345')).toBe('12,345')
+    expect(normalizarCantidad('6')).toBe('6')
+  })
+})
+
 describe('importeDesde', () => {
   it('guarda la base en mh y lo introducido', () => {
     expect(importeDesde('6', 'mp', EQ)).toEqual({
@@ -122,6 +151,15 @@ describe('importeDesde', () => {
       base: 50000,
       introducido: { cantidad: '0.5', moneda: 'mo' },
     })
+  })
+
+  it('guarda lo tecleado normalizado, que pasa EsquemaImporte: «,6» → «0,6» y «6,» → «6»', () => {
+    const sinParteEntera = importeDesde(',6', 'mo', EQ)
+    expect(sinParteEntera).toEqual({ base: 60000, introducido: { cantidad: '0,6', moneda: 'mo' } })
+    expect(EsquemaImporte.safeParse(sinParteEntera).success).toBe(true)
+    const sinDecimales = importeDesde('6,', 'mp', EQ)
+    expect(sinDecimales).toEqual({ base: 60000, introducido: { cantidad: '6', moneda: 'mp' } })
+    expect(EsquemaImporte.safeParse(sinDecimales).success).toBe(true)
   })
 
   it('lanza el error de aBase si la cantidad no es válida', () => {

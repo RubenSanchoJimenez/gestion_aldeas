@@ -53,11 +53,28 @@ export function aBase(cantidadTexto: string, moneda: Moneda, eq: Equivalencias):
   return Number(base)
 }
 
-/** Importe con la base en mh y lo introducido, con la cantidad tal como se tecleó (sin espacios alrededor). */
+/**
+ * Lo tecleado en la forma que admite EsquemaImporte: «,6» → «0,6», «6,» → «6», sin espacios alrededor (§3, T13).
+ * No cambia el separador ni los ceros que se escribieron: «0.5» sigue «0.5» y «007» sigue «007».
+ */
+export function normalizarCantidad(cantidadTexto: string): string {
+  let cantidad = cantidadTexto.trim()
+  // «,6» y «.5»: aBase los admite, pero EsquemaImporte pide la parte entera; se pone el 0 que no se tecleó.
+  if (cantidad.startsWith(',') || cantidad.startsWith('.')) {
+    cantidad = `0${cantidad}`
+  }
+  // «6,» y «6.»: un separador sin decimales no añade nada; se quita.
+  if (cantidad.endsWith(',') || cantidad.endsWith('.')) {
+    cantidad = cantidad.slice(0, -1)
+  }
+  return cantidad
+}
+
+/** Importe con la base en mh y lo introducido, con la cantidad tecleada normalizada (normalizarCantidad). */
 export function importeDesde(cantidadTexto: string, moneda: Moneda, eq: Equivalencias): Importe {
   return {
     base: aBase(cantidadTexto, moneda, eq),
-    introducido: { cantidad: cantidadTexto.trim(), moneda },
+    introducido: { cantidad: normalizarCantidad(cantidadTexto), moneda },
   }
 }
 
