@@ -112,6 +112,40 @@ describe('EsquemaMovimiento', () => {
     ])
   })
 
+  it('exige que el vínculo y la regla no vayan en el mismo movimiento (§8: «no es vinculado»)', () => {
+    const ambos = EsquemaMovimiento.safeParse({ ...PEAJE, vinculo: { tipo: 'venta', id: 'venta.1' } })
+    expect(ambos.success).toBe(false)
+    expect(ambos.error?.issues.map((i) => i.message)).toEqual(['Un movimiento vinculado no sale de una regla'])
+  })
+
+  it('ata inversionId a los beneficios de una inversión, en los dos sentidos', () => {
+    const beneficioSinInversionId = EsquemaMovimiento.safeParse({
+      ...PEAJE,
+      id: 'mov.beneficio.1abril',
+      concepto: 'Beneficio de El Tonel Dorado',
+      regla: { tipo: 'beneficio', id: 'inv.tonel-dorado' },
+    })
+    expect(beneficioSinInversionId.success).toBe(false)
+    expect(beneficioSinInversionId.error?.issues.map((i) => i.message)).toEqual([
+      'Los beneficios de una inversión guardan su inversionId',
+    ])
+
+    const inversionIdSinBeneficio = EsquemaMovimiento.safeParse({ ...PEAJE, inversionId: 'inv.tonel-dorado' })
+    expect(inversionIdSinBeneficio.success).toBe(false)
+    expect(inversionIdSinBeneficio.error?.issues.map((i) => i.message)).toEqual([
+      'Los beneficios de una inversión guardan su inversionId',
+    ])
+
+    const conAmbos = {
+      ...PEAJE,
+      id: 'mov.beneficio.1abril',
+      concepto: 'Beneficio de El Tonel Dorado',
+      regla: { tipo: 'beneficio' as const, id: 'inv.tonel-dorado' },
+      inversionId: 'inv.tonel-dorado',
+    }
+    expect(EsquemaMovimiento.parse(conAmbos)).toEqual(conAmbos)
+  })
+
   it('guarda las transferencias y las reglas recurrentes del personaje', () => {
     const transferencia: Transferencia = {
       id: 'trf.bree-archet.6abril',
