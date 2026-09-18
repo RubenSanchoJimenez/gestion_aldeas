@@ -58,6 +58,7 @@ Cada fase deja software que funciona y se puede probar por sí solo. Solo la fas
   - movimientos agrupados: diarios por avance; salarios y soldadas por asentamiento y día; locales por asentamiento y día, con su detalle;
   - gastos e ingresos recurrentes (J5), salarios (A5), soldadas (A6), impuestos fijos y por habitante, tributos (A3) e impuestos de locales comerciales (§7), con `cobradoHasta`, estado abierto o cerrado y producción anotada;
   - pagos y cobros programados;
+  - adelantado de las fases 4 y 5 para que el entregable cuadre (D-019): los beneficios de las inversiones, los eventos que cambian impuestos, rentas y gastos, y el cobro al volver de las caravanas de venta;
   - impagos con contraparte automática; el motor nunca deja una caja en negativo;
   - avisos de dinero de la tabla de §9;
   - aplicar un avance y deshacer el último (copia completa, avisos de cambios posteriores);
