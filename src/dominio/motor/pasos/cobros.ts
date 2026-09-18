@@ -8,10 +8,12 @@ import { cobrar } from '../caja'
 import { anadirMovimiento, aplicarProgramado, type Contexto, type Dia } from '../contexto'
 import { acumularDiario } from '../diarios'
 import { conceptoBeneficio } from '../textos'
+import { cobrarLocales } from './locales'
 
-/** Paso 8 sin los locales: impuestos y rentas, beneficios, ingresos recurrentes y cobros programados, en ese orden (§9 l.1280). */
+/** Paso 8: impuestos y rentas, locales, beneficios, ingresos recurrentes y cobros programados, en ese orden (§9 l.1280). */
 export function pasoCobros(ctx: Contexto, dia: Dia): void {
   cobrarImpuestosYRentas(ctx, dia)
+  cobrarLocales(ctx, dia)
   cobrarBeneficios(ctx, dia)
   cobrarIngresosRecurrentes(ctx, dia)
   cobrarProgramados(ctx, dia)
