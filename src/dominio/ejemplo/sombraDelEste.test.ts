@@ -45,3 +45,42 @@ describe('documentoDeEjemplo', () => {
     expect(validarCopia(documento, catalogos)).toEqual([])
   })
 })
+
+describe('copia propia en cada llamada', () => {
+  it('no comparte ni los objetos de las colecciones ni el snapshotPrevio (decisión 6)', () => {
+    const primero = documentoDeEjemplo()
+    const segundo = documentoDeEjemplo()
+    expect(segundo).toEqual(primero)
+    expect(segundo.partida).not.toBe(primero.partida)
+    expect(segundo.movimientos[0]).not.toBe(primero.movimientos[0])
+    expect(segundo.existencias[0]).not.toBe(primero.existencias[0])
+    const ultimo = primero.avances.length - 1
+    expect(primero.avances[ultimo].snapshotPrevio).toBeDefined()
+    expect(segundo.avances[ultimo].snapshotPrevio).not.toBe(primero.avances[ultimo].snapshotPrevio)
+  })
+
+  it('mutar lo que devolvió la primera llamada no toca a la segunda', () => {
+    const primero = documentoDeEjemplo()
+    const conceptoOriginal = primero.movimientos[0].concepto
+    const cantidadOriginal = primero.existencias[0].cantidad
+    primero.movimientos[0].concepto = 'tocado por una prueba'
+    primero.existencias[0].cantidad = cantidadOriginal + 1000
+    const ultimo = primero.avances.length - 1
+    const snapshot = primero.avances[ultimo].snapshotPrevio
+    expect(snapshot).toBeDefined()
+    snapshot!.movimientos.length = 0
+
+    const segundo = documentoDeEjemplo()
+    expect(segundo.movimientos[0].concepto).toBe(conceptoOriginal)
+    expect(segundo.existencias[0].cantidad).toBe(cantidadOriginal)
+    expect(segundo.avances[ultimo].snapshotPrevio?.movimientos.length).toBeGreaterThan(0)
+  })
+
+  it('catalogosDeEjemplo también devuelve opciones y recursos propios', () => {
+    const primero = catalogosDeEjemplo()
+    const segundo = catalogosDeEjemplo()
+    expect(segundo).toEqual(primero)
+    expect(segundo.opciones[0]).not.toBe(primero.opciones[0])
+    expect(segundo.recursos[0]).not.toBe(primero.recursos[0])
+  })
+})

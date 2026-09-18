@@ -49,11 +49,11 @@ import {
 
 /**
  * «La Sombra del Este» entera, tal como está guardada el 12 de abril de 1640 T.E.: las 34 claves del estado
- * más la lista de avances (decisión 6). Devuelve un objeto nuevo en cada llamada, para que una prueba que
- * toque una colección no ensucie a la siguiente.
+ * más la lista de avances (decisión 6). Devuelve una copia propia y completa en cada llamada, para que una prueba
+ * que toque una colección o el snapshotPrevio no ensucie a la siguiente.
  */
 export function documentoDeEjemplo(): DocumentoPartida {
-  return {
+  return structuredClone({
     partida: PARTIDA,
     dominios: [...DOMINIOS],
     cajas: [CAJA_THARAN, ...CAJAS_ASENTAMIENTOS],
@@ -89,10 +89,10 @@ export function documentoDeEjemplo(): DocumentoPartida {
     ubicaciones: [...UBICACIONES],
     personas: [...PERSONAS],
     avances: [...AVANCES],
-  }
+  })
 }
 
 /** El catálogo de fábrica en la forma en la que viaja en una copia: el ejemplo no usa ninguna opción propia. */
 export function catalogosDeEjemplo(): CatalogosEnCopia {
-  return { opciones: [...OPCIONES_INICIALES], recursos: [...RECURSOS_INICIALES] }
+  return structuredClone({ opciones: [...OPCIONES_INICIALES], recursos: [...RECURSOS_INICIALES] })
 }
