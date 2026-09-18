@@ -1,4 +1,4 @@
-import { Dexie, type DexieOptions, type EntityTable, type Table } from 'dexie'
+import { Dexie, type DexieOptions, type Table } from 'dexie'
 import type { OpcionCatalogo, RecursoCatalogo } from '../dominio/modelo/catalogos'
 import type { DocumentoPartida } from '../dominio/modelo/documento'
 import type { ResumenPartida } from '../dominio/modelo/resumen'
@@ -21,10 +21,10 @@ export interface Ajuste {
  */
 export class BaseDeDatos extends Dexie {
   declare partidas: Table<DocumentoPartida, string>
-  declare resumenes: EntityTable<ResumenPartida, 'id'>
-  declare opcionesCatalogo: EntityTable<OpcionCatalogo, 'id'>
-  declare recursosCatalogo: EntityTable<RecursoCatalogo, 'id'>
-  declare ajustes: EntityTable<Ajuste, 'clave'>
+  declare resumenes: Table<ResumenPartida, string>
+  declare opcionesCatalogo: Table<OpcionCatalogo, string>
+  declare recursosCatalogo: Table<RecursoCatalogo, string>
+  declare ajustes: Table<Ajuste, string>
 
   /** En la app: new BaseDeDatos(). En las pruebas: baseDePrueba(), que inyecta una IDBFactory nueva. */
   constructor(nombre: string = NOMBRE_BASE, opciones?: DexieOptions) {
