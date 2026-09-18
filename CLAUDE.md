@@ -40,6 +40,13 @@ Cada entrada de `docs/decisiones.md` lleva: identificador (`D-NNN`), fecha, fase
 - **Rama por fase**: `implementacion/fase-N`, creada desde la rama de trabajo actual. Al cerrar la fase, fusiónala en local, borra la rama y sube la rama de trabajo a GitHub.
 - **Cierre de fase**: `npm test`, `npx tsc -b`, `npm run build` y `npm run lint` en verde, árbol de trabajo limpio y una revisión final de toda la fase.
 
+## Qué modelo usa cada agente
+
+Para gastar menos sin perder calidad (pedido por el usuario el 2026-09-18):
+
+- **Sonnet 5** para el trabajo que sigue instrucciones ya fijadas: leer y extraer datos de la especificación, escribir las tareas del plan a partir del contrato, montar el plan, verificarlo ejecutándolo, aplicar arreglos, implementar tareas, corregir, y las revisiones de especificación y de calidad de cada tarea.
+- **Opus 5** solo donde hay que pensar o decidir: el crítico que cruza los informes, el contrato de cada fase (decisiones, tipos y lista de tareas), la revisión final de cada fase y cualquier tarea que Sonnet haya dejado bloqueada o mal dos veces.
+
 ## Reglas del código
 
 - TypeScript estricto. Dominio puro en `src/dominio` (sin React, sin Dexie, sin APIs del navegador; Zod sí). IndexedDB y lo que toque el navegador, en `src/datos`. Interfaz en `src/interfaz`.
