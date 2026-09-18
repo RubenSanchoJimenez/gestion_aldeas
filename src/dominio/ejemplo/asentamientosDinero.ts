@@ -1,0 +1,593 @@
+import { CATEGORIA, idDeOpcion } from '../catalogo/inicial'
+import type { ImpuestoRenta, LocalComercial, TipoLocal, Trabajador, UnidadGuarnicion } from '../modelo/asentamiento'
+import type { Deuda } from '../modelo/deudas'
+import type { Caja } from '../modelo/dominios'
+import type { Movimiento, Transferencia } from '../modelo/movimientos'
+import {
+  AVANCE,
+  CARAVANA,
+  DEUDA,
+  DOM,
+  EDIFICIO,
+  IMPUESTO,
+  LOCAL,
+  MOV_ARCHET,
+  MOV_BREE,
+  MOV_THARAN,
+  OBRA,
+  PERSONA,
+  TIPO_LOCAL,
+  TRABAJADOR,
+  TRANSFERENCIA,
+  UNIDAD,
+} from './ids'
+
+/** El 1 de abril de 1640: el día en que arrancan todas las reglas recurrentes del ejemplo (decisión 2). */
+const PRIMERO_DE_ABRIL = { anio: 1640, mes: 4, dia: 1 }
+
+/**
+ * Las cajas de los dos asentamientos (§8). Los dos saldos iniciales están **despejados** para que el saldo de
+ * §7 (inicial + movimientos no programados) dé las cifras de las vistas:
+ * Bree 49.890.000 − 15.830.000 = 34.060.000 mh (340,6 mo) y Archet 12.500.000 − 4.000.000 = 8.500.000 mh (85 mo).
+ */
+export const CAJAS_ASENTAMIENTOS: Caja[] = [
+  {
+    dominioId: DOM.bree,
+    saldoInicial: { base: 49890000, introducido: { cantidad: '498,9', moneda: 'mo' } },
+  },
+  {
+    dominioId: DOM.archet,
+    saldoInicial: { base: 12500000, introducido: { cantidad: '125', moneda: 'mo' } },
+  },
+]
+
+/**
+ * La tesorería de Bree: 15 movimientos que suman −15.830.000 mh (§6.3, A2).
+ * Los automáticos los crearon los avances del 6, del 10 y del 12 de abril; los manuales son el adelanto del
+ * Gremio del 28 de marzo, la transferencia a Tharan y el pago de la obra de la puerta.
+ */
+export const MOVIMIENTOS_BREE: Movimiento[] = [
+  {
+    id: MOV_BREE.adelantoGranero,
+    dominioId: DOM.bree,
+    fecha: { anio: 1640, mes: 3, dia: 28 },
+    tipo: 'ingreso',
+    importe: { base: 3000000, introducido: { cantidad: '30', moneda: 'mo' } },
+    categoriaId: CATEGORIA.prestamosYDeudas,
+    concepto: 'Adelanto para el granero',
+    origen: 'manual',
+    vinculo: { tipo: 'altaDeuda', id: DEUDA.gremioBree },
+    programado: false,
+  },
+  {
+    id: MOV_BREE.impuestoHogar,
+    dominioId: DOM.bree,
+    fecha: PRIMERO_DE_ABRIL,
+    tipo: 'ingreso',
+    importe: { base: 1240000 },
+    categoriaId: CATEGORIA.impuestos,
+    concepto: 'Impuesto por hogar',
+    origen: 'avance',
+    avanceId: AVANCE.hasta6Abril,
+    regla: { tipo: 'impuesto', id: IMPUESTO.hogar },
+    programado: false,
+  },
+  {
+    id: MOV_BREE.locales,
+    dominioId: DOM.bree,
+    fecha: PRIMERO_DE_ABRIL,
+    tipo: 'ingreso',
+    importe: { base: 470000 },
+    categoriaId: CATEGORIA.impuestos,
+    concepto: 'Impuestos de locales · marzo (4)',
+    origen: 'avance',
+    avanceId: AVANCE.hasta6Abril,
+    regla: { tipo: 'locales', id: DOM.bree },
+    detalleLocales: [
+      {
+        localId: LOCAL.herreria1,
+        nombre: 'Herrería 1',
+        mes: { anio: 1640, mes: 3 },
+        produccion: { base: 1000000 },
+        anotada: false,
+        impuesto: { base: 100000 },
+      },
+      {
+        localId: LOCAL.posada,
+        nombre: 'Posada El Poney Pisador',
+        mes: { anio: 1640, mes: 3 },
+        produccion: { base: 4000000 },
+        anotada: false,
+        impuesto: { base: 320000 },
+      },
+      {
+        localId: LOCAL.tiendaDeTelas,
+        nombre: 'Tienda de telas',
+        mes: { anio: 1640, mes: 3 },
+        produccion: { base: 600000 },
+        anotada: false,
+        impuesto: { base: 30000 },
+      },
+      {
+        localId: LOCAL.ultramarinos,
+        nombre: 'Ultramarinos del camino',
+        mes: { anio: 1640, mes: 3 },
+        produccion: { base: 400000 },
+        anotada: false,
+        impuesto: { base: 20000 },
+      },
+    ],
+    programado: false,
+  },
+  {
+    id: MOV_BREE.aranceles1Abril,
+    dominioId: DOM.bree,
+    fecha: PRIMERO_DE_ABRIL,
+    tipo: 'ingreso',
+    importe: { base: 300000, introducido: { cantidad: '3', moneda: 'mo' } },
+    categoriaId: CATEGORIA.aranceles,
+    concepto: 'Aranceles del mercado',
+    origen: 'avance',
+    avanceId: AVANCE.hasta6Abril,
+    regla: { tipo: 'impuesto', id: IMPUESTO.aranceles },
+    programado: false,
+  },
+  {
+    id: MOV_BREE.caravanaTharbad,
+    dominioId: DOM.bree,
+    fecha: PRIMERO_DE_ABRIL,
+    tipo: 'gasto',
+    importe: { base: -7500000, introducido: { cantidad: '75', moneda: 'mo' } },
+    categoriaId: CATEGORIA.viveresDelAlmacen,
+    concepto: 'Caravana: compra de víveres en Tharbad',
+    origen: 'avance',
+    avanceId: AVANCE.hasta6Abril,
+    vinculo: { tipo: 'caravana', id: CARAVANA.compraViveresTharbad },
+    programado: false,
+  },
+  {
+    id: MOV_BREE.peaje6Abril,
+    dominioId: DOM.bree,
+    fecha: { anio: 1640, mes: 4, dia: 6 },
+    tipo: 'ingreso',
+    importe: { base: 180000 },
+    categoriaId: CATEGORIA.impuestos,
+    concepto: 'Peaje del camino · 6 días',
+    origen: 'avance',
+    avanceId: AVANCE.hasta6Abril,
+    regla: { tipo: 'impuesto', id: IMPUESTO.peaje },
+    programado: false,
+  },
+  {
+    id: MOV_BREE.salarios6Abril,
+    dominioId: DOM.bree,
+    fecha: { anio: 1640, mes: 4, dia: 6 },
+    tipo: 'gasto',
+    importe: { base: -420000 },
+    categoriaId: CATEGORIA.salarios,
+    concepto: 'Salarios de 14 trabajadores',
+    origen: 'avance',
+    avanceId: AVANCE.hasta6Abril,
+    regla: { tipo: 'salarios', id: DOM.bree },
+    detalleTrabajo: [
+      { origenId: TRABAJADOR.granjeros, nombre: 'Granjeros', numero: 6, importe: { base: 180000 } },
+      { origenId: TRABAJADOR.lenadores, nombre: 'Leñadores', numero: 3, importe: { base: 90000 } },
+      { origenId: TRABAJADOR.cerveceros, nombre: 'Cerveceros', numero: 2, importe: { base: 80000 } },
+      { origenId: TRABAJADOR.canteros, nombre: 'Canteros', numero: 2, importe: { base: 60000 } },
+      { origenId: TRABAJADOR.pastores, nombre: 'Pastores', numero: 1, importe: { base: 10000 } },
+    ],
+    programado: false,
+  },
+  {
+    id: MOV_BREE.transferencia,
+    dominioId: DOM.bree,
+    fecha: { anio: 1640, mes: 4, dia: 6 },
+    tipo: 'transferencia',
+    importe: { base: -2000000, introducido: { cantidad: '20', moneda: 'mo' } },
+    categoriaId: CATEGORIA.transferencias,
+    concepto: 'Transferencia a Tharan',
+    origen: 'manual',
+    vinculo: { tipo: 'transferencia', id: TRANSFERENCIA.breeATharan },
+    programado: false,
+  },
+  {
+    id: MOV_BREE.obraPuerta,
+    dominioId: DOM.bree,
+    fecha: { anio: 1640, mes: 4, dia: 6 },
+    tipo: 'gasto',
+    importe: { base: -3000000, introducido: { cantidad: '30', moneda: 'mo' } },
+    categoriaId: CATEGORIA.obras,
+    concepto: 'Obra: reparación de la puerta del sur',
+    origen: 'manual',
+    vinculo: { tipo: 'obra', id: OBRA.puerta },
+    programado: false,
+  },
+  {
+    id: MOV_BREE.aranceles8Abril,
+    dominioId: DOM.bree,
+    fecha: { anio: 1640, mes: 4, dia: 8 },
+    tipo: 'ingreso',
+    importe: { base: 300000, introducido: { cantidad: '3', moneda: 'mo' } },
+    categoriaId: CATEGORIA.aranceles,
+    concepto: 'Aranceles del mercado',
+    origen: 'avance',
+    avanceId: AVANCE.hasta10Abril,
+    regla: { tipo: 'impuesto', id: IMPUESTO.aranceles },
+    programado: false,
+  },
+  {
+    id: MOV_BREE.soldadas10Abril,
+    dominioId: DOM.bree,
+    fecha: { anio: 1640, mes: 4, dia: 10 },
+    tipo: 'gasto',
+    importe: { base: -580000 },
+    categoriaId: CATEGORIA.soldadas,
+    concepto: 'Soldada de la guarnición',
+    origen: 'avance',
+    avanceId: AVANCE.hasta10Abril,
+    regla: { tipo: 'soldadas', id: DOM.bree },
+    detalleTrabajo: [
+      { origenId: UNIDAD.guardias, nombre: 'Guardias de la puerta', numero: 6, importe: { base: 180000 } },
+      { origenId: UNIDAD.arqueros, nombre: 'Arqueros de la empalizada', numero: 4, importe: { base: 200000 } },
+      { origenId: UNIDAD.capitan, nombre: 'Capitán de la guardia', numero: 1, importe: { base: 200000 } },
+    ],
+    programado: false,
+  },
+  {
+    id: MOV_BREE.alquilerMolino,
+    dominioId: DOM.bree,
+    fecha: { anio: 1640, mes: 4, dia: 10 },
+    tipo: 'ingreso',
+    importe: { base: 500000, introducido: { cantidad: '5', moneda: 'mo' } },
+    categoriaId: CATEGORIA.rentasYAlquileres,
+    concepto: 'Alquiler del molino',
+    origen: 'avance',
+    avanceId: AVANCE.hasta10Abril,
+    regla: { tipo: 'impuesto', id: IMPUESTO.alquilerMolino },
+    programado: false,
+  },
+  {
+    id: MOV_BREE.obraGranero,
+    dominioId: DOM.bree,
+    fecha: { anio: 1640, mes: 4, dia: 10 },
+    tipo: 'gasto',
+    importe: { base: -8500000, introducido: { cantidad: '85', moneda: 'mo' } },
+    categoriaId: CATEGORIA.obras,
+    concepto: 'Obra: nuevo granero',
+    origen: 'avance',
+    avanceId: AVANCE.hasta10Abril,
+    vinculo: { tipo: 'obra', id: OBRA.granero },
+    programado: false,
+  },
+  {
+    id: MOV_BREE.peaje10Abril,
+    dominioId: DOM.bree,
+    fecha: { anio: 1640, mes: 4, dia: 10 },
+    tipo: 'ingreso',
+    importe: { base: 120000 },
+    categoriaId: CATEGORIA.impuestos,
+    concepto: 'Peaje del camino · 4 días',
+    origen: 'avance',
+    avanceId: AVANCE.hasta10Abril,
+    regla: { tipo: 'impuesto', id: IMPUESTO.peaje },
+    programado: false,
+  },
+  {
+    id: MOV_BREE.peaje12Abril,
+    dominioId: DOM.bree,
+    fecha: { anio: 1640, mes: 4, dia: 12 },
+    tipo: 'ingreso',
+    importe: { base: 60000 },
+    categoriaId: CATEGORIA.impuestos,
+    concepto: 'Peaje del camino · 2 días',
+    origen: 'avance',
+    avanceId: AVANCE.hasta12Abril,
+    regla: { tipo: 'impuesto', id: IMPUESTO.peaje },
+    programado: false,
+  },
+]
+
+/** El único movimiento de Archet: el coste de la obra del molino, pagado al empezarla (§6.3, A9). */
+export const MOVIMIENTOS_ARCHET: Movimiento[] = [
+  {
+    id: MOV_ARCHET.obraMolino,
+    dominioId: DOM.archet,
+    fecha: { anio: 1640, mes: 3, dia: 20 },
+    tipo: 'gasto',
+    importe: { base: -4000000, introducido: { cantidad: '40', moneda: 'mo' } },
+    categoriaId: CATEGORIA.obras,
+    concepto: 'Obra: molino',
+    origen: 'manual',
+    vinculo: { tipo: 'obra', id: OBRA.molinoArchet },
+    programado: false,
+  },
+]
+
+/** Las dos caras de la transferencia del 6 de abril: 20 mo de la caja de Bree a la bolsa de Tharan (§8). */
+export const TRANSFERENCIAS: Transferencia[] = [
+  {
+    id: TRANSFERENCIA.breeATharan,
+    fecha: { anio: 1640, mes: 4, dia: 6 },
+    importe: { base: 2000000, introducido: { cantidad: '20', moneda: 'mo' } },
+    saleDeId: DOM.bree,
+    entraEnId: DOM.tharan,
+    movimientoSaleId: MOV_BREE.transferencia,
+    movimientoEntraId: MOV_THARAN.transferencia,
+  },
+]
+
+/** La única deuda de Bree: el adelanto del Gremio para el granero, que vence el 1 de junio (§6.3, A2b). */
+export const DEUDAS_ASENTAMIENTOS: Deuda[] = [
+  {
+    id: DEUDA.gremioBree,
+    dominioId: DOM.bree,
+    sentido: 'debo',
+    contraparteId: PERSONA.gremioBree,
+    fecha: { anio: 1640, mes: 3, dia: 28 },
+    principal: { base: 3000000, introducido: { cantidad: '30', moneda: 'mo' } },
+    interesPct: 0,
+    vencimiento: { anio: 1640, mes: 6, dia: 1 },
+    notas: 'Adelanto para el granero',
+    estado: 'abierta',
+    impago: false,
+    cuentaAltaId: DOM.bree,
+    pagos: [],
+    devengos: [],
+  },
+]
+
+/**
+ * Los ingresos, rentas y tributos de los dos asentamientos (§6.3, A3). Cada uno lleva su `categoriaId`
+ * (decisión 3): Impuestos, Aranceles, Rentas y alquileres o Tributos.
+ */
+export const IMPUESTOS_RENTAS: ImpuestoRenta[] = [
+  {
+    id: IMPUESTO.hogar,
+    dominioId: DOM.bree,
+    sentido: 'ingreso',
+    concepto: 'Impuesto por hogar',
+    base: 'porHabitante',
+    importe: { base: 1000, introducido: { cantidad: '0,01', moneda: 'mo' } },
+    categoriaId: CATEGORIA.impuestos,
+    recurrencia: { tipo: 'mensual', diaMes: 1, inicio: PRIMERO_DE_ABRIL },
+  },
+  {
+    id: IMPUESTO.aranceles,
+    dominioId: DOM.bree,
+    sentido: 'ingreso',
+    concepto: 'Aranceles del mercado',
+    base: 'fija',
+    importe: { base: 300000, introducido: { cantidad: '3', moneda: 'mo' } },
+    categoriaId: CATEGORIA.aranceles,
+    recurrencia: { tipo: 'semanal', diaSemana: 6, inicio: PRIMERO_DE_ABRIL },
+  },
+  {
+    id: IMPUESTO.alquilerMolino,
+    dominioId: DOM.bree,
+    sentido: 'ingreso',
+    concepto: 'Alquiler del molino',
+    base: 'fija',
+    importe: { base: 500000, introducido: { cantidad: '5', moneda: 'mo' } },
+    categoriaId: CATEGORIA.rentasYAlquileres,
+    recurrencia: { tipo: 'mensual', diaMes: 10, inicio: PRIMERO_DE_ABRIL },
+    edificioId: EDIFICIO.molino,
+  },
+  {
+    id: IMPUESTO.peaje,
+    dominioId: DOM.bree,
+    sentido: 'ingreso',
+    concepto: 'Peaje del camino',
+    base: 'fija',
+    importe: { base: 30000, introducido: { cantidad: '0,3', moneda: 'mo' } },
+    categoriaId: CATEGORIA.impuestos,
+    recurrencia: { tipo: 'diaria', inicio: PRIMERO_DE_ABRIL },
+  },
+  {
+    id: IMPUESTO.diezmo,
+    dominioId: DOM.bree,
+    sentido: 'tributo',
+    concepto: 'Diezmo a Fornost',
+    base: 'fija',
+    importe: { base: 2500000, introducido: { cantidad: '25', moneda: 'mo' } },
+    categoriaId: CATEGORIA.tributos,
+    recurrencia: { tipo: 'mensual', diaMes: 30, inicio: PRIMERO_DE_ABRIL },
+    destinatarioId: PERSONA.corona,
+  },
+  {
+    id: IMPUESTO.tributoArchet,
+    dominioId: DOM.archet,
+    sentido: 'tributo',
+    concepto: 'Tributo a la Corona',
+    base: 'fija',
+    importe: { base: 6000000, introducido: { cantidad: '60', moneda: 'mo' } },
+    categoriaId: CATEGORIA.tributos,
+    recurrencia: { tipo: 'trimestral', diaMes: 19, primera: { anio: 1640, mes: 4, dia: 19 } },
+    destinatarioId: PERSONA.corona,
+  },
+  {
+    id: IMPUESTO.rentasArchet,
+    dominioId: DOM.archet,
+    sentido: 'ingreso',
+    concepto: 'Rentas de las tierras',
+    base: 'fija',
+    importe: { base: 2580000, introducido: { cantidad: '25,8', moneda: 'mo' } },
+    categoriaId: CATEGORIA.rentasYAlquileres,
+    recurrencia: { tipo: 'trimestral', diaMes: 1, primera: { anio: 1640, mes: 6, dia: 1 } },
+  },
+]
+
+/** Los tres tipos de local de Bree: porcentaje, mínimo y día de cobro (§7, A3b). */
+export const TIPOS_LOCAL: TipoLocal[] = [
+  {
+    id: TIPO_LOCAL.herreria,
+    dominioId: DOM.bree,
+    nombre: 'Herrería',
+    pct: 10,
+    minimo: { base: 20000, introducido: { cantidad: '2', moneda: 'mp' } },
+    diaCobro: 1,
+  },
+  {
+    id: TIPO_LOCAL.posada,
+    dominioId: DOM.bree,
+    nombre: 'Posada',
+    pct: 8,
+    minimo: { base: 50000, introducido: { cantidad: '5', moneda: 'mp' } },
+    diaCobro: 1,
+  },
+  {
+    id: TIPO_LOCAL.tienda,
+    dominioId: DOM.bree,
+    nombre: 'Tienda',
+    pct: 5,
+    minimo: { base: 10000, introducido: { cantidad: '1', moneda: 'mp' } },
+    diaCobro: 1,
+  },
+]
+
+/**
+ * Los cuatro locales comerciales de Bree (§6.3, A3b). Todos se dan de alta el 1 de marzo de 1640 con
+ * `cobradoHasta` naciendo en febrero, y el único cobro es el del 1 de abril, que deja `cobradoHasta` en
+ * marzo de 1640 (decisión 2).
+ */
+export const LOCALES_COMERCIALES: LocalComercial[] = [
+  {
+    id: LOCAL.herreria1,
+    dominioId: DOM.bree,
+    nombre: 'Herrería 1',
+    tipoId: TIPO_LOCAL.herreria,
+    titularId: PERSONA.hobart,
+    produccionHabitual: { base: 1000000, introducido: { cantidad: '10', moneda: 'mo' } },
+    cambiosEstado: [{ desde: { anio: 1640, mes: 3, dia: 1 }, estado: 'abierto' }],
+    alta: { anio: 1640, mes: 3, dia: 1 },
+    cobradoHasta: { anio: 1640, mes: 3 },
+    producciones: [],
+  },
+  {
+    id: LOCAL.posada,
+    dominioId: DOM.bree,
+    nombre: 'Posada El Poney Pisador',
+    tipoId: TIPO_LOCAL.posada,
+    titularId: PERSONA.barnabas,
+    produccionHabitual: { base: 4000000, introducido: { cantidad: '40', moneda: 'mo' } },
+    cambiosEstado: [{ desde: { anio: 1640, mes: 3, dia: 1 }, estado: 'abierto' }],
+    alta: { anio: 1640, mes: 3, dia: 1 },
+    cobradoHasta: { anio: 1640, mes: 3 },
+    producciones: [],
+  },
+  {
+    id: LOCAL.tiendaDeTelas,
+    dominioId: DOM.bree,
+    nombre: 'Tienda de telas',
+    tipoId: TIPO_LOCAL.tienda,
+    produccionHabitual: { base: 600000, introducido: { cantidad: '6', moneda: 'mo' } },
+    cambiosEstado: [{ desde: { anio: 1640, mes: 3, dia: 1 }, estado: 'abierto' }],
+    alta: { anio: 1640, mes: 3, dia: 1 },
+    cobradoHasta: { anio: 1640, mes: 3 },
+    producciones: [
+      {
+        mes: { anio: 1640, mes: 4 },
+        importe: { base: 150000, introducido: { cantidad: '1,5', moneda: 'mo' } },
+        nota: 'Vendió poco con las lluvias',
+      },
+    ],
+  },
+  {
+    id: LOCAL.ultramarinos,
+    dominioId: DOM.bree,
+    nombre: 'Ultramarinos del camino',
+    tipoId: TIPO_LOCAL.tienda,
+    produccionHabitual: { base: 400000, introducido: { cantidad: '4', moneda: 'mo' } },
+    cambiosEstado: [{ desde: { anio: 1640, mes: 3, dia: 1 }, estado: 'abierto' }],
+    alta: { anio: 1640, mes: 3, dia: 1 },
+    cobradoHasta: { anio: 1640, mes: 3 },
+    producciones: [],
+  },
+]
+
+/** Las plantillas de los dos asentamientos: 14 trabajadores en Bree y 4 albañiles en Archet (§6.3, A5). */
+export const TRABAJADORES: Trabajador[] = [
+  {
+    id: TRABAJADOR.granjeros,
+    dominioId: DOM.bree,
+    oficioId: idDeOpcion('oficios', 'Granjero'),
+    numero: 6,
+    salario: { base: 30000, introducido: { cantidad: '0,3', moneda: 'mo' } },
+    recurrencia: { tipo: 'semanal', diaSemana: 4, inicio: PRIMERO_DE_ABRIL },
+    edificioId: EDIFICIO.granjas,
+  },
+  {
+    id: TRABAJADOR.lenadores,
+    dominioId: DOM.bree,
+    oficioId: idDeOpcion('oficios', 'Leñador'),
+    numero: 3,
+    salario: { base: 30000, introducido: { cantidad: '0,3', moneda: 'mo' } },
+    recurrencia: { tipo: 'semanal', diaSemana: 4, inicio: PRIMERO_DE_ABRIL },
+    edificioId: EDIFICIO.aserradero,
+  },
+  {
+    id: TRABAJADOR.cerveceros,
+    dominioId: DOM.bree,
+    oficioId: idDeOpcion('oficios', 'Cervecero'),
+    numero: 2,
+    salario: { base: 40000, introducido: { cantidad: '0,4', moneda: 'mo' } },
+    recurrencia: { tipo: 'semanal', diaSemana: 4, inicio: PRIMERO_DE_ABRIL },
+    edificioId: EDIFICIO.cerveceria,
+  },
+  {
+    id: TRABAJADOR.canteros,
+    dominioId: DOM.bree,
+    oficioId: idDeOpcion('oficios', 'Cantero'),
+    numero: 2,
+    salario: { base: 30000, introducido: { cantidad: '0,3', moneda: 'mo' } },
+    recurrencia: { tipo: 'semanal', diaSemana: 4, inicio: PRIMERO_DE_ABRIL },
+    edificioId: EDIFICIO.cantera,
+  },
+  {
+    id: TRABAJADOR.pastores,
+    dominioId: DOM.bree,
+    oficioId: idDeOpcion('oficios', 'Pastor'),
+    numero: 1,
+    salario: { base: 10000, introducido: { cantidad: '0,1', moneda: 'mo' } },
+    recurrencia: { tipo: 'semanal', diaSemana: 4, inicio: PRIMERO_DE_ABRIL },
+    edificioId: EDIFICIO.redil,
+  },
+  {
+    id: TRABAJADOR.albanilesArchet,
+    dominioId: DOM.archet,
+    oficioId: idDeOpcion('oficios', 'Albañil'),
+    numero: 4,
+    salario: { base: 80000, introducido: { cantidad: '0,8', moneda: 'mo' } },
+    recurrencia: { tipo: 'mensual', diaMes: 26, inicio: { anio: 1640, mes: 4, dia: 13 } },
+  },
+]
+
+/** Las tres unidades de la guarnición de Bree: 11 soldados y 5,8 mo por pago quincenal (§6.3, A6). */
+export const UNIDADES_GUARNICION: UnidadGuarnicion[] = [
+  {
+    id: UNIDAD.guardias,
+    dominioId: DOM.bree,
+    tipoId: idDeOpcion('tiposUnidad', 'Guardia'),
+    nombre: 'Guardias de la puerta',
+    numero: 6,
+    soldada: { base: 30000, introducido: { cantidad: '0,3', moneda: 'mo' } },
+    recurrencia: { tipo: 'quincenal', primera: { anio: 1640, mes: 4, dia: 10 } },
+  },
+  {
+    id: UNIDAD.arqueros,
+    dominioId: DOM.bree,
+    tipoId: idDeOpcion('tiposUnidad', 'Arquero'),
+    nombre: 'Arqueros de la empalizada',
+    numero: 4,
+    soldada: { base: 50000, introducido: { cantidad: '0,5', moneda: 'mo' } },
+    recurrencia: { tipo: 'quincenal', primera: { anio: 1640, mes: 4, dia: 10 } },
+  },
+  {
+    id: UNIDAD.capitan,
+    dominioId: DOM.bree,
+    tipoId: idDeOpcion('tiposUnidad', 'Capitán'),
+    nombre: 'Capitán de la guardia',
+    numero: 1,
+    soldada: { base: 200000, introducido: { cantidad: '2', moneda: 'mo' } },
+    recurrencia: { tipo: 'quincenal', primera: { anio: 1640, mes: 4, dia: 10 } },
+  },
+]
