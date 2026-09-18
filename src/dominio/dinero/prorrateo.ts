@@ -48,3 +48,51 @@ export function alMes(base: number, r: Recurrencia): number {
   // −7,5 → −7. Las mitades son exactas en coma flotante.
   return Number(entero) + redondearMitadArriba(Number(resto) / denominador)
 }
+
+/** Una partida que se prorratea a 30 días: su importe por ocurrencia y su frecuencia (§3). */
+export interface PartidaMensual {
+  base: number
+  recurrencia: Recurrencia
+}
+
+/** Máximo común divisor de dos enteros positivos (algoritmo de Euclides). */
+function mcd(a: bigint, b: bigint): bigint {
+  let x = a
+  let y = b
+  while (y !== 0n) {
+    const resto = x % y
+    x = y
+    y = resto
+  }
+  return x
+}
+
+/** numerador ÷ denominador (denominador > 0) al entero más cercano, con las mitades hacia arriba (+∞) y sin −0. */
+function redondearFraccion(numerador: bigint, denominador: bigint): number {
+  const n = 2n * numerador + denominador
+  const d = 2n * denominador
+  const cociente = n / d
+  // La división de BigInt corta hacia 0; con resto negativo, se baja uno para redondear hacia abajo.
+  return Number(n % d < 0n ? cociente - 1n : cociente)
+}
+
+/**
+ * Suma exacta al mes de varias partidas, con un solo redondeo al mh y las mitades hacia arriba (§3, §7 l.1057, T2).
+ * Junta las fracciones base × factor de todas las partidas sobre un denominador común y redondea solo el total:
+ * fila a fila con alMes, las tres soldadas de Bree darían 1.242.856 en vez de 1.242.857.
+ *
+ * Precondiciones: cada base es un entero en mh y cada recurrencia es válida (validarRecurrencia).
+ */
+export function sumarAlMes(partidas: readonly PartidaMensual[]): number {
+  let numerador = 0n
+  let denominador = 1n
+  for (const { base, recurrencia } of partidas) {
+    const fraccion = fraccionMensual(recurrencia)
+    const suyo = BigInt(fraccion.denominador)
+    // El denominador común es el mínimo común múltiplo de los dos: así no crece de más.
+    const comun = (denominador / mcd(denominador, suyo)) * suyo
+    numerador = numerador * (comun / denominador) + BigInt(base) * BigInt(fraccion.numerador) * (comun / suyo)
+    denominador = comun
+  }
+  return redondearFraccion(numerador, denominador)
+}

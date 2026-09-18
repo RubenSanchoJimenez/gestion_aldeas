@@ -4,7 +4,7 @@ import type { Recurrencia } from '../calendario/recurrencia'
 import { formatearOroProrrateado } from './formato'
 import { aBase } from './importe'
 import { EQUIVALENCIAS_POR_DEFECTO } from './monedas'
-import { alMes, factorMensual } from './prorrateo'
+import { alMes, factorMensual, sumarAlMes, type PartidaMensual } from './prorrateo'
 
 const EQ = EQUIVALENCIAS_POR_DEFECTO
 
@@ -103,6 +103,67 @@ describe('alMes', () => {
     // El mayor entero seguro × 30 pasa de Number.MAX_SAFE_INTEGER, y la coma flotante sube 1 mh.
     expect(Math.round((Number.MAX_SAFE_INTEGER * 30) / 90)).toBe(3002399751580331)
     expect(alMes(Number.MAX_SAFE_INTEGER, { tipo: 'cadaNDias', n: 90, primera: PRIMERA })).toBe(3002399751580330)
+  })
+})
+
+describe('sumarAlMes', () => {
+  /** Las tres unidades de la guarnición de Bree (A6): 6 × 0,3 mo, 4 × 0,5 mo y 1 × 2 mo cada dos semanas. */
+  const SOLDADAS_BREE: PartidaMensual[] = [
+    { base: 6 * mo('0,3'), recurrencia: CADA_DOS_SEMANAS },
+    { base: 4 * mo('0,5'), recurrencia: CADA_DOS_SEMANAS },
+    { base: 1 * mo('2'), recurrencia: CADA_DOS_SEMANAS },
+  ]
+
+  /** Las cinco filas de trabajadores de Bree (A5), cada viernes: 6 × 0,3, 3 × 0,3, 2 × 0,4, 2 × 0,3 y 1 × 0,1 mo. */
+  const SALARIOS_BREE: PartidaMensual[] = [
+    { base: 6 * mo('0,3'), recurrencia: SEMANAL },
+    { base: 3 * mo('0,3'), recurrencia: SEMANAL },
+    { base: 2 * mo('0,4'), recurrencia: SEMANAL },
+    { base: 2 * mo('0,3'), recurrencia: SEMANAL },
+    { base: 1 * mo('0,1'), recurrencia: SEMANAL },
+  ]
+
+  /** El diezmo de Bree, su único tributo (A3): 25 mo el día 1 de cada mes. */
+  const DIEZMO_BREE: PartidaMensual = { base: mo('25'), recurrencia: MENSUAL }
+
+  it('sin partidas da 0', () => {
+    expect(sumarAlMes([])).toBe(0)
+  })
+
+  it('con una sola partida da lo mismo que alMes, también con mitades, negativos y sin −0', () => {
+    const casos: PartidaMensual[] = [
+      { base: mo('3'), recurrencia: SEMANAL },
+      { base: mo('5,8'), recurrencia: CADA_DOS_SEMANAS },
+      { base: 1, recurrencia: { tipo: 'cadaNDias', n: 4, primera: PRIMERA } },
+      { base: -1, recurrencia: { tipo: 'cadaNDias', n: 4, primera: PRIMERA } },
+      { base: 11, recurrencia: { tipo: 'cadaNDias', n: 44, primera: PRIMERA } },
+      { base: -6, recurrencia: SEMANAL },
+      { base: -1, recurrencia: { tipo: 'anual', mes: 4, diaMes: 13 } },
+    ]
+    for (const partida of casos) {
+      expect(sumarAlMes([partida])).toBe(alMes(partida.base, partida.recurrencia))
+    }
+    expect(sumarAlMes([{ base: -1, recurrencia: { tipo: 'anual', mes: 4, diaMes: 13 } }])).toBe(0)
+  })
+
+  it('las tres soldadas de Bree suman 1.242.857 al mes, con un solo redondeo; fila a fila serían 1.242.856', () => {
+    expect(sumarAlMes(SOLDADAS_BREE)).toBe(1242857)
+    const filaAFila = SOLDADAS_BREE.reduce((suma, p) => suma + alMes(p.base, p.recurrencia), 0)
+    expect(filaAFila).toBe(1242856)
+  })
+
+  it('lo que sale de Bree al mes: salarios, soldadas y diezmo = 5.542.857, «55,4 mo» (§7)', () => {
+    const salen = sumarAlMes([...SALARIOS_BREE, ...SOLDADAS_BREE, DIEZMO_BREE])
+    expect(salen).toBe(5542857)
+    expect(formatearOroProrrateado(salen, EQ)).toBe('55,4 mo')
+    expect(sumarAlMes(SALARIOS_BREE)).toBe(1800000)
+    expect(sumarAlMes([DIEZMO_BREE])).toBe(2500000)
+  })
+
+  it('«Una sola vez» no cuenta: suma 0', () => {
+    const unica: PartidaMensual = { base: mo('100'), recurrencia: { tipo: 'unica', fecha: PRIMERA } }
+    expect(sumarAlMes([unica])).toBe(0)
+    expect(sumarAlMes([unica, DIEZMO_BREE])).toBe(2500000)
   })
 })
 
