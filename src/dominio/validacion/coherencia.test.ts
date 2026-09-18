@@ -275,6 +275,56 @@ describe('validarCoherenciaInterna', () => {
         devengos: [],
       },
     ]
+    expect(validarCoherenciaInterna(documento)).toEqual([
+      { ruta: 'movimientos[0].programado', mensaje: 'Un movimiento con fecha futura tiene que estar programado' },
+      { ruta: 'obras[0]', mensaje: 'El estado de la obra «obra.granero» no cuadra con sus fechas' },
+      {
+        ruta: 'deudas[0].vencimiento',
+        mensaje: 'La deuda con «persona.gremio-bree» está marcada vencida y no ha vencido',
+      },
+    ])
+  })
+
+  it('admite obras y caravanas programadas con la fecha ya pasada, y las entradas sin aplicar (D-018)', () => {
+    const documento = documentoMinimo()
+    documento.obras = [
+      {
+        id: 'obra.granero',
+        dominioId: 'dom.bree',
+        nombre: 'Granero nuevo',
+        estado: 'programada',
+        coste: { base: 1000000 },
+        materiales: { 'recurso.viveres': 10 },
+        inicio: { anio: 1640, mes: 4, dia: 5 },
+        diasTotales: 30,
+        efecto: { tipo: 'ampliarAlmacen', recursoId: 'recurso.viveres', valor: 100 },
+      },
+      {
+        id: 'obra.muralla',
+        dominioId: 'dom.bree',
+        nombre: 'Muralla',
+        estado: 'enCurso',
+        coste: { base: 2000000 },
+        materiales: { 'recurso.viveres': 5 },
+        inicio: { anio: 1640, mes: 4, dia: 1 },
+        diasTotales: 3,
+        efecto: { tipo: 'ampliarAlmacen', recursoId: 'recurso.viveres', valor: 50 },
+      },
+    ]
+    documento.caravanas = [
+      {
+        id: 'car.viveres',
+        dominioId: 'dom.bree',
+        operacion: 'compra',
+        mercadoId: 'mer.bree',
+        carga: { recursoId: 'recurso.viveres', cantidad: 30 },
+        precioUnidad: { base: 25000 },
+        importe: { base: 750000 },
+        salida: { anio: 1640, mes: 4, dia: 5 },
+        vuelta: { anio: 1640, mes: 4, dia: 20 },
+        estado: 'programada',
+      },
+    ]
     documento.entradasAlmacen = [
       {
         id: 'ent.1',
@@ -286,14 +336,41 @@ describe('validarCoherenciaInterna', () => {
         aplicada: false,
       },
     ]
-    expect(validarCoherenciaInterna(documento)).toEqual([
-      { ruta: 'movimientos[0].programado', mensaje: 'Un movimiento con fecha futura tiene que estar programado' },
-      { ruta: 'obras[0]', mensaje: 'El estado de la obra «obra.granero» no cuadra con sus fechas' },
+    expect(validarCoherenciaInterna(documento)).toEqual([])
+  })
+
+  it('sigue pillando una obra en curso que no ha empezado y una caravana en ruta que no ha salido', () => {
+    const documento = documentoMinimo()
+    documento.obras = [
       {
-        ruta: 'deudas[0].vencimiento',
-        mensaje: 'La deuda con «persona.gremio-bree» está marcada vencida y no ha vencido',
+        id: 'obra.granero',
+        dominioId: 'dom.bree',
+        nombre: 'Granero nuevo',
+        estado: 'enCurso',
+        coste: { base: 1000000 },
+        materiales: { 'recurso.viveres': 10 },
+        inicio: { anio: 1640, mes: 5, dia: 1 },
+        diasTotales: 30,
+        efecto: { tipo: 'ampliarAlmacen', recursoId: 'recurso.viveres', valor: 100 },
       },
-      { ruta: 'entradasAlmacen[0].fecha', mensaje: 'Una entrada sin aplicar tiene fecha pasada' },
+    ]
+    documento.caravanas = [
+      {
+        id: 'car.viveres',
+        dominioId: 'dom.bree',
+        operacion: 'compra',
+        mercadoId: 'mer.bree',
+        carga: { recursoId: 'recurso.viveres', cantidad: 30 },
+        precioUnidad: { base: 25000 },
+        importe: { base: 750000 },
+        salida: { anio: 1640, mes: 5, dia: 1 },
+        vuelta: { anio: 1640, mes: 5, dia: 20 },
+        estado: 'enRuta',
+      },
+    ]
+    expect(validarCoherenciaInterna(documento)).toEqual([
+      { ruta: 'obras[0]', mensaje: 'El estado de la obra «obra.granero» no cuadra con sus fechas' },
+      { ruta: 'caravanas[0]', mensaje: 'El estado de la caravana «car.viveres» no cuadra con sus fechas' },
     ])
   })
 })

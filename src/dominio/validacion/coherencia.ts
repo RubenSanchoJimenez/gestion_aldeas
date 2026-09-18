@@ -158,10 +158,8 @@ function problemasDelEstado(documento: DocumentoPartida): ProblemaDeCoherencia[]
     }
     const fin = sumarDias(inicio, o.diasTotales - 1)
     let cuadra = fin.anio <= ANIO_MAXIMO
-    if (o.estado === 'programada') {
-      cuadra = cuadra && compararFechas(inicio, hoy) > 0
-    } else if (o.estado === 'enCurso') {
-      cuadra = cuadra && compararFechas(inicio, hoy) <= 0 && compararFechas(fin, hoy) >= 0
+    if (o.estado === 'enCurso') {
+      cuadra = cuadra && compararFechas(inicio, hoy) <= 0
     } else if (o.estado === 'terminada') {
       cuadra = cuadra && compararFechas(fin, hoy) <= 0
     }
@@ -169,11 +167,9 @@ function problemasDelEstado(documento: DocumentoPartida): ProblemaDeCoherencia[]
   })
   documento.caravanas.forEach((c, i) => {
     let cuadra = true
-    if (c.estado === 'programada') {
-      cuadra = compararFechas(c.salida, hoy) > 0
-    } else if (c.estado === 'enRuta') {
+    if (c.estado === 'enRuta') {
       cuadra = compararFechas(c.salida, hoy) <= 0
-    } else {
+    } else if (c.estado === 'terminada') {
       cuadra = compararFechas(c.vuelta, hoy) <= 0
     }
     exige(cuadra, `caravanas[${i}]`, `El estado de la caravana «${c.id}» no cuadra con sus fechas`)
@@ -187,12 +183,6 @@ function problemasDelEstado(documento: DocumentoPartida): ProblemaDeCoherencia[]
       `deudas[${i}].vencimiento`,
       `La deuda con «${d.contraparteId}» está marcada vencida y no ha vencido`,
     )
-  })
-  documento.entradasAlmacen.forEach((e, i) => {
-    if (e.aplicada) {
-      return
-    }
-    exige(compararFechas(e.fecha, hoy) > 0, `entradasAlmacen[${i}].fecha`, 'Una entrada sin aplicar tiene fecha pasada')
   })
 
   // ---- 4.5 Coherencias entre registros ------------------------------------
