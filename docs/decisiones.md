@@ -28,6 +28,7 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 | D-013 | Salarios y soldadas se guardan por trabajador y por soldado, y al pagarse salen como un solo movimiento con su detalle. | Es como lo enseñan las pantallas de la aldea. |
 | D-014 | Límites de los campos que la especificación no fijaba: interés y participación del 0 al 100 con 2 decimales, nivel de un pergamino del 1 al 50, nombres de 1 a 60 letras, notas hasta 1.000, cantidades de recursos con decimales y objetos o animales en números enteros. | Se copian los límites que la especificación sí da en campos parecidos. |
 | D-015 | La partida de ejemplo arranca a finales de marzo de 1640 y sus avances de días son 31/3 → 6/4 → 10/4 → 12/4. | Encaja con el historial corto que elegiste; la fase 9 lo alargará. |
+| D-018 | Una obra o una caravana «programada» puede tener la fecha ya pasada, y una copia así se importa sin problemas. | Es lo que pasa cuando el día señalado falta dinero o materiales: la obra no empieza, avisa en rojo y sigue esperando. |
 | D-017 | Las cinco tablas de la base de datos exigen siempre la clave al guardar, en vez de dejarla opcional como propone Dexie. | Los identificadores los pone la app, no la base: si falta uno, es un fallo y conviene que salte al compilar. |
 | D-016 | Todo lo demás de la fase 2 es puramente técnico (nombres de archivos, identificadores internos, biblioteca de validación, orden de las claves del JSON) y no cambia nada de lo que ves ni de las reglas del juego. | Está explicado tarea a tarea en el plan de la fase 2. |
 
