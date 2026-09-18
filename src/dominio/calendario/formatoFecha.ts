@@ -56,3 +56,43 @@ export function formatearFecha(f: Fecha, opciones: { edad?: Edad; diaSemana?: bo
   }
   return texto
 }
+
+/** «a», «a y b», «a, b y c»: una lista escrita como se lee. */
+function enumerar(partes: readonly string[]): string {
+  if (partes.length === 0) {
+    return ''
+  }
+  if (partes.length === 1) {
+    return partes[0]
+  }
+  return `${partes.slice(0, -1).join(', ')} y ${partes[partes.length - 1]}`
+}
+
+/** «abril», «marzo y abril», «enero, febrero y marzo»; si cruzan de año, cada mes con el suyo (§9 l.1288, D-031). */
+export function formatearMeses(meses: readonly { anio: number; mes: number }[]): string {
+  const cruzanDeAnio = meses.some((m) => m.anio !== meses[0].anio)
+  const nombres = meses.map((m) => {
+    const nombre = NOMBRES_MES[m.mes - 1]
+    return cruzanDeAnio ? `${nombre} de ${m.anio}` : nombre
+  })
+  return enumerar(nombres)
+}
+
+/** «19 de julio», o «19 de enero de 1641» si el año no es el de `hoy` (D-025). */
+export function formatearDiaCercano(f: Fecha, hoy: Fecha): string {
+  return f.anio === hoy.anio ? formatearDiaMes(f) : formatearFecha(f)
+}
+
+/**
+ * El día de un hecho: «19» si el avance cae en un mes; «19 de abril» si cae en un año; si no, con el año
+ * (D-032, T18). primerDia y ultimoDia son el primer y el último día simulados.
+ */
+export function formatearDiaDelAvance(f: Fecha, primerDia: Fecha, ultimoDia: Fecha): string {
+  if (primerDia.anio !== ultimoDia.anio) {
+    return formatearFecha(f)
+  }
+  if (primerDia.mes !== ultimoDia.mes) {
+    return formatearDiaMes(f)
+  }
+  return String(f.dia)
+}
