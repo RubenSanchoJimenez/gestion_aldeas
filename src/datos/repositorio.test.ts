@@ -119,6 +119,7 @@ describe('listar partidas', () => {
 
     await abrirPartida(db, 'p.sombra-del-este', '2026-09-17T14:00:00.000Z')
     expect((await ultimaPartidaUsada(db))?.id).toBe('p.sombra-del-este')
+    expect((await listarPartidas(db)).map((r) => r.id)).toEqual(['p.sombra-del-este', 'p.senderos-del-norte'])
   })
 })
 
