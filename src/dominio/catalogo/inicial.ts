@@ -15,7 +15,7 @@ const PREFIJO_LISTA: Readonly<Record<ListaCatalogo, string>> = {
 }
 
 /** Marcas diacríticas que la descomposición NFD separa de su letra (de U+0300 a U+036F). */
-const MARCAS_DIACRITICAS = /[̀-ͯ]/g
+const MARCAS_DIACRITICAS = /[\u0300-\u036f]/g
 
 /** Cada tramo que no es letra sin tilde ni cifra: se convierte en un guion. */
 const TRAMOS_NO_ALFANUMERICOS = /[^a-z0-9]+/g
