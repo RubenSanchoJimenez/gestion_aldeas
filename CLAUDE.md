@@ -44,7 +44,9 @@ Cada entrada de `docs/decisiones.md` lleva: identificador (`D-NNN`), fecha, fase
 
 Para gastar menos sin perder calidad (pedido por el usuario el 2026-09-18):
 
-- **Sonnet 5** para el trabajo que sigue instrucciones ya fijadas: leer y extraer datos de la especificación, escribir las tareas del plan a partir del contrato, montar el plan, verificarlo ejecutándolo, aplicar arreglos, implementar tareas, corregir, y las revisiones de especificación y de calidad de cada tarea.
+- **Haiku 4.5** para lo puramente mecánico: implementar una tarea de un plan **ya verificado**, que consiste en copiar sus bloques de código y ejecutar sus comandos, y los arreglos del plan que solo cambian números o salidas esperadas. Si Haiku termina bloqueado, con dudas o con la revisión de especificación fallada dos veces, la tarea se repite con Sonnet.
+- **Sonnet 5** para el trabajo que sigue instrucciones ya fijadas pero exige criterio: leer y extraer datos de la especificación, escribir las tareas del plan a partir del contrato, montar el plan, verificarlo ejecutándolo, corregir lo que señalan las revisiones, y las revisiones de especificación y de calidad de cada tarea.
+- **Sin modelo** (un script): las comprobaciones que no necesitan juicio, como comparar un bloque del plan con un archivo, contar pruebas o revisar que las vallas de código estén pareadas.
 - **Opus 5** solo donde hay que pensar o decidir: el crítico que cruza los informes, el contrato de cada fase (decisiones, tipos y lista de tareas), la revisión final de cada fase y cualquier tarea que Sonnet haya dejado bloqueada o mal dos veces.
 
 ## Reglas del código
