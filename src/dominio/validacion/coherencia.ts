@@ -354,7 +354,11 @@ export function validarCopia(documento: DocumentoPartida, catalogos: CatalogosEn
   ]
   return [
     ...problemas,
-    ...delSnapshot.map((p) => ({ ruta: `avances[${ultimo}].snapshotPrevio.${p.ruta}`, mensaje: p.mensaje })),
+    // Los catálogos viven en el sobre de la copia, fuera de la partida: ya los valida `problemas` una vez,
+    // así que aquí se descartan para no duplicarlos con una ruta «avances[n].snapshotPrevio.catalogos…» imposible.
+    ...delSnapshot
+      .filter((p) => !p.ruta.startsWith('catalogos.'))
+      .map((p) => ({ ruta: `avances[${ultimo}].snapshotPrevio.${p.ruta}`, mensaje: p.mensaje })),
   ]
 }
 

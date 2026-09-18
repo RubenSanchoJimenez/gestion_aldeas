@@ -313,4 +313,14 @@ describe('validarCopia', () => {
       },
     ])
   })
+
+  it('no duplica los problemas del catálogo al validar el snapshot: los catálogos van fuera de la partida', () => {
+    const catalogos = catalogosMinimos()
+    catalogos.opciones.push({ id: 'cat.otros', nombre: 'Otros (bis)', propia: true, lista: 'categorias', grupo: 'otros' })
+    const documento = documentoMinimo()
+    documento.avances = [{ ...documento.avances[0], snapshotPrevio: estadoDelSnapshot() }]
+    expect(validarCopia(documento, catalogos)).toEqual([
+      { ruta: 'catalogos.opciones[1].id', mensaje: 'El identificador «cat.otros» está repetido' },
+    ])
+  })
 })
