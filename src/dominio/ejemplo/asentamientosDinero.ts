@@ -174,7 +174,7 @@ export const MOVIMIENTOS_BREE: Movimiento[] = [
       { origenId: TRABAJADOR.lenadores, nombre: 'Leñadores', numero: 3, importe: { base: 90000 } },
       { origenId: TRABAJADOR.cerveceros, nombre: 'Cerveceros', numero: 2, importe: { base: 80000 } },
       { origenId: TRABAJADOR.canteros, nombre: 'Canteros', numero: 2, importe: { base: 60000 } },
-      { origenId: TRABAJADOR.pastores, nombre: 'Pastores', numero: 1, importe: { base: 10000 } },
+      { origenId: TRABAJADOR.pastores, nombre: 'Pastor', numero: 1, importe: { base: 10000 } },
     ],
     programado: false,
   },

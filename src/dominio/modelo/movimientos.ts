@@ -32,6 +32,9 @@ export const EsquemaVinculo = z.object({
 })
 export type Vinculo = z.infer<typeof EsquemaVinculo>
 
+/** Los vínculos cuyo movimiento puede esperar programado: el motor los aplica en los pasos 3 y 7 (§7, D-033). */
+const VINCULOS_PROGRAMABLES: readonly Vinculo['tipo'][] = ['obra', 'caravana', 'entradaAlmacen']
+
 /**
  * Regla recurrente que creó el movimiento; no es un vínculo y cada ocurrencia se edita suelta con J2c (§8).
  * `salarios`, `soldadas` y `locales` apuntan al dominioId del asentamiento, porque el motor agrupa por
@@ -119,6 +122,11 @@ export const EsquemaMovimiento = z
     exige(
       (m) => m.objetoPendiente === undefined || (m.tipo === 'gasto' && m.programado),
       'El objeto pendiente solo va en un gasto programado',
+    ),
+    // D-033: solo un movimiento suelto tiene fecha futura; los de obras, caravanas y compras siguen sus reglas (§7).
+    exige(
+      (m) => !m.programado || m.vinculo === undefined || VINCULOS_PROGRAMABLES.includes(m.vinculo.tipo),
+      'Un movimiento que sale de otro registro solo queda programado si es de una obra, una caravana o una compra',
     ),
   )
 export type Movimiento = z.infer<typeof EsquemaMovimiento>

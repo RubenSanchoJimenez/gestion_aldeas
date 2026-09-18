@@ -46,7 +46,7 @@ export const EsquemaTipoAviso = z.enum([
 ])
 export type TipoAviso = z.infer<typeof EsquemaTipoAviso>
 
-/** Un aviso guardado con el avance, tal como lo pinta P5 (decisión 4). Sigue vigente hasta el avance siguiente. */
+/** Un aviso guardado con el avance (decisión 4): los avisos vigentes al terminar el avance, tal como los pinta P5. */
 export const EsquemaAvisoAvance = z.object({
   tipo: EsquemaTipoAviso,
   color: z.enum(['rojo', 'ambar']),

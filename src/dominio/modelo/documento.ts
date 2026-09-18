@@ -96,3 +96,15 @@ export const EsquemaDocumentoPartida = EsquemaEstadoPartida.extend({
   avances: z.array(EsquemaAvance),
 })
 export type DocumentoPartida = z.infer<typeof EsquemaDocumentoPartida>
+
+/** Las 34 claves de EstadoPartida, en el orden del esquema. */
+const CLAVES_DEL_ESTADO = Object.keys(EsquemaEstadoPartida.shape) as (keyof EstadoPartida)[]
+
+/**
+ * Solo las 34 claves de EsquemaEstadoPartida, sin `avances`: lo que recibe simular y copia snapshotPrevio
+ * (§8, §9, T12). Comparte las colecciones con el documento, sin copiarlas. Nunca `{ ...documento }`: TypeScript lo
+ * acepta como EstadoPartida, pero arrastra `avances` y, con ellos, el snapshotPrevio del último avance.
+ */
+export function estadoDe(documento: EstadoPartida): EstadoPartida {
+  return Object.fromEntries(CLAVES_DEL_ESTADO.map((clave) => [clave, documento[clave]])) as EstadoPartida
+}

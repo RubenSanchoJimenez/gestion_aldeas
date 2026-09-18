@@ -99,6 +99,17 @@ describe('los libros de los asentamientos', () => {
     expect(soldadas?.importe.base).toBe(-580000)
   })
 
+  it('el detalle de los salarios nombra el oficio en singular con 1 y en plural con más: «Pastor» (§6.3)', () => {
+    const salarios = MOVIMIENTOS_BREE.find((m) => m.id === MOV_BREE.salarios6Abril)
+    expect(salarios?.detalleTrabajo?.map((d) => [d.nombre, d.numero])).toEqual([
+      ['Granjeros', 6],
+      ['Leñadores', 3],
+      ['Cerveceros', 2],
+      ['Canteros', 2],
+      ['Pastor', 1],
+    ])
+  })
+
   it('la transferencia del 6 de abril tiene sus dos movimientos, uno en cada dominio (§8)', () => {
     expect(TRANSFERENCIAS).toHaveLength(1)
     const transferencia = TRANSFERENCIAS[0]

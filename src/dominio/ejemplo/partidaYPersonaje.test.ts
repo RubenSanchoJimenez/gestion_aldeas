@@ -16,6 +16,7 @@ import {
   EsquemaObjetoInventario,
   EsquemaPergamino,
 } from '../modelo/personaje'
+import { INVERSION, MOV_THARAN } from './ids'
 import {
   CAJA_THARAN,
   DEUDAS_THARAN,
@@ -104,6 +105,13 @@ describe('la bolsa de Tharan', () => {
         )
       }
     }
+  })
+
+  it('el beneficio del Tonel del 1 de abril lleva lo tecleado en su inversión: «3 mo» (§3)', () => {
+    const beneficio = MOVIMIENTOS_THARAN.find((m) => m.id === MOV_THARAN.beneficioTonel)
+    const tonel = INVERSIONES.find((i) => i.id === INVERSION.tonelDorado)
+    expect(beneficio?.importe).toEqual({ base: 300000, introducido: { cantidad: '3', moneda: 'mo' } })
+    expect(beneficio?.importe).toEqual(tonel?.beneficio)
   })
 })
 

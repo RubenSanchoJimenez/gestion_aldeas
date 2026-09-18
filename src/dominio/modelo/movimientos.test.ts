@@ -23,6 +23,24 @@ const PEAJE: Movimiento = {
   programado: false,
 }
 
+/** Un pago de 15 mo al Gremio el 1 de mayo: un gasto que sale de un pago de deuda, sin programar. */
+const PAGO_AL_GREMIO: Movimiento = {
+  id: 'mov.pago-gremio.1mayo',
+  dominioId: 'dom.tharan',
+  fecha: { anio: 1640, mes: 5, dia: 1 },
+  tipo: 'gasto',
+  importe: { base: -1500000, introducido: { cantidad: '15', moneda: 'mo' } },
+  categoriaId: 'cat.prestamos-y-deudas',
+  concepto: 'Pago al Gremio de mercaderes de Bree',
+  origen: 'manual',
+  vinculo: { tipo: 'pagoDeuda', id: 'pago.gremio.3' },
+  programado: false,
+}
+
+/** El mensaje de la comprobación de D-033: solo obras, caravanas y compras del almacén esperan programadas. */
+const SOLO_OBRAS_CARAVANAS_Y_COMPRAS =
+  'Un movimiento que sale de otro registro solo queda programado si es de una obra, una caravana o una compra'
+
 describe('EsquemaMovimiento', () => {
   it('acepta el peaje del 12 de abril del ejemplo', () => {
     expect(EsquemaMovimiento.parse(PEAJE)).toEqual(PEAJE)
@@ -110,6 +128,42 @@ describe('EsquemaMovimiento', () => {
     expect(mal.error?.issues.map((i) => i.message)).toEqual([
       'El detalle por trabajador solo va en el pago agrupado de salarios o de soldadas',
     ])
+  })
+
+  it('rechaza programado un movimiento que sale de un pago de deuda, una venta o una transferencia (D-033)', () => {
+    const pago = EsquemaMovimiento.safeParse({ ...PAGO_AL_GREMIO, programado: true })
+    expect(pago.success).toBe(false)
+    expect(pago.error?.issues.map((i) => i.message)).toEqual([SOLO_OBRAS_CARAVANAS_Y_COMPRAS])
+
+    const otros = ['venta', 'altaDeuda', 'capitalInversion', 'retiradaInversion', 'pergamino'] as const
+    for (const tipo of otros) {
+      const programado = { ...PAGO_AL_GREMIO, vinculo: { tipo, id: 'reg.1' }, programado: true }
+      expect(EsquemaMovimiento.safeParse(programado).error?.issues.map((i) => i.message)).toEqual([
+        SOLO_OBRAS_CARAVANAS_Y_COMPRAS,
+      ])
+    }
+
+    const transferencia = EsquemaMovimiento.safeParse({
+      ...PAGO_AL_GREMIO,
+      tipo: 'transferencia',
+      vinculo: { tipo: 'transferencia', id: 'trf.1' },
+      programado: true,
+    })
+    expect(transferencia.error?.issues.map((i) => i.message)).toEqual([SOLO_OBRAS_CARAVANAS_Y_COMPRAS])
+  })
+
+  it('admite programados los de una obra, una caravana o una compra del almacén (§7)', () => {
+    for (const tipo of ['obra', 'caravana', 'entradaAlmacen'] as const) {
+      const programado = { ...PAGO_AL_GREMIO, vinculo: { tipo, id: 'reg.1' }, programado: true }
+      expect(EsquemaMovimiento.safeParse(programado).success).toBe(true)
+    }
+  })
+
+  it('admite programado un movimiento suelto, y sin programar uno vinculado de cualquier clase', () => {
+    const suelto = { ...PAGO_AL_GREMIO, vinculo: undefined, programado: true }
+    expect(EsquemaMovimiento.safeParse(suelto).success).toBe(true)
+    expect(EsquemaMovimiento.safeParse(PAGO_AL_GREMIO).success).toBe(true)
+    expect(EsquemaMovimiento.parse(PAGO_AL_GREMIO)).toEqual(PAGO_AL_GREMIO)
   })
 
   it('guarda las transferencias y las reglas recurrentes del personaje', () => {

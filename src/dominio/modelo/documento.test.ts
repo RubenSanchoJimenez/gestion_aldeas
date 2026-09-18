@@ -3,6 +3,7 @@ import {
   EsquemaAvance,
   EsquemaDocumentoPartida,
   EsquemaEstadoPartida,
+  estadoDe,
   type DocumentoPartida,
   type EstadoPartida,
 } from './documento'
@@ -132,5 +133,25 @@ describe('EsquemaAvance y EsquemaDocumentoPartida', () => {
 
     expect(EsquemaDocumentoPartida.safeParse({ ...DOCUMENTO, avances: undefined }).success).toBe(false)
     expect(EsquemaDocumentoPartida.safeParse({ ...DOCUMENTO, produccionesRealizadas: undefined }).success).toBe(false)
+  })
+})
+
+describe('estadoDe', () => {
+  it('saca del documento las 34 claves del estado, en el orden del esquema y sin avances (§8, §9)', () => {
+    const estado = estadoDe(DOCUMENTO)
+    expect(Object.keys(estado)).toEqual(Object.keys(EsquemaEstadoPartida.shape))
+    expect(Object.keys(estado)).toHaveLength(34)
+    expect(estado).not.toHaveProperty('avances')
+    expect(EsquemaEstadoPartida.parse(estado)).toEqual(estado)
+  })
+
+  it('comparte las colecciones sin copiarlas, y evita la trampa de { ...documento }', () => {
+    const estado = estadoDe(DOCUMENTO)
+    expect(estado.partida).toBe(DOCUMENTO.partida)
+    expect(estado.movimientos).toBe(DOCUMENTO.movimientos)
+    expect(estadoDe(ESTADO_VACIO)).toEqual(ESTADO_VACIO)
+    // TypeScript acepta el spread como EstadoPartida, pero arrastra los avances con su snapshotPrevio.
+    const conSpread: EstadoPartida = { ...DOCUMENTO }
+    expect(conSpread).toHaveProperty('avances')
   })
 })

@@ -137,7 +137,7 @@ export const MOVIMIENTOS_THARAN: Movimiento[] = [
     dominioId: DOM.tharan,
     fecha: { anio: 1640, mes: 4, dia: 1 },
     tipo: 'ingreso',
-    importe: { base: 300000 },
+    importe: { base: 300000, introducido: { cantidad: '3', moneda: 'mo' } },
     categoriaId: CATEGORIA.beneficiosDeInversiones,
     concepto: 'Beneficio de El Tonel Dorado',
     origen: 'avance',
