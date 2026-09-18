@@ -1,8 +1,8 @@
 /** Marcas diacríticas que la descomposición NFD separa de su letra (de U+0300 a U+036F). */
-const MARCAS_DIACRITICAS = /[̀-ͯ]/g
+const MARCAS_DIACRITICAS = /[\u0300-\u036f]/g
 
 /** Hueco donde se aparta la ñ mientras se quitan las tildes; no es un carácter que se pueda teclear. */
-const HUECO_ENIE = ''
+const HUECO_ENIE = '\u0001'
 
 /** El hueco, para devolver la ñ a su sitio al final. */
 const REGEX_HUECO_ENIE = new RegExp(HUECO_ENIE, 'g')
