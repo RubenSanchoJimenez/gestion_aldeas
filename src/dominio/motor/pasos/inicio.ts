@@ -2,6 +2,7 @@ import { compararFechas, diasEntre, sumarDias } from '../../calendario/fecha'
 import { hayDeTodo, sacarDelAlmacen, sumarAlAlmacen } from '../almacen'
 import { pagarEntero, pagoProgramado } from '../caja'
 import { aplicarProgramado, type Contexto, type Dia } from '../contexto'
+import { nombreDeRecurso } from '../textos'
 
 /**
  * Paso 3: inicio de obras, salida de caravanas y entrada de compras y recepciones del almacén (§9 l.1275;
@@ -69,12 +70,13 @@ function entrarAlmacen(ctx: Contexto, dia: Dia): void {
       return
     }
     if (entrada.operacion === 'compra') {
+      if (entrada.movimientoId === undefined) {
+        throw new Error(`La compra de ${nombreDeRecurso(ctx.opciones.catalogo, entrada.recursoId)} no tiene su movimiento de pago`)
+      }
       if (!pagarEntero(ctx, entrada.dominioId, pagoProgramado(ctx, entrada.movimientoId))) {
         return
       }
-      if (entrada.movimientoId !== undefined) {
-        aplicarProgramado(ctx, entrada.movimientoId, { fecha: dia.fecha })
-      }
+      aplicarProgramado(ctx, entrada.movimientoId, { fecha: dia.fecha })
     }
     sumarAlAlmacen(ctx, dia, entrada.dominioId, entrada.recursoId, entrada.cantidad)
     ctx.entradasAlmacen[indice] = { ...entrada, aplicada: true, fecha: dia.fecha }

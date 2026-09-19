@@ -426,6 +426,26 @@ describe('pasoInicio: entradas del almacén', () => {
     expect(flujo?.perdido).toBeCloseTo(110, 6)
   })
 
+  it('una compra sin movimiento de pago lanza un error', () => {
+    const base = conAsentamiento(estadoMinimo(HOY), { id: 'dom.aldea', nombre: 'Aldea', caja: 300000 })
+    const estado: EstadoPartida = {
+      ...base,
+      existencias: [{ dominioId: 'dom.aldea', recursoId: RECURSO.madera, cantidad: 0 }],
+      entradasAlmacen: [
+        entradaDePrueba({
+          dominioId: 'dom.aldea',
+          recursoId: RECURSO.madera,
+          cantidad: 30,
+          operacion: 'compra',
+          mercadoId: 'mercado.dom.aldea',
+          precioUnidad: { base: 10000 },
+        }),
+      ],
+    }
+    const ctx = contexto(estado, fecha(13))
+    expect(() => recorrerPasos(ctx, 1, [pasoInicio])).toThrow('La compra de Madera no tiene su movimiento de pago')
+  })
+
   it('una entrada con caravanaId no se toca en este paso (TC18)', () => {
     const base = conAsentamiento(estadoMinimo(HOY), { id: 'dom.aldea', nombre: 'Aldea', caja: 0 })
     const estado: EstadoPartida = {
