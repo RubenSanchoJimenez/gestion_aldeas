@@ -7,10 +7,11 @@ import { catalogosDeEjemplo, documentoDeEjemplo } from '../../ejemplo/sombraDelE
 import type { Caravana } from '../../modelo/comercio'
 import { estadoDe, type EstadoPartida } from '../../modelo/documento'
 import type { Movimiento } from '../../modelo/movimientos'
+import { filaEn } from '../almacen'
 import { crearContexto, type Contexto, type Dia } from '../contexto'
 import { idsEnSerie } from '../ids'
-import { congelar } from '../pruebas/constructores'
-import { pasoVueltaDeVentas } from './caravanas'
+import { conAsentamiento, congelar, estadoMinimo } from '../pruebas/constructores'
+import { pasoLlegadaDeCaravanas, pasoVueltaDeVentas } from './caravanas'
 
 /** El avance de prueba: todo lo que crea lleva este avanceId. */
 const AVANCE_PRUEBA = 'av.prueba'
@@ -138,5 +139,150 @@ describe('pasoVueltaDeVentas', () => {
     expect(delAvance(programada)).toEqual([])
     expect(caravana(programada, CARAVANA.ventaCervezaFornost)?.estado).toBe('programada')
     expect(programada.saldos.get(DOM.bree)).toBe(34060000)
+  })
+})
+
+describe('pasoLlegadaDeCaravanas', () => {
+  it('la compra de Tharbad llega el 25: +300 víveres en Bree, terminada y suceso vueltaCaravana', () => {
+    const ctx = contexto(ejemplo(), fecha(25))
+    pasoLlegadaDeCaravanas(ctx, diaDe(ctx, fecha(25)))
+    expect(filaEn(ctx, DOM.bree, RECURSO.viveres)?.cantidad).toBe(610)
+    expect(caravana(ctx, CARAVANA.compraViveresTharbad)?.estado).toBe('terminada')
+    expect(ctx.sucesos).toContainEqual({
+      tipo: 'vueltaCaravana',
+      dominioId: DOM.bree,
+      fecha: fecha(25),
+      mercadoId: MERCADO.tharbad,
+    })
+  })
+
+  it('llega con el almacén lleno y pierde lo que no cabe', () => {
+    const base = conAsentamiento(estadoMinimo(fecha(12)), { id: 'dom.aldea', nombre: 'Aldea', caja: 0 })
+    const estado: EstadoPartida = {
+      ...base,
+      existencias: [{ dominioId: 'dom.aldea', recursoId: RECURSO.madera, cantidad: 90, capacidad: 100 }],
+      caravanas: [
+        {
+          id: 'car.prueba',
+          dominioId: 'dom.aldea',
+          operacion: 'compra',
+          mercadoId: 'mercado.dom.aldea',
+          carga: { recursoId: RECURSO.madera, cantidad: 30 },
+          precioUnidad: { base: 10000 },
+          importe: { base: 300000 },
+          salida: fecha(1),
+          vuelta: fecha(13),
+          estado: 'enRuta',
+        },
+      ],
+    }
+    const ctx = crearContexto(estado, fecha(13), {
+      avanceId: AVANCE_PRUEBA,
+      nuevoId: idsEnSerie('sim'),
+      catalogo: catalogosDeEjemplo(),
+    })
+    pasoLlegadaDeCaravanas(ctx, diaDe(ctx, fecha(13)))
+    expect(filaEn(ctx, 'dom.aldea', RECURSO.madera)?.cantidad).toBe(100)
+    const flujo = ctx.flujos.find((f) => f.dominioId === 'dom.aldea' && f.recursoId === RECURSO.madera)
+    expect(flujo).toMatchObject({ entradas: 10, perdido: 20 })
+  })
+
+  it('un traslado entra en el destino, crea la fila si falta, y empuja llegadaTraslado', () => {
+    const base = conAsentamiento(
+      conAsentamiento(estadoMinimo(fecha(12)), { id: 'dom.origen', nombre: 'Origen', caja: 0 }),
+      { id: 'dom.destino', nombre: 'Destino', caja: 0 },
+    )
+    const estado: EstadoPartida = {
+      ...base,
+      caravanas: [
+        {
+          id: 'car.traslado',
+          dominioId: 'dom.origen',
+          operacion: 'traslado',
+          destinoId: 'dom.destino',
+          carga: { recursoId: RECURSO.madera, cantidad: 20 },
+          salida: fecha(11),
+          vuelta: fecha(13),
+          estado: 'enRuta',
+        },
+      ],
+    }
+    const ctx = crearContexto(estado, fecha(13), {
+      avanceId: AVANCE_PRUEBA,
+      nuevoId: idsEnSerie('sim'),
+      catalogo: catalogosDeEjemplo(),
+    })
+    expect(filaEn(ctx, 'dom.destino', RECURSO.madera)).toBeUndefined()
+    pasoLlegadaDeCaravanas(ctx, diaDe(ctx, fecha(13)))
+    expect(filaEn(ctx, 'dom.destino', RECURSO.madera)?.cantidad).toBe(20)
+    expect(caravana(ctx, 'car.traslado')?.estado).toBe('terminada')
+    expect(ctx.sucesos).toContainEqual({
+      tipo: 'llegadaTraslado',
+      dominioId: 'dom.origen',
+      fecha: fecha(13),
+      destinoId: 'dom.destino',
+    })
+  })
+
+  it('una vuelta ya pasada se cobra el primer día del avance', () => {
+    // La compra de Tharbad vuelve, en este estado, el 10 en vez del 25: ya había pasado cuando arranca el avance.
+    const estado: EstadoPartida = {
+      ...estadoDe(documentoDeEjemplo()),
+      caravanas: estadoDe(documentoDeEjemplo()).caravanas.map((c) =>
+        c.id === CARAVANA.compraViveresTharbad ? { ...c, vuelta: fecha(10) } : c,
+      ),
+    }
+    const ctx = contexto(estado, fecha(19))
+    pasoLlegadaDeCaravanas(ctx, diaDe(ctx, fecha(13)))
+    expect(caravana(ctx, CARAVANA.compraViveresTharbad)?.estado).toBe('terminada')
+    const flujo = ctx.flujos.find((f) => f.dominioId === DOM.bree && f.recursoId === RECURSO.viveres)
+    expect(flujo?.fecha).toEqual(fecha(13))
+  })
+
+  it('las ventas no las toca: sigue esperando a pasoVueltaDeVentas', () => {
+    const ctx = contexto(ejemplo(), fecha(19))
+    pasoLlegadaDeCaravanas(ctx, diaDe(ctx, fecha(18)))
+    expect(caravana(ctx, CARAVANA.ventaCervezaFornost)?.estado).toBe('enRuta')
+    expect(ctx.sucesos).toEqual([])
+  })
+
+  it('marca aplicada la entrada del almacén que esperaba a esta caravana (TC18)', () => {
+    const base = conAsentamiento(estadoMinimo(fecha(12)), { id: 'dom.aldea', nombre: 'Aldea', caja: 0 })
+    const estado: EstadoPartida = {
+      ...base,
+      entradasAlmacen: [
+        {
+          id: 'ea.prueba',
+          dominioId: 'dom.aldea',
+          recursoId: RECURSO.madera,
+          cantidad: 20,
+          operacion: 'compra',
+          fecha: fecha(1),
+          caravanaId: 'car.prueba',
+          aplicada: false,
+        },
+      ],
+      caravanas: [
+        {
+          id: 'car.prueba',
+          dominioId: 'dom.aldea',
+          operacion: 'compra',
+          mercadoId: 'mercado.dom.aldea',
+          carga: { recursoId: RECURSO.madera, cantidad: 20 },
+          precioUnidad: { base: 10000 },
+          importe: { base: 200000 },
+          salida: fecha(1),
+          vuelta: fecha(13),
+          estado: 'enRuta',
+        },
+      ],
+    }
+    const ctx = crearContexto(estado, fecha(13), {
+      avanceId: AVANCE_PRUEBA,
+      nuevoId: idsEnSerie('sim'),
+      catalogo: catalogosDeEjemplo(),
+    })
+    pasoLlegadaDeCaravanas(ctx, diaDe(ctx, fecha(13)))
+    expect(ctx.entradasAlmacen[0].aplicada).toBe(true)
   })
 })

@@ -1,6 +1,7 @@
 import { compararFechas } from '../../calendario/fecha'
 import { CATEGORIA, RECURSO } from '../../catalogo/inicial'
 import type { Importe } from '../../dinero/importe'
+import { sumarAlAlmacen } from '../almacen'
 import { cobrar } from '../caja'
 import { anadirMovimiento, type Contexto, type Dia } from '../contexto'
 import { conceptoVentaCaravana, nombreDeRecurso } from '../textos'
@@ -42,5 +43,40 @@ export function pasoVueltaDeVentas(ctx: Contexto, dia: Dia): void {
     })
     ctx.caravanas[indice] = { ...caravana, estado: 'terminada', movimientoVueltaId: movimientoId }
     ctx.sucesos.push({ tipo: 'vueltaCaravana', dominioId: caravana.dominioId, fecha: dia.fecha, mercadoId })
+  })
+}
+
+/**
+ * Paso 7, mercancía: una caravana de compra o de traslado en ruta con vuelta ≤ día entra en el almacén de
+ * destino y queda terminada (§7 l.1152-1154; §9 l.1279). Las entradas que esperaban a esta caravana (TC18)
+ * se marcan aplicadas. Las ventas no las toca esta función: las cobra `pasoVueltaDeVentas`, que no cambia.
+ */
+export function pasoLlegadaDeCaravanas(ctx: Contexto, dia: Dia): void {
+  ctx.caravanas.forEach((caravana, indice) => {
+    if (caravana.operacion === 'venta' || caravana.estado !== 'enRuta') {
+      return
+    }
+    if (compararFechas(caravana.vuelta, dia.fecha) > 0) {
+      return
+    }
+    const destino = caravana.operacion === 'compra' ? caravana.dominioId : caravana.destinoId
+    if (destino === undefined) {
+      throw new Error(`No existe destino para «${caravana.id}»`)
+    }
+    sumarAlAlmacen(ctx, dia, destino, caravana.carga.recursoId, caravana.carga.cantidad)
+    ctx.caravanas[indice] = { ...caravana, estado: 'terminada' }
+    ctx.entradasAlmacen.forEach((entrada, indiceEntrada) => {
+      if (entrada.caravanaId === caravana.id) {
+        ctx.entradasAlmacen[indiceEntrada] = { ...entrada, aplicada: true }
+      }
+    })
+    if (caravana.operacion === 'compra') {
+      if (caravana.mercadoId === undefined) {
+        throw new Error(`No existe mercado para «${caravana.id}»`)
+      }
+      ctx.sucesos.push({ tipo: 'vueltaCaravana', dominioId: caravana.dominioId, fecha: dia.fecha, mercadoId: caravana.mercadoId })
+    } else {
+      ctx.sucesos.push({ tipo: 'llegadaTraslado', dominioId: caravana.dominioId, fecha: dia.fecha, destinoId: destino })
+    }
   })
 }
