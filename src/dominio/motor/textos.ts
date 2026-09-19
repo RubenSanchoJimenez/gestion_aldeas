@@ -1,6 +1,9 @@
-import { formatearMeses } from '../calendario/formatoFecha'
-import type { CatalogosEnCopia } from '../modelo/catalogos'
-import type { AnioMes, Id } from '../modelo/comunes'
+import { cantidadDeRecurso, esUnaUnidad, formatearCantidad } from '../almacen/cantidades'
+import { enumerar, formatearMeses } from '../calendario/formatoFecha'
+import { RECURSO } from '../catalogo/inicial'
+import type { CatalogosEnCopia, RecursoEnCopia } from '../modelo/catalogos'
+import type { Caravana } from '../modelo/comercio'
+import type { AnioMes, Id, RecurrenciaProduccion } from '../modelo/comunes'
 import type { Dominio } from '../modelo/dominios'
 import { esNombreReservado } from '../texto/normalizar'
 import type { QuePago } from './tipos'
@@ -68,10 +71,29 @@ export function conceptoBeneficio(negocio: string): string {
   return ajustarTexto(`Beneficio de ${negocio}`, MAXIMO_CONCEPTO)
 }
 
+/** «Oro en bruto» → «oro en bruto» (la usa también conceptoVentaCaravana, T27). */
+export function minusculaInicial(texto: string): string {
+  return texto.length === 0 ? texto : `${texto.charAt(0).toLowerCase()}${texto.slice(1)}`
+}
+
 /** «Caravana: venta de cerveza en Fornost», con el recurso en minúscula inicial (D-031, T27). */
 export function conceptoVentaCaravana(recurso: string, mercado: string): string {
-  const carga = `${recurso.charAt(0).toLowerCase()}${recurso.slice(1)}`
-  return ajustarTexto(`Caravana: venta de ${carga} en ${mercado}`, MAXIMO_CONCEPTO)
+  return ajustarTexto(`Caravana: venta de ${minusculaInicial(recurso)} en ${mercado}`, MAXIMO_CONCEPTO)
+}
+
+/** «Obra: nuevo granero», con el nombre de la obra en minúscula inicial (D-066). */
+export function conceptoObra(obra: string): string {
+  return ajustarTexto(`Obra: ${minusculaInicial(obra)}`, MAXIMO_CONCEPTO)
+}
+
+/** «Caravana: compra de víveres en Tharbad», con el recurso en minúscula inicial (D-066). */
+export function conceptoCompraCaravana(recurso: string, mercado: string): string {
+  return ajustarTexto(`Caravana: compra de ${minusculaInicial(recurso)} en ${mercado}`, MAXIMO_CONCEPTO)
+}
+
+/** «Compra de víveres en Bree», con el recurso en minúscula inicial (D-066). */
+export function conceptoCompraAlmacen(recurso: string, mercado: string): string {
+  return ajustarTexto(`Compra de ${minusculaInicial(recurso)} en ${mercado}`, MAXIMO_CONCEPTO)
 }
 
 /**
@@ -89,6 +111,37 @@ export function nombreDeOficio(catalogo: CatalogosEnCopia, oficioId: Id, numero:
 /** El nombre de un recurso del catálogo; «mercancía» si no está (T28). */
 export function nombreDeRecurso(catalogo: CatalogosEnCopia, recursoId: Id): string {
   return catalogo.recursos.find((r) => r.id === recursoId)?.nombre ?? 'mercancía'
+}
+
+/** El recurso del catálogo; si no está: { id, nombre: 'mercancía', unidadSingular: 'unidad', unidadPlural: 'unidades' }. */
+export function recursoDelCatalogo(catalogo: CatalogosEnCopia, recursoId: Id): RecursoEnCopia {
+  const recurso = catalogo.recursos.find((r) => r.id === recursoId)
+  if (recurso !== undefined) {
+    return recurso
+  }
+  return { id: recursoId, nombre: 'mercancía', unidadSingular: 'unidad', unidadPlural: 'unidades', propia: false }
+}
+
+/** «cada día», «cada 3 días», «semanal», «cada dos semanas», «mensual», «cada 2 meses», «trimestral», «anual» (D-067). */
+export function nombreDeFrecuencia(r: RecurrenciaProduccion): string {
+  switch (r.tipo) {
+    case 'diaria':
+      return 'cada día'
+    case 'cadaNDias':
+      return `cada ${r.n} días`
+    case 'semanal':
+      return 'semanal'
+    case 'quincenal':
+      return 'cada dos semanas'
+    case 'mensual':
+      return 'mensual'
+    case 'cadaNMeses':
+      return `cada ${r.n} meses`
+    case 'trimestral':
+      return 'trimestral'
+    case 'anual':
+      return 'anual'
+  }
 }
 
 /** «Trabajadores de Bree» (§9 l.1294). */
@@ -122,6 +175,21 @@ export function hechoCaravanaDeVuelta(mercado: string, dia: string): string {
   return `Caravana de ${mercado} de vuelta · ${dia}`
 }
 
+/** «Obra «Reparación de la puerta del sur» terminada · 17» (D-052). */
+export function hechoObraTerminada(obra: string, dia: string): string {
+  return ajustarTexto(`Obra «${obra}» terminada · ${dia}`, MAXIMO_TEXTO)
+}
+
+/** «Feria de primavera · 15 al 17» (D-052); `dias` ya llega escrito (formatearTramoDelAvance). */
+export function hechoEventoTerminado(evento: string, dias: string): string {
+  return ajustarTexto(`${evento} · ${dias}`, MAXIMO_TEXTO)
+}
+
+/** «Caravana de Bree llegada a Archet · 25» (D-052). */
+export function hechoTrasladoLlegado(origen: string, destino: string, dia: string): string {
+  return ajustarTexto(`Caravana de ${origen} llegada a ${destino} · ${dia}`, MAXIMO_TEXTO)
+}
+
 /** «La bolsa de Tharan» o «La caja de Bree»: la bolsa es la del personaje (§6.4 l.808). */
 export function laCajaDe(dominio: Dominio): string {
   return dominio.tipo === 'personaje' ? `La bolsa de ${dominio.nombre}` : `La caja de ${dominio.nombre}`
@@ -146,4 +214,105 @@ export function avisoPagoNoCubierto(dominio: Dominio, que: QuePago, importe: str
   }
   const hueco = MAXIMO_TEXTO - antes.length - despues.length - '«»'.length
   return `${antes}«${ajustarTexto(que.concepto, hueco)}»${despues}`
+}
+
+/** Una caravana que llega después de que empiece la falta: se añade « y la caravana de X …» (D-051). */
+export interface CaravanaQueTarda {
+  de: string
+  operacion: 'compra' | 'traslado'
+  fecha: string
+}
+
+/** «Los víveres de Bree se agotan el 23 de abril», con la caravana que tarda si la hay (D-051). */
+export function avisoFaltaPrevista(
+  asentamiento: string,
+  recurso: RecursoEnCopia,
+  fecha: string,
+  caravana?: CaravanaQueTarda,
+): string {
+  const base =
+    recurso.id === RECURSO.viveres
+      ? `Los víveres de ${asentamiento} se agotan el ${fecha}`
+      : `${asentamiento} se queda sin ${minusculaInicial(recurso.nombre)} el ${fecha}`
+  if (caravana === undefined) {
+    return ajustarTexto(base, MAXIMO_TEXTO)
+  }
+  const verbo = caravana.operacion === 'compra' ? 'no vuelve hasta' : 'no llega hasta'
+  return ajustarTexto(`${base} y la caravana de ${caravana.de} ${verbo} el ${caravana.fecha}`, MAXIMO_TEXTO)
+}
+
+/** «Los víveres de Bree se agotaron el 23 de abril: faltaron 2.217 sacos» (D-051). */
+export function avisoFaltaOcurrida(asentamiento: string, recurso: RecursoEnCopia, fecha: string, faltaron: number): string {
+  const cantidad = formatearCantidad(faltaron, recurso)
+  const verbo = esUnaUnidad(cantidad) ? 'faltó' : 'faltaron'
+  const base =
+    recurso.id === RECURSO.viveres
+      ? `Los víveres de ${asentamiento} se agotaron el ${fecha}`
+      : `${asentamiento} se quedó sin ${minusculaInicial(recurso.nombre)} el ${fecha}`
+  return ajustarTexto(`${base}: ${verbo} ${cantidad}`, MAXIMO_TEXTO)
+}
+
+/** «Se perderán 7 fardos de lana en Bree el 19 de mayo» (D-051; §7 l.1107). */
+export function avisoPerdidaPrevista(asentamiento: string, recurso: RecursoEnCopia, cantidad: number, fecha: string): string {
+  const texto = cantidadDeRecurso(cantidad, recurso)
+  const verbo = esUnaUnidad(texto) ? 'Se perderá' : 'Se perderán'
+  return ajustarTexto(`${verbo} ${texto} en ${asentamiento} el ${fecha}`, MAXIMO_TEXTO)
+}
+
+/** «Se perdieron 103 fardos de lana en Bree desde el 19 de mayo» («el 14 de julio» si fue un solo día, D-051). */
+export function avisoPerdidaOcurrida(
+  asentamiento: string,
+  recurso: RecursoEnCopia,
+  cantidad: number,
+  fecha: string,
+  variosDias: boolean,
+): string {
+  const texto = cantidadDeRecurso(cantidad, recurso)
+  const verbo = esUnaUnidad(texto) ? 'Se perdió' : 'Se perdieron'
+  const cuando = variosDias ? `desde el ${fecha}` : `el ${fecha}`
+  return ajustarTexto(`${verbo} ${texto} en ${asentamiento} ${cuando}`, MAXIMO_TEXTO)
+}
+
+/** «La obra «Horno comunal» no pudo empezar por falta de 20 carretadas de cal y 12 mo en la caja» (D-047, D-051). */
+export function avisoObraQueNoPudoEmpezar(obra: string, faltas: readonly string[]): string {
+  const base = `La obra «${obra}» no pudo empezar`
+  return ajustarTexto(faltas.length === 0 ? base : `${base} por falta de ${enumerar(faltas)}`, MAXIMO_TEXTO)
+}
+
+/** «La caravana de compra a Fornost no pudo salir por falta de 12 mo en la caja» (D-051). */
+export function avisoCaravanaQueNoPudoSalir(
+  operacion: Caravana['operacion'],
+  destino: string,
+  faltas: readonly string[],
+): string {
+  const base = `La caravana de ${operacion} a ${destino} no pudo salir`
+  return ajustarTexto(faltas.length === 0 ? base : `${base} por falta de ${enumerar(faltas)}`, MAXIMO_TEXTO)
+}
+
+/** «La compra de víveres en Bree no pudo hacerse por falta de 12 mo en la caja» (D-051). */
+export function avisoCompraQueNoPudoHacerse(recurso: string, mercado: string, faltas: readonly string[]): string {
+  const base = `La compra de ${minusculaInicial(recurso)} en ${mercado} no pudo hacerse`
+  return ajustarTexto(faltas.length === 0 ? base : `${base} por falta de ${enumerar(faltas)}`, MAXIMO_TEXTO)
+}
+
+/** «Horno comunal está terminado: anota su producción y sus trabajadores» (§7 l.1145). */
+export function avisoEdificioTerminado(edificio: string): string {
+  return ajustarTexto(`${edificio} está terminado: anota su producción y sus trabajadores`, MAXIMO_TEXTO)
+}
+
+/** «La mejora de Cantera está terminada: anota su producción» (§7 l.1146). */
+export function avisoMejoraTerminada(edificio: string): string {
+  return ajustarTexto(`La mejora de ${edificio} está terminada: anota su producción`, MAXIMO_TEXTO)
+}
+
+/** Lo que falta de dinero en una falta de obra, caravana o compra: «12 mo en la caja». */
+export function faltaDeDinero(importe: string): string {
+  return `${importe} en la caja`
+}
+
+/** «Faltan 20 carretadas de cal», «Falta 1 lingote de hierro», «Faltan 20 carretadas de cal y 5 haces de madera» (D-067). */
+export function textoFaltan(faltas: readonly { cantidad: number; recurso: RecursoEnCopia }[]): string {
+  const partes = faltas.map((f) => cantidadDeRecurso(f.cantidad, f.recurso))
+  const verbo = faltas.length === 1 && esUnaUnidad(partes[0]) ? 'Falta' : 'Faltan'
+  return `${verbo} ${enumerar(partes)}`
 }

@@ -1,28 +1,51 @@
 import { describe, expect, it } from 'vitest'
+import { RECURSO } from '../catalogo/inicial'
 import { formatearOro } from '../dinero/formato'
 import { EQUIVALENCIAS_POR_DEFECTO } from '../dinero/monedas'
 import { catalogosDeEjemplo } from '../ejemplo/sombraDelEste'
+import type { RecursoEnCopia } from '../modelo/catalogos'
+import type { RecurrenciaProduccion } from '../modelo/comunes'
 import type { Dominio } from '../modelo/dominios'
 import {
   ajustarTexto,
+  avisoCaravanaQueNoPudoSalir,
+  avisoCompraQueNoPudoHacerse,
+  avisoEdificioTerminado,
+  avisoFaltaOcurrida,
+  avisoFaltaPrevista,
   avisoImpago,
+  avisoMejoraTerminada,
+  avisoObraQueNoPudoEmpezar,
   avisoPagoNoCubierto,
+  avisoPerdidaOcurrida,
+  avisoPerdidaPrevista,
   avisoSaldoNegativo,
   conceptoBeneficio,
+  conceptoCompraAlmacen,
+  conceptoCompraCaravana,
   conceptoDiario,
   conceptoLocales,
+  conceptoObra,
   conceptoSalarios,
   conceptoSoldadas,
   conceptoVentaCaravana,
   contraparteDeSalarios,
   contraparteDeSoldadas,
+  faltaDeDinero,
   hechoCaravanaDeVuelta,
+  hechoEventoTerminado,
   hechoLocalesCobrados,
+  hechoObraTerminada,
+  hechoTrasladoLlegado,
   hechoTributoPagado,
   laCajaDe,
+  minusculaInicial,
   nombreDeContraparte,
+  nombreDeFrecuencia,
   nombreDeOficio,
   nombreDeRecurso,
+  recursoDelCatalogo,
+  textoFaltan,
 } from './textos'
 
 const EQ = EQUIVALENCIAS_POR_DEFECTO
@@ -211,5 +234,200 @@ describe('avisos de dinero (apartado 3.4)', () => {
     )
     expect(texto).toHaveLength(200)
     expect(texto.endsWith('C…» de 1.234,56789 mo del 19 de septiembre de 1641')).toBe(true)
+  })
+})
+
+const VIVERES: RecursoEnCopia = { id: RECURSO.viveres, nombre: 'Víveres', unidadSingular: 'saco', unidadPlural: 'sacos', propia: false }
+const MADERA: RecursoEnCopia = { id: RECURSO.madera, nombre: 'Madera', unidadSingular: 'haz', unidadPlural: 'haces', propia: false }
+const PIEDRA: RecursoEnCopia = { id: RECURSO.piedra, nombre: 'Piedra', unidadSingular: 'carretada', unidadPlural: 'carretadas', propia: false }
+const CERVEZA: RecursoEnCopia = { id: RECURSO.cerveza, nombre: 'Cerveza', unidadSingular: 'barril', unidadPlural: 'barriles', propia: false }
+const LANA: RecursoEnCopia = { id: RECURSO.lana, nombre: 'Lana', unidadSingular: 'fardo', unidadPlural: 'fardos', propia: false }
+const HIERRO: RecursoEnCopia = { id: RECURSO.hierro, nombre: 'Hierro', unidadSingular: 'lingote', unidadPlural: 'lingotes', propia: false }
+const CAL: RecursoEnCopia = { id: 'recurso.cal', nombre: 'Cal', unidadSingular: 'carretada', unidadPlural: 'carretadas', propia: true }
+
+describe('minusculaInicial', () => {
+  it('«Oro en bruto» → «oro en bruto»; una cadena vacía se queda vacía', () => {
+    expect(minusculaInicial('Oro en bruto')).toBe('oro en bruto')
+    expect(minusculaInicial('')).toBe('')
+  })
+})
+
+describe('conceptos del almacén (D-066)', () => {
+  it('conceptoObra: «Obra: nuevo granero» y «Obra: reparación de la puerta del sur»', () => {
+    expect(conceptoObra('Nuevo granero')).toBe('Obra: nuevo granero')
+    expect(conceptoObra('Reparación de la puerta del sur')).toBe('Obra: reparación de la puerta del sur')
+  })
+
+  it('conceptoCompraCaravana: «Caravana: compra de víveres en Tharbad»', () => {
+    expect(conceptoCompraCaravana('Víveres', 'Tharbad')).toBe('Caravana: compra de víveres en Tharbad')
+  })
+
+  it('conceptoCompraAlmacen: «Compra de víveres en Bree»', () => {
+    expect(conceptoCompraAlmacen('Víveres', 'Bree')).toBe('Compra de víveres en Bree')
+  })
+})
+
+describe('hechos del almacén (D-052)', () => {
+  it('hechoObraTerminada: «Obra «Reparación de la puerta del sur» terminada · 17»', () => {
+    expect(hechoObraTerminada('Reparación de la puerta del sur', '17')).toBe(
+      'Obra «Reparación de la puerta del sur» terminada · 17',
+    )
+  })
+
+  it('hechoEventoTerminado: «Feria de primavera · 15 al 17» y «Lluvias de primavera · 8 al 21 de abril»', () => {
+    expect(hechoEventoTerminado('Feria de primavera', '15 al 17')).toBe('Feria de primavera · 15 al 17')
+    expect(hechoEventoTerminado('Lluvias de primavera', '8 al 21 de abril')).toBe(
+      'Lluvias de primavera · 8 al 21 de abril',
+    )
+  })
+
+  it('hechoTrasladoLlegado: «Caravana de Bree llegada a Archet · 25»', () => {
+    expect(hechoTrasladoLlegado('Bree', 'Archet', '25')).toBe('Caravana de Bree llegada a Archet · 25')
+  })
+})
+
+describe('avisoFaltaPrevista', () => {
+  it('víveres: «Los víveres de Bree se agotan el 23 de abril», y con una caravana que no llega a tiempo', () => {
+    expect(avisoFaltaPrevista('Bree', VIVERES, '23 de abril')).toBe('Los víveres de Bree se agotan el 23 de abril')
+    expect(
+      avisoFaltaPrevista('Bree', VIVERES, '23 de abril', { de: 'Tharbad', operacion: 'compra', fecha: '25 de abril' }),
+    ).toBe('Los víveres de Bree se agotan el 23 de abril y la caravana de Tharbad no vuelve hasta el 25 de abril')
+    expect(
+      avisoFaltaPrevista('Bree', VIVERES, '23 de abril', { de: 'Archet', operacion: 'traslado', fecha: '25 de abril' }),
+    ).toBe('Los víveres de Bree se agotan el 23 de abril y la caravana de Archet no llega hasta el 25 de abril')
+  })
+
+  it('otro recurso: «Bree se queda sin cerveza el 26 de julio»', () => {
+    expect(avisoFaltaPrevista('Bree', CERVEZA, '26 de julio')).toBe('Bree se queda sin cerveza el 26 de julio')
+  })
+})
+
+describe('avisoFaltaOcurrida', () => {
+  it('víveres y madera en plural, y «faltó 1 saco» en singular', () => {
+    expect(avisoFaltaOcurrida('Bree', VIVERES, '23 de abril', 2216.667)).toBe(
+      'Los víveres de Bree se agotaron el 23 de abril: faltaron 2.217 sacos',
+    )
+    expect(avisoFaltaOcurrida('Bree', MADERA, '6 de julio', 62.16)).toBe(
+      'Bree se quedó sin madera el 6 de julio: faltaron 62 haces',
+    )
+    expect(avisoFaltaOcurrida('Archet', VIVERES, '9 de julio', 1)).toBe(
+      'Los víveres de Archet se agotaron el 9 de julio: faltó 1 saco',
+    )
+  })
+})
+
+describe('avisoPerdidaPrevista', () => {
+  it('plural con 7 y singular con 1', () => {
+    expect(avisoPerdidaPrevista('Bree', LANA, 7, '19 de mayo')).toBe(
+      'Se perderán 7 fardos de lana en Bree el 19 de mayo',
+    )
+    expect(avisoPerdidaPrevista('Bree', LANA, 1, '19 de mayo')).toBe('Se perderá 1 fardo de lana en Bree el 19 de mayo')
+  })
+})
+
+describe('avisoPerdidaOcurrida', () => {
+  it('«desde el» con varios días y «el» con uno solo', () => {
+    expect(avisoPerdidaOcurrida('Bree', LANA, 103, '19 de mayo', true)).toBe(
+      'Se perdieron 103 fardos de lana en Bree desde el 19 de mayo',
+    )
+    expect(avisoPerdidaOcurrida('Bree', PIEDRA, 13.333, '14 de julio', false)).toBe(
+      'Se perdieron 13 carretadas de piedra en Bree el 14 de julio',
+    )
+  })
+})
+
+describe('avisoObraQueNoPudoEmpezar', () => {
+  it('con faltas y sin faltas', () => {
+    expect(avisoObraQueNoPudoEmpezar('Horno comunal', ['20 carretadas de cal', '12 mo en la caja'])).toBe(
+      'La obra «Horno comunal» no pudo empezar por falta de 20 carretadas de cal y 12 mo en la caja',
+    )
+    expect(avisoObraQueNoPudoEmpezar('Horno comunal', [])).toBe('La obra «Horno comunal» no pudo empezar')
+  })
+})
+
+describe('avisoCaravanaQueNoPudoSalir', () => {
+  it('compra, venta y traslado', () => {
+    expect(avisoCaravanaQueNoPudoSalir('compra', 'Fornost', ['12 mo en la caja'])).toBe(
+      'La caravana de compra a Fornost no pudo salir por falta de 12 mo en la caja',
+    )
+    expect(avisoCaravanaQueNoPudoSalir('venta', 'Fornost', ['10 barriles de cerveza'])).toBe(
+      'La caravana de venta a Fornost no pudo salir por falta de 10 barriles de cerveza',
+    )
+    expect(avisoCaravanaQueNoPudoSalir('traslado', 'Archet', [])).toBe(
+      'La caravana de traslado a Archet no pudo salir',
+    )
+  })
+})
+
+describe('avisoCompraQueNoPudoHacerse', () => {
+  it('«La compra de víveres en Bree no pudo hacerse por falta de 12 mo en la caja»', () => {
+    expect(avisoCompraQueNoPudoHacerse('Víveres', 'Bree', ['12 mo en la caja'])).toBe(
+      'La compra de víveres en Bree no pudo hacerse por falta de 12 mo en la caja',
+    )
+  })
+})
+
+describe('edificio y mejora terminados', () => {
+  it('avisoEdificioTerminado: «Horno comunal está terminado: anota su producción y sus trabajadores»', () => {
+    expect(avisoEdificioTerminado('Horno comunal')).toBe(
+      'Horno comunal está terminado: anota su producción y sus trabajadores',
+    )
+  })
+
+  it('avisoMejoraTerminada: «La mejora de Cantera está terminada: anota su producción»', () => {
+    expect(avisoMejoraTerminada('Cantera')).toBe('La mejora de Cantera está terminada: anota su producción')
+  })
+})
+
+describe('faltaDeDinero', () => {
+  it('«12 mo en la caja»', () => {
+    expect(faltaDeDinero('12 mo')).toBe('12 mo en la caja')
+  })
+})
+
+describe('textoFaltan', () => {
+  it('«Faltan 20 carretadas de cal», «Falta 1 lingote de hierro» y las dos juntas', () => {
+    expect(textoFaltan([{ cantidad: 20, recurso: CAL }])).toBe('Faltan 20 carretadas de cal')
+    expect(textoFaltan([{ cantidad: 1, recurso: HIERRO }])).toBe('Falta 1 lingote de hierro')
+    expect(textoFaltan([{ cantidad: 20, recurso: CAL }, { cantidad: 5, recurso: MADERA }])).toBe(
+      'Faltan 20 carretadas de cal y 5 haces de madera',
+    )
+  })
+})
+
+describe('nombreDeFrecuencia', () => {
+  it('las ocho formas de recurrencia de producción', () => {
+    const casos: [RecurrenciaProduccion, string][] = [
+      [{ tipo: 'diaria' }, 'cada día'],
+      [{ tipo: 'cadaNDias', n: 3, primera: { anio: 1640, mes: 4, dia: 1 } }, 'cada 3 días'],
+      [{ tipo: 'semanal', diaSemana: 5 }, 'semanal'],
+      [{ tipo: 'quincenal', primera: { anio: 1640, mes: 4, dia: 1 } }, 'cada dos semanas'],
+      [{ tipo: 'mensual', diaMes: 1 }, 'mensual'],
+      [{ tipo: 'cadaNMeses', n: 2, diaMes: 15, primera: { anio: 1640, mes: 6, dia: 15 } }, 'cada 2 meses'],
+      [{ tipo: 'trimestral', diaMes: 1, primera: { anio: 1640, mes: 4, dia: 1 } }, 'trimestral'],
+      [{ tipo: 'anual', mes: 4, diaMes: 1 }, 'anual'],
+    ]
+    for (const [recurrencia, esperado] of casos) {
+      expect(nombreDeFrecuencia(recurrencia)).toBe(esperado)
+    }
+  })
+})
+
+describe('recursoDelCatalogo', () => {
+  it('el recurso del catálogo, y el genérico «mercancía» con un id que no está', () => {
+    const catalogo = catalogosDeEjemplo()
+    expect(recursoDelCatalogo(catalogo, RECURSO.viveres)).toMatchObject({
+      id: RECURSO.viveres,
+      nombre: 'Víveres',
+      unidadSingular: 'saco',
+      unidadPlural: 'sacos',
+    })
+    expect(recursoDelCatalogo(catalogo, 'recurso.que-no-existe')).toEqual({
+      id: 'recurso.que-no-existe',
+      nombre: 'mercancía',
+      unidadSingular: 'unidad',
+      unidadPlural: 'unidades',
+      propia: false,
+    })
   })
 })
