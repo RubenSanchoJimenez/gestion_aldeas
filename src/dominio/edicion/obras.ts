@@ -1,9 +1,9 @@
 import { compararFechas, type Fecha } from '../calendario/fecha'
-import { cabenMas, textoCaben, TOLERANCIA, type RecursoConNombre } from '../almacen/cantidades'
+import { cabenMas, textoCaben, TOLERANCIA } from '../almacen/cantidades'
 import { CATEGORIA } from '../catalogo/inicial'
 import type { Importe } from '../dinero/importe'
 import type { EfectoObra, Obra } from '../modelo/asentamiento'
-import type { CatalogosEnCopia } from '../modelo/catalogos'
+import type { CatalogosEnCopia, RecursoEnCopia } from '../modelo/catalogos'
 import type { Id } from '../modelo/comunes'
 import type { EstadoPartida } from '../modelo/documento'
 import type { Existencia } from '../modelo/almacen'
@@ -42,8 +42,8 @@ function materialesQueFaltan(
   dominioId: Id,
   materiales: Record<Id, number>,
   catalogo: CatalogosEnCopia,
-): { cantidad: number; recurso: RecursoConNombre }[] {
-  const faltas: { cantidad: number; recurso: RecursoConNombre }[] = []
+): { cantidad: number; recurso: RecursoEnCopia }[] {
+  const faltas: { cantidad: number; recurso: RecursoEnCopia }[] = []
   for (const [recursoId, cantidad] of Object.entries(materiales)) {
     const disponible = filaExistencia(estado, dominioId, recursoId)?.cantidad ?? 0
     const falta = cantidad - disponible
@@ -227,7 +227,7 @@ export function empezarObra<E extends EstadoPartida>(
 
   const faltas = materialesQueFaltan(sinProgramado, obra.dominioId, obra.materiales, catalogo)
   if (faltas.length > 0) {
-    throw new Error(textoFaltan(faltas as any))
+    throw new Error(textoFaltan(faltas))
   }
   let nuevoEstado = sacarMateriales(sinProgramado, obra.dominioId, obra.materiales)
   let obraNueva: Obra = {
