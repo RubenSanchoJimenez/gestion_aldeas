@@ -34,9 +34,13 @@ Cada entrada de `docs/decisiones.md` lleva: identificador (`D-NNN`), fecha, fase
 
 ## Cómo se construye
 
-- **Planes**: usa la skill `superpowers:writing-plans`. Un plan detallado por fase, con tareas pequeñas, código completo en cada paso y comandos con su salida esperada.
-- **Verifica el plan antes de ejecutarlo**: ejecútalo entero en un clon del repositorio dentro del scratchpad y corrige lo que falle. Nunca en el repositorio de verdad.
-- **Ejecución**: usa la skill `superpowers:subagent-driven-development`, un agente por tarea y dos revisiones (especificación y calidad) con sus bucles de arreglo. Los problemas del plan o de la especificación no los arregla un corrector: los decides tú y los anotas.
+Método ahorrador, elegido por el usuario el 2026-09-19 porque se llegaba al límite de uso demasiado rápido:
+
+- **Investigación ligera**: pocos lectores, informes de 300 líneas como mucho, y el crítico va dentro del agente que escribe el contrato (Opus), no aparte.
+- **Planes**: usa la skill `superpowers:writing-plans`. Un plan por fase con **unas 15 tareas grandes**, no 30 pequeñas. Código completo en cada paso, pero **sin ruido**: nada de salidas de `git commit`, avisos de fin de línea ni recuentos de líneas insertadas; las citas de la especificación, en una línea.
+- **Verifica el plan una sola vez**: cada escritor prueba su código en una réplica del scratchpad antes de escribirlo. No se vuelve a ejecutar el plan entero en otro clon; la ejecución real hace de verificación final. Nunca en el repositorio de verdad.
+- **Ejecución**: skill `superpowers:subagent-driven-development` con un agente por tarea, pero **sin revisor de especificación por tarea**: lo sustituye un script que compara los archivos del plan con los commiteados y pasa `tsc` y las pruebas. La **revisión de calidad va por bloques** de 4 o 5 tareas, con su bucle de arreglo, más la revisión final de la fase con Opus. Los problemas del plan o de la especificación no los arregla un corrector: los decides tú y los anotas.
+- **Un solo flujo pesado a la vez**, en lotes pequeños, para que un corte por el límite no tire trabajo.
 - **Rama por fase**: `implementacion/fase-N`, creada desde la rama de trabajo actual. Al cerrar la fase, fusiónala en local, borra la rama y sube la rama de trabajo a GitHub.
 - **Cierre de fase**: `npm test`, `npx tsc -b`, `npm run build` y `npm run lint` en verde, árbol de trabajo limpio y una revisión final de toda la fase.
 
@@ -44,10 +48,10 @@ Cada entrada de `docs/decisiones.md` lleva: identificador (`D-NNN`), fecha, fase
 
 Para gastar menos sin perder calidad (pedido por el usuario el 2026-09-18):
 
-- **Haiku 4.5** para lo puramente mecánico: implementar una tarea de un plan **ya verificado**, que consiste en copiar sus bloques de código y ejecutar sus comandos, y los arreglos del plan que solo cambian números o salidas esperadas. Si Haiku termina bloqueado, con dudas o con la revisión de especificación fallada dos veces, la tarea se repite con Sonnet.
-- **Sonnet 5** para el trabajo que sigue instrucciones ya fijadas pero exige criterio: leer y extraer datos de la especificación, escribir las tareas del plan a partir del contrato, montar el plan, verificarlo ejecutándolo, corregir lo que señalan las revisiones, y las revisiones de especificación y de calidad de cada tarea.
+- **Haiku 4.5** para lo puramente mecánico: implementar una tarea de un plan **ya verificado**, que consiste en copiar sus bloques de código y ejecutar sus comandos, y los arreglos del plan que solo cambian números o salidas esperadas. Si Haiku termina bloqueado, con dudas o sin pasar el script de comprobación, la tarea pasa a Sonnet.
+- **Sonnet 5** para el trabajo que sigue instrucciones ya fijadas pero exige criterio: leer y extraer datos de la especificación, escribir las tareas del plan a partir del contrato, montar el plan, corregir lo que señalan las revisiones, y la revisión de calidad de cada bloque de tareas.
 - **Sin modelo** (un script): las comprobaciones que no necesitan juicio, como comparar un bloque del plan con un archivo, contar pruebas o revisar que las vallas de código estén pareadas.
-- **Opus 5** solo donde hay que pensar o decidir: el crítico que cruza los informes, el contrato de cada fase (decisiones, tipos y lista de tareas), la revisión final de cada fase y cualquier tarea que Sonnet haya dejado bloqueada o mal dos veces.
+- **Opus 5** solo donde hay que pensar o decidir: el contrato de cada fase (con el cruce de informes dentro), la revisión final de cada fase y cualquier tarea que Sonnet haya dejado bloqueada o mal dos veces.
 
 ## Reglas del código
 
