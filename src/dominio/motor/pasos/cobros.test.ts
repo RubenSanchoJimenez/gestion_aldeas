@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { aNumeroDeDia, compararFechas, type Fecha } from '../../calendario/fecha'
 import { CATEGORIA } from '../../catalogo/inicial'
-import { eventosDeDineroEl } from '../../eventos/efectos'
+import { eventosConEfectosEl } from '../../eventos/efectos'
 import { DOM, IMPUESTO, INVERSION, RECURRENTE } from '../../ejemplo/ids'
 import { catalogosDeEjemplo, documentoDeEjemplo } from '../../ejemplo/sombraDelEste'
 import { estadoDe, type EstadoPartida } from '../../modelo/documento'
@@ -39,7 +39,7 @@ function diaDe(ctx: Contexto, f: Fecha): Dia {
     fecha: f,
     numero: aNumeroDeDia(f),
     primero: compararFechas(f, ctx.primerDia) === 0,
-    eventos: eventosDeDineroEl(ctx.estado.eventos, f),
+    eventos: eventosConEfectosEl(ctx.estado.eventos, f),
   }
 }
 

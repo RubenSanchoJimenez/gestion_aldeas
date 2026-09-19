@@ -1,5 +1,5 @@
 import { aNumeroDeDia, desdeNumeroDeDia, type Fecha } from '../calendario/fecha'
-import { eventosDeDineroEl } from '../eventos/efectos'
+import { eventosConEfectosEl } from '../eventos/efectos'
 import type { PersonaEntidad } from '../modelo/catalogos'
 import type { Id } from '../modelo/comunes'
 import type { EstadoPartida } from '../modelo/documento'
@@ -17,9 +17,9 @@ export interface PasoDelDia {
   paso: (ctx: Contexto, dia: Dia) => void
 }
 
-/** Paso 1, solo dinero: los eventos de asentamiento activos ese día con efectos de costes o ingresos (§9 l.1273). */
+/** Paso 1: los eventos de asentamiento activos ese día con algún efecto, de cualquier ámbito (§9 l.1273). */
 export function pasoEventos(ctx: Contexto, dia: Dia): void {
-  dia.eventos = eventosDeDineroEl(ctx.estado.eventos, dia.fecha)
+  dia.eventos = eventosConEfectosEl(ctx.estado.eventos, dia.fecha)
 }
 
 /** Los pasos que ya tiene el motor, en el orden de §9: 1 eventos, 7 vueltaDeVentas, 8 cobros y 9 pagos (T15). */

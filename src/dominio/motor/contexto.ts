@@ -18,7 +18,7 @@ export interface Dia {
   numero: number
   /** El primer día recoge lo que ya había vencido (§9 l.1321, T14). */
   primero: boolean
-  /** Los eventos de dinero activos ese día; lo rellena el paso 1. */
+  /** Los eventos de asentamiento activos ese día con algún efecto; lo rellena el paso 1. */
   eventos: EventoNarrativo[]
 }
 

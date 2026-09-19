@@ -3,7 +3,15 @@ import type { Fecha } from '../calendario/fecha'
 import { DOM, EVENTO, IMPUESTO } from '../ejemplo/ids'
 import { documentoDeEjemplo } from '../ejemplo/sombraDelEste'
 import type { EfectoEvento, EventoNarrativo } from '../modelo/eventos'
-import { conEfecto, eventoActivoEl, eventosDeDineroEl, pctDeCostes, pctDeIngresos } from './efectos'
+import {
+  conEfecto,
+  eventoActivoEl,
+  eventosConEfectosEl,
+  pctDeCostes,
+  pctDeConsumo,
+  pctDeIngresos,
+  pctDeProduccion,
+} from './efectos'
 
 /** Atajo para escribir fechas de 1640: dia(15, 4) es el 15 de abril. */
 function dia(d: number, m: number): Fecha {
@@ -30,14 +38,21 @@ describe('eventoActivoEl', () => {
   })
 })
 
-describe('eventosDeDineroEl', () => {
-  it('el 15 de abril solo cuenta la feria: las lluvias son de producción y el mensajero no tiene efectos', () => {
-    expect(eventosDeDineroEl(eventosDelEjemplo(), dia(15, 4)).map((e) => e.id)).toEqual([EVENTO.feria])
+describe('eventosConEfectosEl', () => {
+  it('el 15 de abril cuenta la feria y las lluvias, de cualquier ámbito', () => {
+    expect(eventosConEfectosEl(eventosDelEjemplo(), dia(15, 4)).map((e) => e.id)).toEqual([
+      EVENTO.lluvias,
+      EVENTO.feria,
+    ])
   })
 
-  it('el 12 de abril no hay ninguno, y el 22 de marzo estaban los bandidos del peaje', () => {
-    expect(eventosDeDineroEl(eventosDelEjemplo(), dia(12, 4))).toEqual([])
-    expect(eventosDeDineroEl(eventosDelEjemplo(), dia(22, 3)).map((e) => e.id)).toEqual([EVENTO.bandidos])
+  it('el 12 de abril solo las lluvias, y el 22 de marzo los bandidos del peaje', () => {
+    expect(eventosConEfectosEl(eventosDelEjemplo(), dia(12, 4)).map((e) => e.id)).toEqual([EVENTO.lluvias])
+    expect(eventosConEfectosEl(eventosDelEjemplo(), dia(22, 3)).map((e) => e.id)).toEqual([EVENTO.bandidos])
+  })
+
+  it('el mensajero real, sin efectos, nunca cuenta aunque esté activo', () => {
+    expect(eventosConEfectosEl(eventosDelEjemplo(), dia(1, 4)).map((e) => e.id)).not.toContain(EVENTO.mensajero)
   })
 
   it('un evento de partida no cuenta, aunque traiga efectos (EsquemaEventoNarrativo no lo deja guardar)', () => {
@@ -48,7 +63,47 @@ describe('eventosDeDineroEl', () => {
       duracionDias: 30,
       efectos: [{ ambito: 'costes', objetivo: { tipo: 'todos' }, pct: 50 }],
     }
-    expect(eventosDeDineroEl([dePartida], dia(15, 4))).toEqual([])
+    expect(eventosConEfectosEl([dePartida], dia(15, 4))).toEqual([])
+  })
+})
+
+describe('pctDeProduccion', () => {
+  it('suma los % de «todos» y los de ese edificio (§7 l.1116)', () => {
+    const activos = [
+      evento('ev.a', DOM.bree, [{ ambito: 'produccion', objetivo: { tipo: 'todos' }, pct: -10 }]),
+      evento('ev.b', DOM.bree, [
+        { ambito: 'produccion', objetivo: { tipo: 'edificio', id: 'edificio.granjas' }, pct: -20 },
+      ]),
+    ]
+    expect(pctDeProduccion(activos, DOM.bree, 'edificio.granjas')).toBe(-30)
+    expect(pctDeProduccion(activos, DOM.bree, 'edificio.cantera')).toBe(-10)
+  })
+
+  it('no suma los efectos de otro asentamiento ni los de consumo', () => {
+    const activos = [
+      evento('ev.a', DOM.archet, [{ ambito: 'produccion', objetivo: { tipo: 'todos' }, pct: 50 }]),
+      evento('ev.b', DOM.bree, [{ ambito: 'consumo', objetivo: { tipo: 'todos' }, pct: 50 }]),
+    ]
+    expect(pctDeProduccion(activos, DOM.bree, 'edificio.granjas')).toBe(0)
+  })
+})
+
+describe('pctDeConsumo', () => {
+  it('suma los % de «todos» y los de ese recurso, víveres incluidos (§7 l.1139)', () => {
+    const activos = [
+      evento('ev.a', DOM.bree, [{ ambito: 'consumo', objetivo: { tipo: 'todos' }, pct: -50 }]),
+      evento('ev.b', DOM.bree, [{ ambito: 'consumo', objetivo: { tipo: 'recurso', id: 'recurso.viveres' }, pct: 10 }]),
+    ]
+    expect(pctDeConsumo(activos, DOM.bree, 'recurso.viveres')).toBe(-40)
+    expect(pctDeConsumo(activos, DOM.bree, 'recurso.cerveza')).toBe(-50)
+  })
+
+  it('no suma los efectos de otro asentamiento ni los de producción', () => {
+    const activos = [
+      evento('ev.a', DOM.archet, [{ ambito: 'consumo', objetivo: { tipo: 'todos' }, pct: 50 }]),
+      evento('ev.b', DOM.bree, [{ ambito: 'produccion', objetivo: { tipo: 'todos' }, pct: 50 }]),
+    ]
+    expect(pctDeConsumo(activos, DOM.bree, 'recurso.viveres')).toBe(0)
   })
 })
 

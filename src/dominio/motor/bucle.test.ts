@@ -44,18 +44,18 @@ describe('PASOS_DEL_DIA y pasoEventos', () => {
     expect(PASOS_DEL_DIA.map((p) => p.nombre)).toEqual(['eventos', 'vueltaDeVentas', 'cobros', 'pagos'])
   })
 
-  it('pone en el día los eventos de dinero activos: la feria, y no las lluvias, que son de producción', () => {
+  it('pone en el día los eventos activos con algún efecto, de cualquier ámbito', () => {
     const estado = estadoDe(documentoDeEjemplo())
     const ctx = crearContexto(estado, { anio: 1640, mes: 4, dia: 19 }, opciones())
     const diaDe = (fecha: Fecha): Dia => ({ fecha, numero: aNumeroDeDia(fecha), primero: false, eventos: [] })
 
     const dia15 = diaDe({ anio: 1640, mes: 4, dia: 15 })
     pasoEventos(ctx, dia15)
-    expect(dia15.eventos.map((e) => e.id)).toEqual([EVENTO.feria])
+    expect(dia15.eventos.map((e) => e.id)).toEqual([EVENTO.lluvias, EVENTO.feria])
 
-    const dia18 = diaDe({ anio: 1640, mes: 4, dia: 18 })
-    pasoEventos(ctx, dia18)
-    expect(dia18.eventos).toEqual([])
+    const dia22 = diaDe({ anio: 1640, mes: 4, dia: 22 })
+    pasoEventos(ctx, dia22)
+    expect(dia22.eventos).toEqual([])
   })
 })
 
