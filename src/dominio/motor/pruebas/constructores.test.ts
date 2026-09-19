@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest'
+import { aNumeroDeDia } from '../../calendario/fecha'
 import { RECURSO } from '../../catalogo/inicial'
 import { saldosPorDominio } from '../../dinero/saldo'
 import { catalogosDeEjemplo } from '../../ejemplo/sombraDelEste'
 import { EsquemaEstadoPartida } from '../../modelo/documento'
 import { validarCopia } from '../../validacion/coherencia'
-import { conAsentamiento, congelar, estadoMinimo } from './constructores'
+import { crearContexto } from '../contexto'
+import { idsEnSerie } from '../ids'
+import { conAsentamiento, conFila, congelar, diaDe, estadoMinimo, recorrerPasos } from './constructores'
 
 describe('estadoMinimo', () => {
   it('es una partida válida: pasa EsquemaEstadoPartida y validarCopia, con la fecha que se le pida', () => {
@@ -56,5 +59,54 @@ describe('congelar', () => {
       congelado.cajas[0].saldoInicial.base = 1
     }).toThrow(TypeError)
     expect(congelar(7)).toBe(7)
+  })
+})
+
+describe('conFila', () => {
+  it('añade la fila si no estaba, y la sustituye entera si ya estaba (mismo dominio y recurso)', () => {
+    const conBree = conAsentamiento(estadoMinimo(), { id: 'dom.bree', nombre: 'Bree', caja: 0 })
+    const conMadera = conFila(conBree, { dominioId: 'dom.bree', recursoId: RECURSO.madera, cantidad: 420, capacidad: 600 })
+    expect(conMadera.existencias).toEqual([
+      { dominioId: 'dom.bree', recursoId: RECURSO.viveres, cantidad: 0 },
+      { dominioId: 'dom.bree', recursoId: RECURSO.madera, cantidad: 420, capacidad: 600 },
+    ])
+    const sustituida = conFila(conMadera, { dominioId: 'dom.bree', recursoId: RECURSO.viveres, cantidad: 90 })
+    expect(sustituida.existencias).toEqual([
+      { dominioId: 'dom.bree', recursoId: RECURSO.viveres, cantidad: 90 },
+      { dominioId: 'dom.bree', recursoId: RECURSO.madera, cantidad: 420, capacidad: 600 },
+    ])
+    expect(conBree.existencias).toHaveLength(1)
+  })
+})
+
+describe('diaDe', () => {
+  it('un Dia con numero = aNumeroDeDia(fecha), sin eventos, y primero solo si se pide', () => {
+    const fecha = { anio: 1640, mes: 4, dia: 12 }
+    expect(diaDe(fecha)).toEqual({ fecha, numero: aNumeroDeDia(fecha), primero: false, eventos: [] })
+    expect(diaDe(fecha, true)).toEqual({ fecha, numero: aNumeroDeDia(fecha), primero: true, eventos: [] })
+  })
+})
+
+describe('recorrerPasos', () => {
+  it('llama a cada paso una vez por día, en orden, desde ctx.primerDia', () => {
+    const estado = congelar(estadoMinimo())
+    const ctx = crearContexto(estado, { anio: 1640, mes: 4, dia: 15 }, {
+      avanceId: 'av.prueba',
+      nuevoId: idsEnSerie('sim'),
+      catalogo: catalogosDeEjemplo(),
+    })
+    const vistos: Array<{ numero: number; primero: boolean; paso: string }> = []
+    recorrerPasos(ctx, 3, [
+      (_ctx, dia) => vistos.push({ numero: dia.numero, primero: dia.primero, paso: 'a' }),
+      (_ctx, dia) => vistos.push({ numero: dia.numero, primero: dia.primero, paso: 'b' }),
+    ])
+    expect(vistos).toEqual([
+      { numero: aNumeroDeDia({ anio: 1640, mes: 4, dia: 13 }), primero: true, paso: 'a' },
+      { numero: aNumeroDeDia({ anio: 1640, mes: 4, dia: 13 }), primero: true, paso: 'b' },
+      { numero: aNumeroDeDia({ anio: 1640, mes: 4, dia: 14 }), primero: false, paso: 'a' },
+      { numero: aNumeroDeDia({ anio: 1640, mes: 4, dia: 14 }), primero: false, paso: 'b' },
+      { numero: aNumeroDeDia({ anio: 1640, mes: 4, dia: 15 }), primero: false, paso: 'a' },
+      { numero: aNumeroDeDia({ anio: 1640, mes: 4, dia: 15 }), primero: false, paso: 'b' },
+    ])
   })
 })

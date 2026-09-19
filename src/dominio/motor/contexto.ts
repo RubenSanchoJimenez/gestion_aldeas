@@ -1,6 +1,9 @@
+import { claveExistencia } from '../almacen/cantidades'
+import { asignadosPorEdificio, primerDiaQueCuenta as primerDiaDeRecurrencia } from '../almacen/produccion'
 import { aNumeroDeDia, sumarDias, type Fecha } from '../calendario/fecha'
 import { saldosPorDominio } from '../dinero/saldo'
-import type { LocalComercial } from '../modelo/asentamiento'
+import type { EntradaAlmacen, Existencia, ProduccionRealizada } from '../modelo/almacen'
+import type { AcumuladoProduccion, Defensa, Edificio, LocalComercial, Obra } from '../modelo/asentamiento'
 import type { PersonaEntidad } from '../modelo/catalogos'
 import type { Caravana } from '../modelo/comercio'
 import type { Id } from '../modelo/comunes'
@@ -9,7 +12,7 @@ import { estadoDe, type EstadoPartida } from '../modelo/documento'
 import type { EventoNarrativo } from '../modelo/eventos'
 import type { DetalleTrabajo, Movimiento, ReglaOrigen } from '../modelo/movimientos'
 import type { ObjetoInventario } from '../modelo/personaje'
-import type { OpcionesSimulacion, Suceso } from './tipos'
+import type { FlujoAlmacen, OpcionesSimulacion, Suceso } from './tipos'
 
 /** Un día del recorrido (§9). */
 export interface Dia {
@@ -80,6 +83,22 @@ export interface Contexto {
   /** Clave `${regla.tipo}|${regla.id}`. */
   readonly diarios: Map<string, AcumuladoDiario>
   readonly cargosDiarios: Map<string, CargoAbierto>
+  /** Filas vivas por claveExistencia, en el orden de estado.existencias; las nuevas, al final (TC7). Nunca se mutan: se sustituyen. */
+  readonly existencias: Map<string, Existencia>
+  /** Copias propias del acumulado de cada producción, por su id (TC7). */
+  readonly acumulados: Map<Id, AcumuladoProduccion>
+  /** asignadosPorEdificio(estado.trabajadores): no cambian durante un recorrido. */
+  readonly asignados: Map<Id, number>
+  /** Caché de aNumeroDeDia(primerDiaQueCuenta(r)) por id de producción; −Infinity si no hay límite. */
+  readonly primerDiaQueCuenta: Map<Id, number>
+  readonly edificios: Edificio[]
+  readonly obras: Obra[]
+  readonly defensas: Defensa[]
+  readonly entradasAlmacen: EntradaAlmacen[]
+  readonly produccionesRealizadas: ProduccionRealizada[]
+  readonly flujos: FlujoAlmacen[]
+  /** Posición en `flujos` por `${dia.numero}|${clave}`. */
+  readonly indiceFlujo: Map<string, number>
 }
 
 /** El mismo registro sin las claves que valen undefined: así no llegan a IndexedDB ni a la copia. */
@@ -113,6 +132,22 @@ export function crearContexto(estado: EstadoPartida, hasta: Fecha, opciones: Opc
       delDia.push(m.id)
     }
   })
+  const existencias = new Map<string, Existencia>()
+  for (const fila of estado.existencias) {
+    existencias.set(claveExistencia(fila.dominioId, fila.recursoId), fila)
+  }
+  const acumulados = new Map<Id, AcumuladoProduccion>()
+  const primerDiaQueCuenta = new Map<Id, number>()
+  for (const edificio of estado.edificios) {
+    for (const produccion of edificio.producciones) {
+      acumulados.set(produccion.id, {
+        desde: { ...produccion.acumulado.desde },
+        sumaFactores: produccion.acumulado.sumaFactores,
+      })
+      const primero = primerDiaDeRecurrencia(produccion.recurrencia)
+      primerDiaQueCuenta.set(produccion.id, primero === null ? -Infinity : aNumeroDeDia(primero))
+    }
+  }
   return {
     estado,
     opciones,
@@ -132,6 +167,17 @@ export function crearContexto(estado: EstadoPartida, hasta: Fecha, opciones: Opc
     sucesos: [],
     diarios: new Map(),
     cargosDiarios: new Map(),
+    existencias,
+    acumulados,
+    asignados: asignadosPorEdificio(estado.trabajadores),
+    primerDiaQueCuenta,
+    edificios: [...estado.edificios],
+    obras: [...estado.obras],
+    defensas: [...estado.defensas],
+    entradasAlmacen: [...estado.entradasAlmacen],
+    produccionesRealizadas: [...estado.produccionesRealizadas],
+    flujos: [],
+    indiceFlujo: new Map(),
   }
 }
 
@@ -167,6 +213,17 @@ export function aplicarProgramado(ctx: Contexto, id: Id, cambios: Partial<Movimi
   })
 }
 
+/** Un edificio con el acumulado vivo de ctx.acumulados en cada una de sus producciones (TC7). */
+function edificioConAcumulados(ctx: Contexto, edificio: Edificio): Edificio {
+  return {
+    ...edificio,
+    producciones: edificio.producciones.map((produccion) => {
+      const acumulado = ctx.acumulados.get(produccion.id)
+      return acumulado === undefined ? produccion : { ...produccion, acumulado }
+    }),
+  }
+}
+
 /** El EstadoPartida final: fechaActual = hasta, las colecciones escritas y el resto compartido con la entrada. */
 export function estadoFinal(ctx: Contexto): EstadoPartida {
   const entrada = estadoDe(ctx.estado)
@@ -179,5 +236,11 @@ export function estadoFinal(ctx: Contexto): EstadoPartida {
     localesComerciales: ctx.localesComerciales,
     caravanas: ctx.caravanas,
     objetos: ctx.objetos,
+    existencias: [...ctx.existencias.values()],
+    edificios: ctx.edificios.map((edificio) => edificioConAcumulados(ctx, edificio)),
+    obras: ctx.obras,
+    defensas: ctx.defensas,
+    entradasAlmacen: ctx.entradasAlmacen,
+    produccionesRealizadas: ctx.produccionesRealizadas,
   }
 }

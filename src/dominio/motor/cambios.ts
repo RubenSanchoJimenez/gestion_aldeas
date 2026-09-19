@@ -58,8 +58,11 @@ export function cambiosDelAvance(
       texto = hechoTributoPagado(nombre, dia(suceso.fecha))
     } else if (suceso.tipo === 'cobroLocales') {
       texto = hechoLocalesCobrados(nombre, dia(suceso.fecha))
-    } else {
+    } else if (suceso.tipo === 'vueltaCaravana') {
       texto = hechoCaravanaDeVuelta(mercados.get(suceso.mercadoId) ?? suceso.mercadoId, dia(suceso.fecha))
+    } else {
+      // obraTerminada y llegadaTraslado: sus hechos los pinta la T15.
+      continue
     }
     hechos.push({
       numero,

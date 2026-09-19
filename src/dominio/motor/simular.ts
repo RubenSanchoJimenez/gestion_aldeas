@@ -24,5 +24,6 @@ export function simular(estado: EstadoPartida, dias: number, opciones: OpcionesS
     cambios: cambiosDelAvance(entrada, recorrido, opciones.avanceId, sumarDias(desde, 1), hasta),
     avisos: avisosEn(recorrido.estadoNuevo, opciones.catalogo).map(sinFecha),
     personasNuevas: recorrido.personasNuevas,
+    flujos: recorrido.flujos,
   }
 }

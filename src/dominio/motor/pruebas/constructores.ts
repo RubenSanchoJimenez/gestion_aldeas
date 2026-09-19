@@ -1,9 +1,12 @@
-import type { Fecha } from '../../calendario/fecha'
+import { claveExistencia } from '../../almacen/cantidades'
+import { aNumeroDeDia, desdeNumeroDeDia, type Fecha } from '../../calendario/fecha'
 import { RECURSO } from '../../catalogo/inicial'
 import { EQUIVALENCIAS_POR_DEFECTO } from '../../dinero/monedas'
+import type { Existencia } from '../../modelo/almacen'
 import type { Id } from '../../modelo/comunes'
 import type { EstadoPartida } from '../../modelo/documento'
 import { VERSION_FORMATO } from '../../modelo/partida'
+import type { Contexto, Dia } from '../contexto'
 
 /** El 12 de abril de 1640 T.E., la fecha actual del ejemplo: la de partida de las pruebas del motor. */
 const FECHA_DE_PRUEBA: Fecha = { anio: 1640, mes: 4, dia: 12 }
@@ -95,4 +98,32 @@ export function congelar<T>(valor: T): T {
     congelar(hijo)
   }
   return valor
+}
+
+/** El estado con esa fila (la sustituye si ya estaba). */
+export function conFila(estado: EstadoPartida, fila: Existencia): EstadoPartida {
+  const clave = claveExistencia(fila.dominioId, fila.recursoId)
+  const ya = estado.existencias.some((e) => claveExistencia(e.dominioId, e.recursoId) === clave)
+  return {
+    ...estado,
+    existencias: ya
+      ? estado.existencias.map((e) => (claveExistencia(e.dominioId, e.recursoId) === clave ? fila : e))
+      : [...estado.existencias, fila],
+  }
+}
+
+/** Un Dia como los de recorrerDias: { fecha, numero: aNumeroDeDia(fecha), primero, eventos: [] }. */
+export function diaDe(fecha: Fecha, primero = false): Dia {
+  return { fecha, numero: aNumeroDeDia(fecha), primero, eventos: [] }
+}
+
+/** Recorre `dias` días desde ctx.primerDia llamando a esos pasos, como recorrerDias pero con los pasos que se elijan. */
+export function recorrerPasos(ctx: Contexto, dias: number, pasos: readonly ((ctx: Contexto, dia: Dia) => void)[]): void {
+  const primero = aNumeroDeDia(ctx.primerDia)
+  for (let numero = primero; numero < primero + dias; numero++) {
+    const dia = diaDe(desdeNumeroDeDia(numero), numero === primero)
+    for (const paso of pasos) {
+      paso(ctx, dia)
+    }
+  }
 }

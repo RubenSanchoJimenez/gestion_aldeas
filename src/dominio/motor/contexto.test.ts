@@ -62,12 +62,39 @@ describe('crearContexto', () => {
     expect(ctx.caravanas).not.toBe(estado.caravanas)
     expect(ctx.objetos).not.toBe(estado.objetos)
     expect(ctx.caravanas).toEqual(estado.caravanas)
+    expect(ctx.edificios).not.toBe(estado.edificios)
+    expect(ctx.edificios).toEqual(estado.edificios)
+    expect(ctx.obras).not.toBe(estado.obras)
+    expect(ctx.obras).toEqual(estado.obras)
+    expect(ctx.defensas).not.toBe(estado.defensas)
+    expect(ctx.defensas).toEqual(estado.defensas)
+    expect(ctx.entradasAlmacen).not.toBe(estado.entradasAlmacen)
+    expect(ctx.entradasAlmacen).toEqual(estado.entradasAlmacen)
+    expect(ctx.produccionesRealizadas).not.toBe(estado.produccionesRealizadas)
+    expect(ctx.produccionesRealizadas).toEqual(estado.produccionesRealizadas)
+    expect([...ctx.existencias.values()]).toEqual(estado.existencias)
     const posada = estado.movimientos.findIndex((m) => m.id === MOV_THARAN.posada12Abril)
     expect(ctx.indiceMovimiento.get(MOV_THARAN.posada12Abril)).toBe(posada)
     expect(ctx.indiceMovimiento.size).toBe(estado.movimientos.length)
     expect(ctx.programadosPorDia.size).toBe(0)
-    expect([ctx.personasNuevas, ctx.sucesos]).toEqual([[], []])
-    expect([ctx.diarios.size, ctx.cargosDiarios.size]).toEqual([0, 0])
+    expect([ctx.personasNuevas, ctx.sucesos, ctx.flujos]).toEqual([[], [], []])
+    expect([ctx.diarios.size, ctx.cargosDiarios.size, ctx.indiceFlujo.size]).toEqual([0, 0, 0])
+  })
+
+  it('acumulados y asignados: una copia propia del acumulado de cada producción y los trabajadores por edificio (TC7)', () => {
+    const estado = ejemplo()
+    const ctx = crearContexto(estado, HASTA, opciones())
+    // La cantera tiene dos producciones (piedra y arcilla); sus acumulados son copias, no las del estado.
+    const cantera = estado.edificios.find((e) => e.producciones.length === 2)
+    if (cantera === undefined) {
+      throw new Error('El ejemplo debe tener un edificio con dos producciones')
+    }
+    for (const produccion of cantera.producciones) {
+      expect(ctx.acumulados.get(produccion.id)).toEqual(produccion.acumulado)
+      expect(ctx.acumulados.get(produccion.id)).not.toBe(produccion.acumulado)
+    }
+    // Dos canteros de tres necesarios (§6.3, A5): asignadosPorEdificio ya lo comprueba en almacen/produccion.test.ts.
+    expect(ctx.asignados.get(cantera.id)).toBe(2)
   })
 
   it('indexa por día los programados sin vínculo del avance; los de fecha pasada, en el primer día (T14)', () => {
@@ -176,13 +203,49 @@ describe('estadoFinal', () => {
     expect(final.partida).toEqual({ ...estado.partida, fechaActual: HASTA })
     expect(final.movimientos).toBe(ctx.movimientos)
     expect(final.movimientos).toHaveLength(estado.movimientos.length + 1)
-    const escritas = ['partida', 'movimientos', 'deudas', 'personas', 'localesComerciales', 'caravanas', 'objetos']
+    const escritas = [
+      'partida',
+      'movimientos',
+      'deudas',
+      'personas',
+      'localesComerciales',
+      'caravanas',
+      'objetos',
+      'existencias',
+      'edificios',
+      'obras',
+      'defensas',
+      'entradasAlmacen',
+      'produccionesRealizadas',
+    ]
     for (const clave of Object.keys(estado) as (keyof EstadoPartida)[]) {
       if (!escritas.includes(clave)) {
         expect(final[clave]).toBe(estado[clave])
       }
     }
+    expect(final.existencias).toEqual(estado.existencias)
+    expect(final.obras).toBe(ctx.obras)
+    expect(final.defensas).toBe(ctx.defensas)
+    expect(final.entradasAlmacen).toBe(ctx.entradasAlmacen)
+    expect(final.produccionesRealizadas).toBe(ctx.produccionesRealizadas)
     expect(EsquemaEstadoPartida.safeParse(final).success).toBe(true)
+  })
+
+  it('vuelca en cada edificio el acumulado vivo de ctx.acumulados, no el de la entrada (TC7)', () => {
+    const estado = ejemplo()
+    const ctx = crearContexto(estado, HASTA, opciones())
+    const cantera = estado.edificios.find((e) => e.producciones.length === 2)
+    if (cantera === undefined) {
+      throw new Error('El ejemplo debe tener un edificio con dos producciones')
+    }
+    const piedra = cantera.producciones[0]
+    ctx.acumulados.set(piedra.id, { desde: { anio: 1640, mes: 4, dia: 20 }, sumaFactores: 99 })
+    const final = estadoFinal(ctx)
+    const edificioFinal = final.edificios.find((e) => e.id === cantera.id)
+    const produccionFinal = edificioFinal?.producciones.find((p) => p.id === piedra.id)
+    expect(produccionFinal?.acumulado).toEqual({ desde: { anio: 1640, mes: 4, dia: 20 }, sumaFactores: 99 })
+    // El resto del edificio (fuera del acumulado que cambió) no se toca.
+    expect(edificioFinal?.nombre).toBe(cantera.nombre)
   })
 
   it('no arrastra los avances aunque reciba un DocumentoPartida (T12)', () => {

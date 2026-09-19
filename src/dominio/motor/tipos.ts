@@ -5,6 +5,25 @@ import type { Id } from '../modelo/comunes'
 import type { OrigenImpago } from '../modelo/deudas'
 import type { EstadoPartida } from '../modelo/documento'
 
+/** Lo que pasó un día en una fila del almacén (TC2). Lo anotan los pasos 3, 4, 5 y 7. */
+export interface FlujoAlmacen {
+  dominioId: Id
+  recursoId: Id
+  fecha: Fecha
+  /** Producción, llegadas y entradas que entraron de verdad, sin lo perdido. */
+  entradas: number
+  /** Lo que no cupo por capacidad (§7 l.1107). */
+  perdido: number
+  /** Consumo de la población servido. */
+  consumido: number
+  /** Materiales de obras y carga de caravanas que salieron. */
+  sacado: number
+  /** Consumo de la población que tocaba, con eventos; falta = consumoTeorico − consumido. */
+  consumoTeorico: number
+  /** Existencias tras lo último que tocó la fila ese día. */
+  cantidad: number
+}
+
 /** Generador de ids nuevos: nuevoId de src/datos/ids.ts en la app; idsEnSerie en pruebas y previsiones (T1). */
 export type NuevoId = () => Id
 
@@ -40,6 +59,8 @@ export type Suceso =
     }
   | { tipo: 'cobroLocales'; dominioId: Id; fecha: Fecha }
   | { tipo: 'vueltaCaravana'; dominioId: Id; fecha: Fecha; mercadoId: Id }
+  | { tipo: 'obraTerminada'; dominioId: Id; fecha: Fecha; nombre: string }
+  | { tipo: 'llegadaTraslado'; dominioId: Id; fecha: Fecha; destinoId: Id }
 
 /** Un aviso en memoria, con la fecha que sirve para ordenarlo; se guarda sin ella (T11). */
 export interface AvisoConFecha extends AvisoAvance {
@@ -59,4 +80,6 @@ export interface ResultadoSimulacion {
   avisos: AvisoAvance[]
   /** P4: «Se añadirá «Trabajadores de Bree» a Personas y entidades» (§9 l.1295). */
   personasNuevas: PersonaEntidad[]
+  /** Lo que pasó cada día en cada fila del almacén: P4, A8 y los avisos de lo ocurrido (TC2). */
+  flujos: FlujoAlmacen[]
 }

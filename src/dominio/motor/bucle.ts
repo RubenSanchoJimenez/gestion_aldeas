@@ -8,7 +8,7 @@ import { cerrarDiarios } from './diarios'
 import { pasoVueltaDeVentas } from './pasos/caravanas'
 import { pasoCobros } from './pasos/cobros'
 import { pasoPagos } from './pasos/pagos'
-import type { OpcionesSimulacion, Suceso } from './tipos'
+import type { FlujoAlmacen, OpcionesSimulacion, Suceso } from './tipos'
 
 /** Un paso del día con su número en la lista de §9 l.1272-1282. */
 export interface PasoDelDia {
@@ -37,6 +37,7 @@ export interface Recorrido {
   saldosDespues: Record<Id, number>
   personasNuevas: PersonaEntidad[]
   sucesos: Suceso[]
+  flujos: FlujoAlmacen[]
 }
 
 /** Recorre del día siguiente a fechaActual hasta `hasta`, paso a paso; sin avisos, para que las previsiones lo usen (§9, T16). */
@@ -57,5 +58,6 @@ export function recorrerDias(estado: EstadoPartida, hasta: Fecha, opciones: Opci
     saldosDespues: Object.fromEntries(ctx.saldos),
     personasNuevas: ctx.personasNuevas,
     sucesos: ctx.sucesos,
+    flujos: ctx.flujos,
   }
 }

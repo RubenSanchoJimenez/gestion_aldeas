@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { Fecha } from '../calendario/fecha'
 import { CATEGORIA } from '../catalogo/inicial'
 import { catalogosDeEjemplo } from '../ejemplo/sombraDelEste'
-import { cobrar, pagarHasta } from './caja'
+import { cobrar, pagarEntero, pagarHasta, pagoProgramado } from './caja'
 import { crearContexto, type Contexto } from './contexto'
 import { idsEnSerie } from './ids'
 import { conAsentamiento, congelar, estadoMinimo } from './pruebas/constructores'
@@ -24,6 +24,42 @@ function contexto(): Contexto {
         categoriaId: CATEGORIA.otros,
         concepto: 'Gasto manual',
         origen: 'manual' as const,
+        programado: false,
+      },
+    ],
+  })
+  return crearContexto(estado, HASTA, { avanceId: 'av.prueba', nuevoId: idsEnSerie('sim'), catalogo: catalogosDeEjemplo() })
+}
+
+/** El mismo contexto, con un gasto programado de 4,5 mo (obra) y uno ya aplicado, para pagoProgramado (T8). */
+function contextoConProgramados(): Contexto {
+  const conBree = conAsentamiento(estadoMinimo(), { id: 'dom.bree', nombre: 'Bree', caja: 300000 })
+  const estado = congelar({
+    ...conBree,
+    movimientos: [
+      {
+        id: 'mov.obraProgramada',
+        dominioId: 'dom.bree',
+        fecha: { anio: 1640, mes: 4, dia: 15 },
+        tipo: 'gasto' as const,
+        importe: { base: -4500000 },
+        categoriaId: CATEGORIA.obras,
+        concepto: 'Obra: ampliar la cervecería',
+        origen: 'avance' as const,
+        avanceId: 'av.anterior',
+        programado: true,
+        vinculo: { tipo: 'obra' as const, id: 'obra.cerveceria' },
+      },
+      {
+        id: 'mov.yaAplicado',
+        dominioId: 'dom.bree',
+        fecha: { anio: 1640, mes: 4, dia: 10 },
+        tipo: 'gasto' as const,
+        importe: { base: -100000 },
+        categoriaId: CATEGORIA.otros,
+        concepto: 'Ya se pagó',
+        origen: 'avance' as const,
+        avanceId: 'av.anterior',
         programado: false,
       },
     ],
@@ -68,5 +104,39 @@ describe('pagarHasta', () => {
     const ctx = contexto()
     expect(() => pagarHasta(ctx, 'dom.inventado', 1)).toThrow('No existe «dom.inventado»')
     expect(() => cobrar(ctx, 'dom.inventado', 1)).toThrow('No existe «dom.inventado»')
+  })
+})
+
+describe('pagarEntero', () => {
+  it('si la caja llega, paga entero y devuelve true (TC8; D-045)', () => {
+    const ctx = contexto()
+    expect(pagarEntero(ctx, 'dom.bree', 180000)).toBe(true)
+    expect(ctx.saldos.get('dom.bree')).toBe(120000)
+  })
+
+  it('si no llega, no toca nada y devuelve false: ni pagos a medias ni impagos (D-045)', () => {
+    const ctx = contexto()
+    expect(pagarEntero(ctx, 'dom.bree', 420000)).toBe(false)
+    expect(ctx.saldos.get('dom.bree')).toBe(300000)
+  })
+
+  it('con 0 siempre da true, aunque la caja esté en negativo', () => {
+    const ctx = contexto()
+    expect(pagarEntero(ctx, 'dom.tharan', 0)).toBe(true)
+    expect(ctx.saldos.get('dom.tharan')).toBe(-60000)
+  })
+})
+
+describe('pagoProgramado', () => {
+  it('la magnitud en mh del movimiento programado, en positivo', () => {
+    const ctx = contextoConProgramados()
+    expect(pagoProgramado(ctx, 'mov.obraProgramada')).toBe(4500000)
+  })
+
+  it('0 sin id, con un id que no existe o con un movimiento que ya no está programado', () => {
+    const ctx = contextoConProgramados()
+    expect(pagoProgramado(ctx, undefined)).toBe(0)
+    expect(pagoProgramado(ctx, 'mov.inventado')).toBe(0)
+    expect(pagoProgramado(ctx, 'mov.yaAplicado')).toBe(0)
   })
 })

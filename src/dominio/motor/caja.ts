@@ -23,3 +23,29 @@ export function pagarHasta(ctx: Contexto, dominioId: Id, importe: number): numbe
   ctx.saldos.set(dominioId, saldo - pagado)
   return pagado
 }
+
+/** Paga entero si el saldo llega y devuelve true; si no, no toca nada y devuelve false (TC8; D-045). Con 0, true. */
+export function pagarEntero(ctx: Contexto, dominioId: Id, importe: number): boolean {
+  if (importe === 0) {
+    return true
+  }
+  const saldo = saldoDe(ctx, dominioId)
+  if (importe > saldo) {
+    return false
+  }
+  ctx.saldos.set(dominioId, saldo - importe)
+  return true
+}
+
+/** La magnitud en mh del movimiento programado con ese id, o 0 si no hay id, no existe o ya no está programado. */
+export function pagoProgramado(ctx: Contexto, movimientoId: Id | undefined): number {
+  if (movimientoId === undefined) {
+    return 0
+  }
+  const indice = ctx.indiceMovimiento.get(movimientoId)
+  if (indice === undefined) {
+    return 0
+  }
+  const movimiento = ctx.movimientos[indice]
+  return movimiento.programado ? Math.abs(movimiento.importe.base) : 0
+}
