@@ -1,3 +1,4 @@
+import { claveExistencia } from '../almacen/cantidades'
 import { RECURSO } from '../catalogo/inicial'
 import type { CatalogosEnCopia, ListaCatalogo } from '../modelo/catalogos'
 import type { Id, UbicacionObjeto } from '../modelo/comunes'
@@ -13,11 +14,6 @@ export interface ProblemaDeCoherencia {
 /** Los ids de una colección de registros. */
 function idsDe(registros: readonly { id: Id }[]): Set<Id> {
   return new Set(registros.map((r) => r.id))
-}
-
-/** Clave de una fila de almacén: un recurso por asentamiento. */
-function claveExistencia(dominioId: Id, recursoId: Id): string {
-  return `${dominioId}|${recursoId}`
 }
 
 /** Errores de referencia del documento: uno por id que no apunta a nada (§6.1, contrato-modelo §4.1). */
