@@ -374,26 +374,25 @@ export function validarReferencias(documento: DocumentoPartida, catalogos: Catal
     exige(recursos.has(e.recursoId), `${r}.recursoId`, `No existe el recurso «${e.recursoId}»`)
   })
   documento.ajustesExistencias.forEach((a, i) => {
+    // D-055 (T20): un ajuste puede quedar apuntando a una fila que ya no está en el almacén.
     const r = `ajustesExistencias[${i}]`
     exige(asentamientos.has(a.dominioId), `${r}.dominioId`, `No existe el asentamiento «${a.dominioId}»`)
     exige(recursos.has(a.recursoId), `${r}.recursoId`, `No existe el recurso «${a.recursoId}»`)
-    exige(
-      existencias.has(claveExistencia(a.dominioId, a.recursoId)),
-      r,
-      `El almacén de «${a.dominioId}» no tiene fila de «${a.recursoId}»`,
-    )
   })
   documento.entradasAlmacen.forEach((e, i) => {
     const r = `entradasAlmacen[${i}]`
     exige(asentamientos.has(e.dominioId), `${r}.dominioId`, `No existe el asentamiento «${e.dominioId}»`)
     exige(recursos.has(e.recursoId), `${r}.recursoId`, `No existe el recurso «${e.recursoId}»`)
-    exige(
-      existencias.has(claveExistencia(e.dominioId, e.recursoId)),
-      r,
-      `El almacén de «${e.dominioId}» no tiene fila de «${e.recursoId}»`,
-    )
-    if (e.mercadoId !== undefined) {
-      exige(mercados.has(e.mercadoId), `${r}.mercadoId`, `No existe el mercado «${e.mercadoId}»`)
+    // D-055 (T20): una entrada ya aplicada puede nombrar un mercado y una fila que ya no existen.
+    if (!e.aplicada) {
+      exige(
+        existencias.has(claveExistencia(e.dominioId, e.recursoId)),
+        r,
+        `El almacén de «${e.dominioId}» no tiene fila de «${e.recursoId}»`,
+      )
+      if (e.mercadoId !== undefined) {
+        exige(mercados.has(e.mercadoId), `${r}.mercadoId`, `No existe el mercado «${e.mercadoId}»`)
+      }
     }
     if (e.movimientoId !== undefined) {
       exige(
@@ -416,26 +415,19 @@ export function validarReferencias(documento: DocumentoPartida, catalogos: Catal
       exige(recursos.has(p.recursoId), `${r}.producciones[${j}].recursoId`, `No existe el recurso «${p.recursoId}»`)
     })
     if (e.avisoPendiente !== undefined) {
+      // D-055 (T20): el aviso puede nombrar una obra que ya se borró; si sigue ahí, tiene que estar terminada.
       const obra = obras.get(e.avisoPendiente.obraId)
       exige(
-        obra !== undefined && obra.estado === 'terminada',
+        obra === undefined || obra.estado === 'terminada',
         `${r}.avisoPendiente.obraId`,
         `No existe la obra «${e.avisoPendiente.obraId}»`,
       )
     }
   })
   documento.produccionesRealizadas.forEach((p, i) => {
-    const r = `produccionesRealizadas[${i}]`
-    const edificio = edificios.get(p.edificioId)
-    exige(edificio !== undefined, `${r}.edificioId`, `No existe el edificio «${p.edificioId}»`)
-    if (edificio !== undefined) {
-      exige(
-        edificio.producciones.some((q) => q.id === p.produccionId),
-        `${r}.produccionId`,
-        `El edificio «${p.edificioId}» no tiene la producción «${p.produccionId}»`,
-      )
-    }
-    exige(recursos.has(p.recursoId), `${r}.recursoId`, `No existe el recurso «${p.recursoId}»`)
+    // D-055, TC15 (T20): la producción ya ocurrida se queda en el calendario aunque se borre su edificio o su
+    // producción; solo el recurso, que nunca se borra, se sigue exigiendo.
+    exige(recursos.has(p.recursoId), `produccionesRealizadas[${i}].recursoId`, `No existe el recurso «${p.recursoId}»`)
   })
   documento.trabajadores.forEach((t, i) => {
     const r = `trabajadores[${i}]`
@@ -470,6 +462,10 @@ export function validarReferencias(documento: DocumentoPartida, catalogos: Catal
         break
       case 'mejorarEdificio':
       case 'repararEdificio': {
+        // D-055 (T20): una obra terminada puede nombrar un edificio ya borrado; las demás lo siguen exigiendo.
+        if (o.estado === 'terminada') {
+          break
+        }
         const e = edificios.get(efecto.objetivoId)
         exige(
           e !== undefined && e.dominioId === o.dominioId,
@@ -479,6 +475,10 @@ export function validarReferencias(documento: DocumentoPartida, catalogos: Catal
         break
       }
       case 'repararDefensa': {
+        // D-055 (T20): igual que con un edificio, una obra terminada puede nombrar una defensa ya borrada.
+        if (o.estado === 'terminada') {
+          break
+        }
         const d = defensas.get(efecto.objetivoId)
         exige(
           d !== undefined && d.dominioId === o.dominioId,
@@ -559,15 +559,18 @@ export function validarReferencias(documento: DocumentoPartida, catalogos: Catal
     if (c.destinoId !== undefined) {
       exige(asentamientos.has(c.destinoId), `${r}.destinoId`, `No existe el asentamiento «${c.destinoId}»`)
     }
-    if (c.mercadoId !== undefined) {
-      exige(mercados.has(c.mercadoId), `${r}.mercadoId`, `No existe el mercado «${c.mercadoId}»`)
-    }
     exige(recursos.has(c.carga.recursoId), `${r}.carga.recursoId`, `No existe el recurso «${c.carga.recursoId}»`)
-    exige(
-      existencias.has(claveExistencia(c.dominioId, c.carga.recursoId)),
-      `${r}.carga`,
-      `El almacén de «${c.dominioId}» no tiene fila de «${c.carga.recursoId}»`,
-    )
+    // D-055 (T20): una caravana terminada puede nombrar un mercado y una fila de origen que ya no existen.
+    if (c.estado !== 'terminada') {
+      if (c.mercadoId !== undefined) {
+        exige(mercados.has(c.mercadoId), `${r}.mercadoId`, `No existe el mercado «${c.mercadoId}»`)
+      }
+      exige(
+        existencias.has(claveExistencia(c.dominioId, c.carga.recursoId)),
+        `${r}.carga`,
+        `El almacén de «${c.dominioId}» no tiene fila de «${c.carga.recursoId}»`,
+      )
+    }
     if (c.movimientoSalidaId !== undefined) {
       exige(
         movimientoVinculado(c.movimientoSalidaId, 'caravana', c.id),

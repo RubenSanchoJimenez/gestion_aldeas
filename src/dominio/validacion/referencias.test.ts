@@ -315,52 +315,32 @@ describe('validarReferencias', () => {
     ])
   })
 
-  it('una producción realizada apunta a una producción que su edificio tiene', () => {
+  it('una producción realizada solo exige que exista el recurso (D-055, T20): el edificio y la producción pueden estar borrados', () => {
     const documento = documentoMinimo()
-    documento.edificios = [
-      {
-        id: 'ed.granjas',
-        dominioId: 'dom.bree',
-        tipoId: 'edificio.granja',
-        nombre: 'Granjas del oeste',
-        estado: 'activo',
-        trabajadoresNecesarios: 6,
-        producciones: [
-          {
-            id: 'prod.trigo',
-            recursoId: 'recurso.viveres',
-            cantidad: 12,
-            recurrencia: { tipo: 'mensual', diaMes: 1 },
-            acumulado: { desde: { anio: 1640, mes: 4, dia: 1 }, sumaFactores: 0 },
-          },
-        ],
-      },
-    ]
     documento.produccionesRealizadas = [
       {
         id: 'pr.1',
         fecha: { anio: 1640, mes: 4, dia: 1 },
-        edificioId: 'ed.granjas',
-        produccionId: 'prod.cebada',
+        edificioId: 'ed.borrado',
+        produccionId: 'prod.borrada',
         recursoId: 'recurso.viveres',
         cantidad: 12,
         perdida: 0,
         avanceId: 'av.1',
       },
-    ]
-    const catalogos = catalogosMinimos()
-    catalogos.opciones.push({
-      id: 'edificio.granja',
-      nombre: 'Granja',
-      propia: false,
-      lista: 'tiposEdificio',
-      grupo: 'alimentos',
-    })
-    expect(validarReferencias(documento, catalogos)).toEqual([
       {
-        ruta: 'produccionesRealizadas[0].produccionId',
-        mensaje: 'El edificio «ed.granjas» no tiene la producción «prod.cebada»',
+        id: 'pr.2',
+        fecha: { anio: 1640, mes: 4, dia: 1 },
+        edificioId: 'ed.borrado',
+        produccionId: 'prod.borrada',
+        recursoId: 'recurso.borrado',
+        cantidad: 12,
+        perdida: 0,
+        avanceId: 'av.1',
       },
+    ]
+    expect(validarReferencias(documento, catalogosMinimos())).toEqual([
+      { ruta: 'produccionesRealizadas[1].recursoId', mensaje: 'No existe el recurso «recurso.borrado»' },
     ])
   })
 })
@@ -409,6 +389,182 @@ describe('las deudas de impago de la fase 3 (técnica 5)', () => {
       {
         ruta: 'deudas[0].contraparteId',
         mensaje: 'No existe la persona o entidad «persona.trabajadores-de-bree»',
+      },
+    ])
+  })
+})
+
+describe('la historia puede nombrar lo borrado (D-055, TC15, T20)', () => {
+  it('una obra terminada puede nombrar en su efecto un edificio o una defensa borrados; una pendiente sigue exigiéndolos', () => {
+    const documento = documentoMinimo()
+    documento.obras = [
+      {
+        id: 'obra.mejora',
+        dominioId: 'dom.bree',
+        nombre: 'Mejora del molino',
+        estado: 'terminada',
+        coste: { base: 1000000 },
+        materiales: {},
+        inicio: { anio: 1640, mes: 3, dia: 1 },
+        diasTotales: 10,
+        efecto: { tipo: 'mejorarEdificio', objetivoId: 'ed.borrado' },
+      },
+      {
+        id: 'obra.reparo',
+        dominioId: 'dom.bree',
+        nombre: 'Reparación de la torre',
+        estado: 'terminada',
+        coste: { base: 500000 },
+        materiales: {},
+        inicio: { anio: 1640, mes: 3, dia: 1 },
+        diasTotales: 5,
+        efecto: { tipo: 'repararDefensa', objetivoId: 'def.borrada' },
+      },
+      {
+        id: 'obra.pendiente',
+        dominioId: 'dom.bree',
+        nombre: 'Otra mejora',
+        estado: 'programada',
+        coste: { base: 1000000 },
+        materiales: {},
+        inicio: { anio: 1640, mes: 4, dia: 20 },
+        diasTotales: 10,
+        efecto: { tipo: 'mejorarEdificio', objetivoId: 'ed.borrado' },
+      },
+    ]
+    expect(validarReferencias(documento, catalogosMinimos())).toEqual([
+      {
+        ruta: 'obras[2].efecto.objetivoId',
+        mensaje: 'No existe el edificio «ed.borrado» en este asentamiento',
+      },
+    ])
+  })
+
+  it('una caravana terminada puede nombrar un mercado y una fila de origen borrados; una en ruta sigue exigiéndolos', () => {
+    const documento = documentoMinimo()
+    documento.caravanas = [
+      {
+        id: 'car.terminada',
+        dominioId: 'dom.bree',
+        operacion: 'compra',
+        mercadoId: 'mer.borrado',
+        carga: { recursoId: 'recurso.borrado', cantidad: 10 },
+        precioUnidad: { base: 30000 },
+        importe: { base: 300000 },
+        salida: { anio: 1640, mes: 3, dia: 1 },
+        vuelta: { anio: 1640, mes: 3, dia: 20 },
+        estado: 'terminada',
+      },
+      {
+        id: 'car.enRuta',
+        dominioId: 'dom.bree',
+        operacion: 'compra',
+        mercadoId: 'mer.borrado',
+        carga: { recursoId: 'recurso.viveres', cantidad: 10 },
+        precioUnidad: { base: 30000 },
+        importe: { base: 300000 },
+        salida: { anio: 1640, mes: 4, dia: 10 },
+        vuelta: { anio: 1640, mes: 4, dia: 20 },
+        estado: 'enRuta',
+      },
+    ]
+    expect(validarReferencias(documento, catalogosMinimos())).toEqual([
+      { ruta: 'caravanas[0].carga.recursoId', mensaje: 'No existe el recurso «recurso.borrado»' },
+      { ruta: 'caravanas[1].mercadoId', mensaje: 'No existe el mercado «mer.borrado»' },
+    ])
+  })
+
+  it('una entrada aplicada puede nombrar un mercado y una fila borrados; una sin aplicar sigue exigiéndolos', () => {
+    const documento = documentoMinimo()
+    documento.entradasAlmacen = [
+      {
+        id: 'ent.aplicada',
+        dominioId: 'dom.bree',
+        recursoId: 'recurso.viveres',
+        cantidad: 20,
+        operacion: 'compra',
+        mercadoId: 'mer.borrado',
+        precioUnidad: { base: 40000 },
+        fecha: { anio: 1640, mes: 4, dia: 1 },
+        aplicada: true,
+      },
+      {
+        id: 'ent.sinAplicar',
+        dominioId: 'dom.bree',
+        recursoId: 'recurso.viveres',
+        cantidad: 20,
+        operacion: 'compra',
+        mercadoId: 'mer.borrado',
+        precioUnidad: { base: 40000 },
+        fecha: { anio: 1640, mes: 4, dia: 20 },
+        aplicada: false,
+      },
+    ]
+    expect(validarReferencias(documento, catalogosMinimos())).toEqual([
+      { ruta: 'entradasAlmacen[1].mercadoId', mensaje: 'No existe el mercado «mer.borrado»' },
+    ])
+  })
+
+  it('un ajuste de existencias puede nombrar una fila que ya no está', () => {
+    const documento = documentoMinimo()
+    documento.ajustesExistencias = [
+      {
+        id: 'aj.1',
+        dominioId: 'dom.bree',
+        recursoId: 'recurso.borrado',
+        fecha: { anio: 1640, mes: 4, dia: 2 },
+        delta: -5,
+        motivo: 'Haces podridos',
+      },
+    ]
+    expect(validarReferencias(documento, catalogosMinimos())).toEqual([
+      { ruta: 'ajustesExistencias[0].recursoId', mensaje: 'No existe el recurso «recurso.borrado»' },
+    ])
+  })
+
+  it('el aviso pendiente de un edificio puede nombrar una obra borrada; si la obra existe, tiene que estar terminada', () => {
+    const documento = documentoMinimo()
+    documento.edificios = [
+      {
+        id: 'ed.a',
+        dominioId: 'dom.bree',
+        tipoId: 'edificio.x',
+        nombre: 'A',
+        estado: 'activo',
+        trabajadoresNecesarios: 0,
+        producciones: [],
+        avisoPendiente: { tipo: 'terminadoSinProduccion', obraId: 'obra.borrada' },
+      },
+      {
+        id: 'ed.b',
+        dominioId: 'dom.bree',
+        tipoId: 'edificio.x',
+        nombre: 'B',
+        estado: 'activo',
+        trabajadoresNecesarios: 0,
+        producciones: [],
+        avisoPendiente: { tipo: 'mejoraTerminada', obraId: 'obra.sinTerminar' },
+      },
+    ]
+    documento.obras = [
+      {
+        id: 'obra.sinTerminar',
+        dominioId: 'dom.bree',
+        nombre: 'Mejora de B',
+        estado: 'enCurso',
+        coste: { base: 0 },
+        materiales: {},
+        inicio: { anio: 1640, mes: 4, dia: 1 },
+        diasTotales: 30,
+        efecto: { tipo: 'mejorarEdificio', objetivoId: 'ed.b' },
+      },
+    ]
+    const catalogos = catalogosMinimos()
+    catalogos.opciones.push({ id: 'edificio.x', nombre: 'X', propia: false, lista: 'tiposEdificio', grupo: 'alimentos' })
+    expect(validarReferencias(documento, catalogos)).toEqual([
+      {
+        ruta: 'edificios[1].avisoPendiente.obraId',
+        mensaje: 'No existe la obra «obra.sinTerminar»',
       },
     ])
   })
