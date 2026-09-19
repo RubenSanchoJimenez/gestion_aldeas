@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { aNumeroDeDia, sumarDias, type Fecha } from '../calendario/fecha'
 import type { Recurrencia } from '../calendario/recurrencia'
-import { CATEGORIA } from '../catalogo/inicial'
+import { CATEGORIA, RECURSO } from '../catalogo/inicial'
 import { saldosPorDominio } from '../dinero/saldo'
-import { AVANCE, EVENTO } from '../ejemplo/ids'
+import { AVANCE, DOM, EVENTO } from '../ejemplo/ids'
 import { SNAPSHOT_10_ABRIL } from '../ejemplo/avances'
+import { EDIFICIOS, EXISTENCIAS } from '../ejemplo/asentamientosAlmacen'
 import { catalogosDeEjemplo, documentoDeEjemplo } from '../ejemplo/sombraDelEste'
+import type { Existencia } from '../modelo/almacen'
 import { estadoDe, type EstadoPartida } from '../modelo/documento'
 import type { RecurrenteDinero } from '../modelo/movimientos'
 import { PASOS_DEL_DIA, pasoEventos, recorrerDias } from './bucle'
@@ -39,9 +41,19 @@ function ingreso(estado: EstadoPartida, id: string, concepto: string, recurrenci
 }
 
 describe('PASOS_DEL_DIA y pasoEventos', () => {
-  it('lleva los pasos 1, 7, 8 y 9 de §9, en ese orden', () => {
-    expect(PASOS_DEL_DIA.map((p) => p.numero)).toEqual([1, 7, 8, 9])
-    expect(PASOS_DEL_DIA.map((p) => p.nombre)).toEqual(['eventos', 'vueltaDeVentas', 'cobros', 'pagos'])
+  it('lleva los pasos del almacén y del dinero de §9, con los números en orden y sin bajar nunca', () => {
+    expect(PASOS_DEL_DIA.map((p) => p.numero)).toEqual([1, 3, 4, 5, 6, 7, 7, 8, 9])
+    expect(PASOS_DEL_DIA.map((p) => p.nombre)).toEqual([
+      'eventos',
+      'inicio',
+      'produccion',
+      'consumo',
+      'obras',
+      'vueltaDeVentas',
+      'llegadaDeCaravanas',
+      'cobros',
+      'pagos',
+    ])
   })
 
   it('pone en el día los eventos activos con algún efecto, de cualquier ámbito', () => {
@@ -159,5 +171,60 @@ describe('recorrerDias', () => {
     const portazgo = recorrido.estadoNuevo.movimientos.find((m) => m.regla?.id === 'imp.portazgo')
     expect(portazgo?.concepto).toBe('Portazgo · 3 días')
     expect(portazgo?.importe).toEqual({ base: 2000 + 1000 + 1000 })
+  })
+
+  /** La fila de `existencias` de ese dominio y recurso. */
+  function filaDe(existencias: readonly Existencia[], dominioId: string, recursoId: string): Existencia | undefined {
+    return existencias.find((e) => e.dominioId === dominioId && e.recursoId === recursoId)
+  }
+
+  it('los números de PASOS_DEL_DIA no bajan nunca', () => {
+    const numeros = PASOS_DEL_DIA.map((p) => p.numero)
+    for (let i = 1; i < numeros.length; i++) {
+      expect(numeros[i]).toBeGreaterThanOrEqual(numeros[i - 1])
+    }
+  })
+
+  it('el ejemplo a 7 días (12 al 19 de abril) da las existencias de O1', () => {
+    const recorrido = recorrerDias(estadoDe(documentoDeEjemplo()), sumarDias(HOY, 7), opciones())
+    const existencias = recorrido.estadoNuevo.existencias
+    expect(filaDe(existencias, DOM.bree, RECURSO.viveres)?.cantidad).toBeCloseTo(92.667, 3)
+    expect(filaDe(existencias, DOM.bree, RECURSO.madera)?.cantidad).toBeCloseTo(385.56, 3)
+    expect(filaDe(existencias, DOM.bree, RECURSO.piedra)?.cantidad).toBeCloseTo(196.667, 3)
+    expect(filaDe(existencias, DOM.bree, RECURSO.cerveza)?.cantidad).toBeCloseTo(83.96, 3)
+    expect(filaDe(existencias, DOM.bree, RECURSO.lana)?.cantidad).toBe(47)
+    expect(filaDe(existencias, DOM.bree, RECURSO.arcilla)?.cantidad).toBe(150)
+    expect(filaDe(existencias, DOM.bree, RECURSO.hierro)?.cantidad).toBe(64)
+    expect(filaDe(existencias, DOM.archet, RECURSO.viveres)?.cantidad).toBeCloseTo(827.667, 3)
+  })
+
+  it('a 30 días (13 de abril al 12 de mayo), da las cantidades finales de O3', () => {
+    const recorrido = recorrerDias(estadoDe(documentoDeEjemplo()), sumarDias(HOY, 30), opciones())
+    const existencias = recorrido.estadoNuevo.existencias
+    expect(filaDe(existencias, DOM.bree, RECURSO.viveres)?.cantidad).toBeCloseTo(48.667, 3)
+    expect(filaDe(existencias, DOM.bree, RECURSO.madera)?.cantidad).toBeCloseTo(297.4, 3)
+    expect(filaDe(existencias, DOM.bree, RECURSO.piedra)?.cantidad).toBeCloseTo(263.333, 3)
+    expect(filaDe(existencias, DOM.bree, RECURSO.arcilla)?.cantidad).toBeCloseTo(156.667, 3)
+    expect(filaDe(existencias, DOM.bree, RECURSO.hierro)?.cantidad).toBe(64)
+    expect(filaDe(existencias, DOM.bree, RECURSO.cerveza)?.cantidad).toBeCloseTo(78.4, 3)
+    expect(filaDe(existencias, DOM.bree, RECURSO.lana)?.cantidad).toBe(95)
+    expect(filaDe(existencias, DOM.archet, RECURSO.viveres)?.cantidad).toBeCloseTo(590, 3)
+  })
+
+  it('la regresión 10 → 12 de abril da las existencias y los acumulados de O11', () => {
+    const entrada = congelar(structuredClone(SNAPSHOT_10_ABRIL))
+    const recorrido = recorrerDias(entrada, HOY, opciones())
+    const existencias = recorrido.estadoNuevo.existencias
+    for (const fila of EXISTENCIAS) {
+      expect(filaDe(existencias, fila.dominioId, fila.recursoId)?.cantidad).toBeCloseTo(fila.cantidad, 3)
+    }
+    const acumulados = new Map(
+      recorrido.estadoNuevo.edificios.flatMap((e) => e.producciones.map((p) => [p.id, p.acumulado.sumaFactores])),
+    )
+    for (const edificio of EDIFICIOS) {
+      for (const produccion of edificio.producciones) {
+        expect(acumulados.get(produccion.id)).toBeCloseTo(produccion.acumulado.sumaFactores, 6)
+      }
+    }
   })
 })

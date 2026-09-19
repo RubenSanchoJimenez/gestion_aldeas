@@ -5,9 +5,13 @@ import type { Id } from '../modelo/comunes'
 import type { EstadoPartida } from '../modelo/documento'
 import { crearContexto, estadoFinal, type Contexto, type Dia } from './contexto'
 import { cerrarDiarios } from './diarios'
-import { pasoVueltaDeVentas } from './pasos/caravanas'
+import { pasoLlegadaDeCaravanas, pasoVueltaDeVentas } from './pasos/caravanas'
 import { pasoCobros } from './pasos/cobros'
+import { pasoConsumo } from './pasos/consumo'
+import { pasoInicio } from './pasos/inicio'
+import { pasoObras } from './pasos/obras'
 import { pasoPagos } from './pasos/pagos'
+import { pasoProduccion } from './pasos/produccion'
 import type { FlujoAlmacen, OpcionesSimulacion, Suceso } from './tipos'
 
 /** Un paso del día con su número en la lista de §9 l.1272-1282. */
@@ -22,10 +26,15 @@ export function pasoEventos(ctx: Contexto, dia: Dia): void {
   dia.eventos = eventosConEfectosEl(ctx.estado.eventos, dia.fecha)
 }
 
-/** Los pasos que ya tiene el motor, en el orden de §9: 1 eventos, 7 vueltaDeVentas, 8 cobros y 9 pagos (T15). */
+/** Los pasos del día en el orden de §9 l.1272-1282: eventos, almacén y dinero, todos juntos ya (T9-T13). */
 export const PASOS_DEL_DIA: readonly PasoDelDia[] = [
   { numero: 1, nombre: 'eventos', paso: pasoEventos },
+  { numero: 3, nombre: 'inicio', paso: pasoInicio },
+  { numero: 4, nombre: 'produccion', paso: pasoProduccion },
+  { numero: 5, nombre: 'consumo', paso: pasoConsumo },
+  { numero: 6, nombre: 'obras', paso: pasoObras },
   { numero: 7, nombre: 'vueltaDeVentas', paso: pasoVueltaDeVentas },
+  { numero: 7, nombre: 'llegadaDeCaravanas', paso: pasoLlegadaDeCaravanas },
   { numero: 8, nombre: 'cobros', paso: pasoCobros },
   { numero: 9, nombre: 'pagos', paso: pasoPagos },
 ]

@@ -70,6 +70,7 @@ describe('cambiosDelAvance: hechos', () => {
     expect(hechos(cambiosTras(estadoDe(documentoDeEjemplo()), 19))).toEqual([
       'Caravana de Fornost de vuelta · 18 de abril',
       'Tributo de Archet pagado · 19 de abril',
+      'Caravana de Tharbad de vuelta · 25 de abril',
       'Tributo de Bree pagado · 30 de abril',
       'Impuestos de locales de Bree cobrados · 1 de mayo',
     ])
