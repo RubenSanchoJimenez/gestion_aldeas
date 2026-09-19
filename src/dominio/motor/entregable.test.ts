@@ -245,6 +245,18 @@ describe('P4: el avance del 12 al 19 de abril de 1640', () => {
 
     expect(resultado.avisos).toEqual([
       {
+        tipo: 'faltaDeRecurso',
+        color: 'rojo',
+        dominioId: DOM.bree,
+        texto: 'Los víveres de Bree se agotan el 23 de abril y la caravana de Tharbad no vuelve hasta el 25 de abril',
+      },
+      {
+        tipo: 'recursoPerdido',
+        color: 'ambar',
+        dominioId: DOM.bree,
+        texto: 'Se perderán 7 fardos de lana en Bree el 19 de mayo',
+      },
+      {
         tipo: 'pagoNoCubierto',
         color: 'ambar',
         dominioId: DOM.archet,
@@ -252,7 +264,15 @@ describe('P4: el avance del 12 al 19 de abril de 1640', () => {
       },
     ])
     expect(resultado.personasNuevas).toEqual([])
-    expect(avisosEn(estadoDe(documentoDeEjemplo()), catalogosDeEjemplo())).toEqual([])
+    expect(avisosEn(estadoDe(documentoDeEjemplo()), catalogosDeEjemplo())).toEqual([
+      {
+        tipo: 'faltaPrevista',
+        color: 'ambar',
+        dominioId: DOM.bree,
+        texto: 'Los víveres de Bree se agotan el 23 de abril',
+        fecha: { anio: 1640, mes: 4, dia: 23 },
+      },
+    ])
   })
 
   it('la caravana de Fornost queda terminada con su cobro y los locales siguen cobrados hasta marzo', () => {
@@ -452,15 +472,57 @@ describe('el impago de Archet que anuncia P4', () => {
     expect(resultado.personasNuevas).toEqual([])
   })
 
-  it('a 98 días avisa del impago en rojo y, en ámbar, de los salarios del 26 de julio y del tributo de octubre', () => {
+  it('a 98 días, con lo ocurrido: los diez avisos de O10 (faltas y pérdidas ocurridas, el impago, el molino y los pagos no cubiertos)', () => {
     const resultado = avanzarEjemplo(98)
 
     expect(resultado.avisos).toEqual([
+      {
+        tipo: 'faltaDeRecurso',
+        color: 'rojo',
+        dominioId: DOM.bree,
+        texto: 'Los víveres de Bree se agotaron el 23 de abril: faltaron 2.217 sacos',
+      },
+      {
+        tipo: 'faltaDeRecurso',
+        color: 'rojo',
+        dominioId: DOM.bree,
+        texto: 'Bree se quedó sin madera el 6 de julio: faltaron 62 haces',
+      },
+      {
+        tipo: 'faltaDeRecurso',
+        color: 'rojo',
+        dominioId: DOM.archet,
+        texto: 'Los víveres de Archet se agotaron el 9 de julio: faltaron 113 sacos',
+      },
       {
         tipo: 'impago',
         color: 'rojo',
         dominioId: DOM.archet,
         texto: 'La caja de Archet no pudo pagar a Corona de Arthedain: 18,8 mo pendientes',
+      },
+      {
+        tipo: 'faltaDeRecurso',
+        color: 'rojo',
+        dominioId: DOM.bree,
+        texto: 'Bree se queda sin cerveza el 26 de julio',
+      },
+      {
+        tipo: 'recursoPerdido',
+        color: 'ambar',
+        dominioId: DOM.bree,
+        texto: 'Se perdieron 103 fardos de lana en Bree desde el 19 de mayo',
+      },
+      {
+        tipo: 'recursoPerdido',
+        color: 'ambar',
+        dominioId: DOM.bree,
+        texto: 'Se perdieron 13 carretadas de piedra en Bree el 14 de julio',
+      },
+      {
+        tipo: 'edificioTerminadoSinProduccion',
+        color: 'ambar',
+        dominioId: DOM.archet,
+        texto: 'Molino está terminado: anota su producción y sus trabajadores',
       },
       {
         tipo: 'pagoNoCubierto',

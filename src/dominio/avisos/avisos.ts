@@ -3,14 +3,26 @@ import { EsquemaTipoAviso, type AvisoAvance } from '../modelo/avance'
 import type { CatalogosEnCopia } from '../modelo/catalogos'
 import type { EstadoPartida } from '../modelo/documento'
 import type { Dominio } from '../modelo/dominios'
-import type { AvisoConFecha } from '../motor/tipos'
+import type { AvisoConFecha, FlujoAlmacen } from '../motor/tipos'
+import { avisosDeAlmacen } from './almacen'
 import { avisosDeImpago, avisosDeSaldoNegativo } from './dinero'
 import { avisosDePagoNoCubierto } from './pagoNoCubierto'
+import { avisosDeEdificios, avisosDeObrasYCaravanas } from './pendientes'
 
-/** Los avisos de dinero vigentes en la fecha actual del estado, ya ordenados (§9, tabla de avisos). */
-export function avisosEn(estado: EstadoPartida, catalogo: CatalogosEnCopia): AvisoConFecha[] {
+/**
+ * Todos los avisos vigentes en la fecha actual, ya ordenados (§9, tabla de avisos); con `ocurrido`, también los
+ * de lo que pasó en el avance (TC13).
+ */
+export function avisosEn(estado: EstadoPartida, catalogo: CatalogosEnCopia, ocurrido?: readonly FlujoAlmacen[]): AvisoConFecha[] {
   return ordenarAvisos(
-    [...avisosDeSaldoNegativo(estado), ...avisosDeImpago(estado), ...avisosDePagoNoCubierto(estado, catalogo)],
+    [
+      ...avisosDeSaldoNegativo(estado),
+      ...avisosDeImpago(estado),
+      ...avisosDePagoNoCubierto(estado, catalogo),
+      ...avisosDeAlmacen(estado, catalogo, ocurrido),
+      ...avisosDeObrasYCaravanas(estado, catalogo),
+      ...avisosDeEdificios(estado),
+    ],
     estado.dominios,
   )
 }

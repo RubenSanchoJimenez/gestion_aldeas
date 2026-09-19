@@ -150,9 +150,21 @@ describe('simular: P4 del 12 al 19 de abril', () => {
     ])
   })
 
-  it('devuelve los avisos del 19 sin fecha y sin personas nuevas', () => {
+  it('devuelve los tres avisos de O10 (19 de abril) sin fecha y sin personas nuevas', () => {
     const resultado = simular(documentoDeEjemplo(), 7, opciones())
     expect(resultado.avisos).toEqual([
+      {
+        tipo: 'faltaDeRecurso',
+        color: 'rojo',
+        dominioId: DOM.bree,
+        texto: 'Los víveres de Bree se agotan el 23 de abril y la caravana de Tharbad no vuelve hasta el 25 de abril',
+      },
+      {
+        tipo: 'recursoPerdido',
+        color: 'ambar',
+        dominioId: DOM.bree,
+        texto: 'Se perderán 7 fardos de lana en Bree el 19 de mayo',
+      },
       {
         tipo: 'pagoNoCubierto',
         color: 'ambar',
@@ -167,6 +179,17 @@ describe('simular: P4 del 12 al 19 de abril', () => {
     const resultado = simular(documentoDeEjemplo(), 105, opciones())
     expect(resultado.personasNuevas).toEqual([{ id: expect.any(String), nombre: 'Trabajadores de Archet' }])
     expect(resultado.estadoNuevo.personas).toContainEqual(resultado.personasNuevas[0])
+  })
+
+  it('a 98 días trae la falta de víveres de Bree del 23 de abril, con lo que faltó (T19)', () => {
+    const resultado = simular(documentoDeEjemplo(), 98, opciones())
+    expect(resultado.avisos).toContainEqual({
+      tipo: 'faltaDeRecurso',
+      color: 'rojo',
+      dominioId: DOM.bree,
+      texto: 'Los víveres de Bree se agotaron el 23 de abril: faltaron 2.217 sacos',
+    })
+    expect(resultado.flujos.length).toBeGreaterThan(0)
   })
 })
 
