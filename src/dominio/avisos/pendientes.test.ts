@@ -233,6 +233,60 @@ describe('avisosDeObrasYCaravanas: caravanas', () => {
       },
     ])
   })
+
+  it('entrada de compra con caravanaId no duplica el aviso: solo sale el de la caravana', () => {
+    const estado = conCaravana(base(0), {
+      id: 'car.prueba',
+      operacion: 'compra',
+      mercadoId: 'mercado.fornost',
+      carga: { recursoId: RECURSO.viveres, cantidad: 100 },
+      importe: { base: 3000000 },
+      movimientoSalidaId: 'mov.compra',
+      salida: F(10, 4),
+      vuelta: F(14, 4),
+    })
+    const estadoConEntrada: EstadoPartida = {
+      ...estado,
+      mercados: [{ id: 'mercado.fornost', nombre: 'Fornost', precios: [] }],
+      entradasAlmacen: [
+        {
+          id: 'entrada.prueba',
+          dominioId: 'dom.prueba',
+          recursoId: RECURSO.viveres,
+          cantidad: 100,
+          operacion: 'compra',
+          mercadoId: 'mercado.fornost',
+          precioUnidad: { base: 30000 },
+          caravanaId: 'car.prueba',
+          fecha: F(10, 4),
+          aplicada: false,
+        },
+      ],
+      movimientos: [
+        {
+          id: 'mov.compra',
+          dominioId: 'dom.prueba',
+          fecha: F(10, 4),
+          tipo: 'gasto',
+          importe: { base: -3000000 },
+          categoriaId: 'cat.comercio',
+          concepto: 'Caravana: compra de víveres en Fornost',
+          origen: 'manual',
+          programado: true,
+        },
+      ],
+    }
+    const avisos = avisosDeObrasYCaravanas(estadoConEntrada, catalogo)
+    expect(avisos).toEqual([
+      {
+        tipo: 'caravanaQueNoPudoSalir',
+        color: 'rojo',
+        dominioId: 'dom.prueba',
+        fecha: HOY,
+        texto: 'La caravana de compra a Fornost no pudo salir por falta de 30 mo en la caja',
+      },
+    ])
+  })
 })
 
 describe('avisosDeEdificios', () => {
