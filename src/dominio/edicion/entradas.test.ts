@@ -197,6 +197,19 @@ describe('eliminarEntradaAlmacen', () => {
     )
   })
 
+  it('una compra sin precioUnidad lanza «La compra necesita un precio por unidad»', () => {
+    const datos: DatosEntrada = {
+      dominioId: DOM.bree,
+      recursoId: RECURSO.viveres,
+      operacion: 'compra',
+      cantidad: 100,
+      fecha: { anio: 1640, mes: 4, dia: 12 },
+    }
+    expect(() => crearEntradaAlmacen(ejemplo(), datos, sello(), catalogo())).toThrow(
+      'La compra necesita un precio por unidad',
+    )
+  })
+
   it('sin aplicar: borra la entrada con su programado', () => {
     const datos: DatosEntrada = {
       dominioId: DOM.bree,

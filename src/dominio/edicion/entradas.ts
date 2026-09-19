@@ -54,7 +54,10 @@ export function crearEntradaAlmacen<E extends EstadoPartida>(
       throw new Error(`No existe «mercado local de ${datos.dominioId}»`)
     }
     mercadoId = mercado.id
-    const precio = datos.precioUnidad as Importe
+    if (datos.precioUnidad === undefined) {
+      throw new Error('La compra necesita un precio por unidad')
+    }
+    const precio = datos.precioUnidad
     const importe = redondearMitadArriba(precio.base * datos.cantidad)
     const recurso = recursoDelCatalogo(catalogo, datos.recursoId)
     movimientoId = sello.nuevoId()
