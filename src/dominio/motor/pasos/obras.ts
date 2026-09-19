@@ -43,7 +43,11 @@ function aplicarEfecto(ctx: Contexto, obra: Obra): void {
       if (indice === -1) {
         return
       }
-      ctx.edificios[indice] = { ...ctx.edificios[indice], avisoPendiente: { tipo: 'mejoraTerminada', obraId: obra.id } }
+      // avisoPendiente es un único campo: si el edificio ya tiene uno sin ver, no se pisa con otro del mismo avance.
+      const edificio = ctx.edificios[indice]
+      if (edificio.avisoPendiente === undefined) {
+        ctx.edificios[indice] = { ...edificio, avisoPendiente: { tipo: 'mejoraTerminada', obraId: obra.id } }
+      }
       return
     }
     case 'ampliarAlmacen': {

@@ -112,6 +112,32 @@ describe('pasoObras: efectos sueltos', () => {
     expect(edificio?.avisoPendiente).toEqual({ tipo: 'mejoraTerminada', obraId: 'obra.prueba' })
   })
 
+  it('dos obras de mejora que terminan el mismo día sobre el mismo edificio no se pisan el aviso pendiente', () => {
+    const base = conAsentamiento(estadoMinimo(HOY), { id: 'dom.aldea', nombre: 'Aldea', caja: 0 })
+    const estado: EstadoPartida = {
+      ...base,
+      edificios: [
+        {
+          id: 'ed.prueba',
+          dominioId: 'dom.aldea',
+          tipoId: 'tipo.prueba',
+          nombre: 'Molino',
+          estado: 'activo',
+          trabajadoresNecesarios: 0,
+          producciones: [],
+        },
+      ],
+      obras: [
+        obraDePrueba({ id: 'obra.a', efecto: { tipo: 'mejorarEdificio', objetivoId: 'ed.prueba' } }),
+        obraDePrueba({ id: 'obra.b', nombre: 'Segunda mejora', efecto: { tipo: 'mejorarEdificio', objetivoId: 'ed.prueba' } }),
+      ],
+    }
+    const ctx = recorrer(estado, fecha(13))
+    expect(ctx.obras.every((o) => o.estado === 'terminada')).toBe(true)
+    const edificio = ctx.edificios.find((e) => e.id === 'ed.prueba')
+    expect(edificio?.avisoPendiente).toEqual({ tipo: 'mejoraTerminada', obraId: 'obra.a' })
+  })
+
   it('mejorarEdificio sobre un edificio que ya no existe no hace nada', () => {
     const base = conAsentamiento(estadoMinimo(HOY), { id: 'dom.aldea', nombre: 'Aldea', caja: 0 })
     const estado: EstadoPartida = {
@@ -154,6 +180,32 @@ describe('pasoObras: efectos sueltos', () => {
     }
     const ctx = recorrer(estado, fecha(13))
     expect(ctx.edificios.find((e) => e.id === 'ed.prueba')?.estado).toBe('activo')
+  })
+
+  it('repararEdificio no pisa el aviso pendiente que puso otra obra del mismo avance', () => {
+    const base = conAsentamiento(estadoMinimo(HOY), { id: 'dom.aldea', nombre: 'Aldea', caja: 0 })
+    const estado: EstadoPartida = {
+      ...base,
+      edificios: [
+        {
+          id: 'ed.prueba',
+          dominioId: 'dom.aldea',
+          tipoId: 'tipo.prueba',
+          nombre: 'Molino',
+          estado: 'daniado',
+          trabajadoresNecesarios: 0,
+          producciones: [],
+        },
+      ],
+      obras: [
+        obraDePrueba({ id: 'obra.a', efecto: { tipo: 'mejorarEdificio', objetivoId: 'ed.prueba' } }),
+        obraDePrueba({ id: 'obra.b', nombre: 'Reparación', efecto: { tipo: 'repararEdificio', objetivoId: 'ed.prueba' } }),
+      ],
+    }
+    const ctx = recorrer(estado, fecha(13))
+    const edificio = ctx.edificios.find((e) => e.id === 'ed.prueba')
+    expect(edificio?.estado).toBe('activo')
+    expect(edificio?.avisoPendiente).toEqual({ tipo: 'mejoraTerminada', obraId: 'obra.a' })
   })
 
   it('una obra en curso con fin ya pasado se aplica el primer día del avance', () => {
