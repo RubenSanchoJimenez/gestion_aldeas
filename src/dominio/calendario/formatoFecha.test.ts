@@ -7,6 +7,7 @@ import {
   formatearDiaMes,
   formatearFecha,
   formatearMeses,
+  formatearTramoDelAvance,
   NOMBRES_DIA,
   NOMBRES_MES,
 } from './formatoFecha'
@@ -167,5 +168,42 @@ describe('formatearDiaDelAvance', () => {
   it('si cruza de año, con el año: «19 de abril de 1641»', () => {
     expect(formatearDiaDelAvance(f(1641, 4, 19), f(1640, 4, 20), f(1641, 4, 20))).toBe('19 de abril de 1641')
     expect(formatearDiaDelAvance(f(1640, 12, 25), f(1640, 4, 20), f(1641, 4, 20))).toBe('25 de diciembre de 1640')
+  })
+})
+
+describe('formatearTramoDelAvance', () => {
+  it('un día (desde = hasta): usa formatearDiaDelAvance, «17»', () => {
+    expect(formatearTramoDelAvance(f(1640, 4, 17), f(1640, 4, 17), f(1640, 4, 13), f(1640, 4, 19))).toBe('17')
+  })
+
+  it('mismo mes y año en las cuatro fechas: «15 al 17»', () => {
+    expect(formatearTramoDelAvance(f(1640, 4, 15), f(1640, 4, 17), f(1640, 4, 13), f(1640, 4, 19))).toBe('15 al 17')
+  })
+
+  it('mismo año y mes del tramo, pero el avance cae en varios meses: «15 al 17 de abril»', () => {
+    expect(formatearTramoDelAvance(f(1640, 4, 15), f(1640, 4, 17), f(1640, 4, 13), f(1640, 5, 1))).toBe(
+      '15 al 17 de abril',
+    )
+  })
+
+  it('mismo año, meses distintos del tramo: «28 de abril al 2 de mayo»', () => {
+    expect(formatearTramoDelAvance(f(1640, 4, 28), f(1640, 5, 2), f(1640, 4, 13), f(1640, 5, 2))).toBe(
+      '28 de abril al 2 de mayo',
+    )
+  })
+
+  it('un tramo que empezó el mes anterior a un avance de un solo mes: «25 de abril al 3 de mayo»', () => {
+    expect(formatearTramoDelAvance(f(1640, 4, 25), f(1640, 5, 3), f(1640, 5, 1), f(1640, 5, 31))).toBe(
+      '25 de abril al 3 de mayo',
+    )
+  })
+
+  it('el avance cruza de año: «8 al 21 de abril de 1640» y «28 de diciembre de 1640 al 2 de enero de 1641»', () => {
+    expect(formatearTramoDelAvance(f(1640, 4, 8), f(1640, 4, 21), f(1640, 4, 20), f(1641, 4, 20))).toBe(
+      '8 al 21 de abril de 1640',
+    )
+    expect(formatearTramoDelAvance(f(1640, 12, 28), f(1641, 1, 2), f(1640, 4, 20), f(1641, 4, 20))).toBe(
+      '28 de diciembre de 1640 al 2 de enero de 1641',
+    )
   })
 })

@@ -1,4 +1,4 @@
-import { diaDeLaSemana, type Fecha } from './fecha'
+import { compararFechas, diaDeLaSemana, type Fecha } from './fecha'
 
 /** Edad de la partida: solo una etiqueta que acompaña al año (§4). */
 export type Edad = 'segunda' | 'tercera' | 'cuarta'
@@ -58,7 +58,7 @@ export function formatearFecha(f: Fecha, opciones: { edad?: Edad; diaSemana?: bo
 }
 
 /** «a», «a y b», «a, b y c»: una lista escrita como se lee. */
-function enumerar(partes: readonly string[]): string {
+export function enumerar(partes: readonly string[]): string {
   if (partes.length === 0) {
     return ''
   }
@@ -95,4 +95,40 @@ export function formatearDiaDelAvance(f: Fecha, primerDia: Fecha, ultimoDia: Fec
     return formatearDiaMes(f)
   }
   return String(f.dia)
+}
+
+/**
+ * Los días de un tramo en un hecho del avance (D-052): si desde = hasta, formatearDiaDelAvance(desde, …). Si el
+ * avance y el tramo caen en el mismo mes y año: «15 al 17». Si caen en el mismo año: «15 al 17 de abril» (mismo
+ * mes) o «28 de abril al 2 de mayo». Si no: «8 al 21 de abril de 1640» (mismo mes y año del tramo), «28 de abril
+ * al 2 de mayo de 1640» (mismo año del tramo) o «28 de diciembre de 1640 al 2 de enero de 1641».
+ *
+ * «Mismo mes y año» exige que coincidan las cuatro fechas; «mismo año», que coincidan los cuatro años.
+ */
+export function formatearTramoDelAvance(desde: Fecha, hasta: Fecha, primerDia: Fecha, ultimoDia: Fecha): string {
+  if (compararFechas(desde, hasta) === 0) {
+    return formatearDiaDelAvance(desde, primerDia, ultimoDia)
+  }
+  const mismoMesYAnio =
+    desde.anio === hasta.anio &&
+    desde.anio === primerDia.anio &&
+    desde.anio === ultimoDia.anio &&
+    desde.mes === hasta.mes &&
+    desde.mes === primerDia.mes &&
+    desde.mes === ultimoDia.mes
+  if (mismoMesYAnio) {
+    return `${desde.dia} al ${hasta.dia}`
+  }
+  const mismoAnio = desde.anio === hasta.anio && desde.anio === primerDia.anio && desde.anio === ultimoDia.anio
+  if (mismoAnio) {
+    return desde.mes === hasta.mes
+      ? `${desde.dia} al ${hasta.dia} de ${NOMBRES_MES[desde.mes - 1]}`
+      : `${formatearDiaMes(desde)} al ${formatearDiaMes(hasta)}`
+  }
+  if (desde.anio === hasta.anio) {
+    return desde.mes === hasta.mes
+      ? `${desde.dia} al ${hasta.dia} de ${NOMBRES_MES[desde.mes - 1]} de ${desde.anio}`
+      : `${formatearDiaMes(desde)} al ${formatearDiaMes(hasta)} de ${desde.anio}`
+  }
+  return `${formatearFecha(desde)} al ${formatearFecha(hasta)}`
 }
