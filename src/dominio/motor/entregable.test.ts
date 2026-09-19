@@ -210,13 +210,31 @@ describe('P4: el avance del 12 al 19 de abril de 1640', () => {
     expect(formatearOro(saldos[DOM.archet] - 8500000, eq, { signo: true })).toBe('−60 mo')
   })
 
-  it('resume el avance con una fila de saldo por dominio y los dos hechos de P5', () => {
+  it('resume el avance con una fila de saldo por dominio, las filas «almacen» de P4 y los cuatro hechos de P5 (O1, O11, T15)', () => {
     const resultado = avanzarEjemplo(7)
 
-    expect(resultado.cambios).toEqual([
+    expect(resultado.cambios.filter((c) => c.tipo === 'saldo')).toEqual([
       { tipo: 'saldo', dominioId: DOM.tharan, antes: 4651800, despues: 4717800, movimientos: 3 },
       { tipo: 'saldo', dominioId: DOM.bree, antes: 34060000, despues: 38050000, movimientos: 4 },
       { tipo: 'saldo', dominioId: DOM.archet, antes: 8500000, despues: 2500000, movimientos: 1 },
+    ])
+    const almacenes = resultado.cambios.filter((c) => c.tipo === 'almacen')
+    const redondeadas = almacenes.map((a) =>
+      a.tipo === 'almacen'
+        ? { dominioId: a.dominioId, recursoId: a.recursoId, antes: a.antes, despues: Math.round(a.despues * 1000) / 1000 }
+        : a,
+    )
+    expect(redondeadas).toEqual([
+      { dominioId: DOM.bree, recursoId: 'recurso.viveres', antes: 310, despues: 92.667 },
+      { dominioId: DOM.bree, recursoId: 'recurso.madera', antes: 420, despues: 385.56 },
+      { dominioId: DOM.bree, recursoId: 'recurso.piedra', antes: 180, despues: 196.667 },
+      { dominioId: DOM.bree, recursoId: 'recurso.cerveza', antes: 90, despues: 83.96 },
+      { dominioId: DOM.bree, recursoId: 'recurso.lana', antes: 35, despues: 47 },
+      { dominioId: DOM.archet, recursoId: 'recurso.viveres', antes: 900, despues: 827.667 },
+    ])
+    expect(resultado.cambios.filter((c) => c.tipo === 'hecho')).toEqual([
+      { tipo: 'hecho', dominioId: DOM.bree, texto: 'Feria de primavera · 15 al 17' },
+      { tipo: 'hecho', dominioId: DOM.bree, texto: 'Obra «Reparación de la puerta del sur» terminada · 17' },
       { tipo: 'hecho', dominioId: DOM.bree, texto: 'Caravana de Fornost de vuelta · 18' },
       { tipo: 'hecho', dominioId: DOM.archet, texto: 'Tributo de Archet pagado · 19' },
     ])
