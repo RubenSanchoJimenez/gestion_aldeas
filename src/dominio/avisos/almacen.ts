@@ -71,6 +71,10 @@ export function avisosDeAlmacen(
   const hoy = estado.partida.fechaActual
   const prevision = preverAlmacen(estado, catalogo, DIAS_DE_PREVISION)
   const previstas = resumirFilas(estado.existencias, prevision.final, prevision.flujos)
+  // `estado.existencias` ya es el estado posterior al avance (avisosDeAlmacen recibe estadoNuevo): al pasarlo
+  // como inicial y como final, esas dos columnas de `ocurridas` no son las cantidades reales de antes/después
+  // del avance, sino ambas el mismo valor posterior. Solo se usan aquí `falta`, `perdido`, `tramosDeFalta` y
+  // `primeraPerdida`, que no dependen de inicial/final: no uses `ocurridas[…].inicial` ni `.final` para nada más.
   const ocurridas = ocurrido === undefined ? undefined : resumirFilas(estado.existencias, estado.existencias, ocurrido)
 
   const previstasPorClave = new Map(previstas.map((f) => [claveExistencia(f.dominioId, f.recursoId), f]))
