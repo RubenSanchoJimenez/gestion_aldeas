@@ -3,7 +3,9 @@ import type { Fecha } from '../calendario/fecha'
 import { RECURSO } from '../catalogo/inicial'
 import { DOM, EDIFICIO } from '../ejemplo/ids'
 import { catalogosDeEjemplo, documentoDeEjemplo } from '../ejemplo/sombraDelEste'
+import type { Existencia } from '../modelo/almacen'
 import { estadoDe, type EstadoPartida } from '../modelo/documento'
+import type { FlujoAlmacen } from '../motor/tipos'
 import { cabenElDia, diasDeReserva, preverAlmacen, proximasProducciones, resumirFilas } from './prevision'
 
 /** Fechas de 1640 T.E. escritas cortas: F(19, 4) es el 19 de abril de 1640. */
@@ -126,6 +128,43 @@ describe('resumirFilas: O3 (previsión a 30 días, del 13 de abril al 12 de mayo
       'dom.bree|recurso.lana',
       'dom.archet|recurso.viveres',
     ])
+  })
+
+  it('una fila que solo sale en los flujos (sin Existencia en `final`, TC10) va detrás de las de `final`', () => {
+    const inicial: Existencia[] = []
+    const final: Existencia[] = [{ dominioId: DOM.bree, recursoId: RECURSO.viveres, cantidad: 10 }]
+    const flujos: FlujoAlmacen[] = [
+      // Un consumo sobre una fila sin Existencia no la crea (TC10): sale primero en los flujos pero nunca en `final`.
+      // Va delante en `flujos` a propósito, para comprobar que el orden lo decide `final`, no el de los flujos.
+      {
+        dominioId: DOM.archet,
+        recursoId: RECURSO.madera,
+        fecha: F(13, 4),
+        entradas: 0,
+        perdido: 0,
+        consumido: 0,
+        sacado: 0,
+        consumoTeorico: 5,
+        cantidad: 0,
+      },
+      {
+        dominioId: DOM.bree,
+        recursoId: RECURSO.viveres,
+        fecha: F(13, 4),
+        entradas: 0,
+        perdido: 0,
+        consumido: 0,
+        sacado: 0,
+        consumoTeorico: 0,
+        cantidad: 10,
+      },
+    ]
+    const resumenSintetico = resumirFilas(inicial, final, flujos)
+    expect(resumenSintetico.map((f) => `${f.dominioId}|${f.recursoId}`)).toEqual([
+      'dom.bree|recurso.viveres',
+      'dom.archet|recurso.madera',
+    ])
+    expect(resumenSintetico[1]).toMatchObject({ inicial: 0, final: 0, consumoTeorico: 5, falta: 5 })
   })
 })
 
