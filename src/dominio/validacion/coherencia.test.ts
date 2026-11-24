@@ -285,6 +285,28 @@ describe('validarCoherenciaInterna', () => {
     ])
   })
 
+  it('una deuda que vence hoy puede estar ya vencida: el paso 10 la marca ese mismo día', () => {
+    const documento = documentoMinimo()
+    documento.personas = [{ id: 'persona.gremio-bree', nombre: 'Gremio de mercaderes de Bree' }]
+    documento.deudas = [
+      {
+        id: 'deuda.gremio',
+        dominioId: 'dom.tharan',
+        sentido: 'debo',
+        contraparteId: 'persona.gremio-bree',
+        fecha: { anio: 1640, mes: 4, dia: 1 },
+        principal: { base: 4200000 },
+        interesPct: 0,
+        vencimiento: documento.partida.fechaActual,
+        estado: 'vencida',
+        impago: false,
+        pagos: [],
+        devengos: [],
+      },
+    ]
+    expect(validarCoherenciaInterna(documento)).toEqual([])
+  })
+
   it('admite obras y caravanas programadas con la fecha ya pasada, y las entradas sin aplicar (D-018)', () => {
     const documento = documentoMinimo()
     documento.obras = [
