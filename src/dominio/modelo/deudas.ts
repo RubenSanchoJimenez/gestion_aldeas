@@ -10,12 +10,16 @@ import {
   exige,
 } from './comunes'
 
+/** «Se aplica a» de un pago: los tres segmentos de J4b (selector n.º 11, §6.5). */
+export const EsquemaAplicarPagoA = z.enum(['interesesYCapital', 'soloCapital', 'soloIntereses'])
+export type AplicarPagoA = z.infer<typeof EsquemaAplicarPagoA>
+
 /** Un pago o cobro anotado en una deuda (J4b, §8). La cuenta es el dominioId de su movimiento. */
 export const EsquemaPagoDeuda = z.object({
   ...CAMPOS_REGISTRO,
   fecha: EsquemaFecha,
   importe: EsquemaImporteMagnitud,
-  aplicarA: z.enum(['interesesYCapital', 'soloCapital', 'soloIntereses']),
+  aplicarA: EsquemaAplicarPagoA,
   movimientoId: EsquemaId,
 })
 export type PagoDeuda = z.infer<typeof EsquemaPagoDeuda>
