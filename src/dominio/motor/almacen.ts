@@ -80,6 +80,10 @@ export function sumarAlAlmacen(
  * servido entero. Anota consumoTeorico y consumido. No crea la fila. Devuelve lo servido. Precondición: pedido > 0.
  */
 export function consumirDelAlmacen(ctx: Contexto, dia: Dia, dominioId: Id, recursoId: Id, pedido: number): number {
+  // Sin esto, un pedido negativo sumaría al almacén en vez de restar, sin que nada avisara.
+  if (pedido <= 0) {
+    return 0
+  }
   const clave = claveExistencia(dominioId, recursoId)
   const fila = ctx.existencias.get(clave)
   const actual = fila?.cantidad ?? 0

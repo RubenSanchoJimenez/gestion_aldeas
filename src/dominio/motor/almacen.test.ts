@@ -114,6 +114,14 @@ describe('consumirDelAlmacen', () => {
     expect(filaEn(ctx, 'dom.bree', RECURSO.viveres)?.cantidad).toBe(0)
   })
 
+  it('un pedido de 0 o negativo no toca el almacén ni los flujos', () => {
+    const ctx = contexto([{ recursoId: RECURSO.viveres, cantidad: 10 }])
+    expect(consumirDelAlmacen(ctx, DIA, 'dom.bree', RECURSO.viveres, 0)).toBe(0)
+    expect(consumirDelAlmacen(ctx, DIA, 'dom.bree', RECURSO.viveres, -5)).toBe(0)
+    expect(filaEn(ctx, 'dom.bree', RECURSO.viveres)?.cantidad).toBe(10)
+    expect(flujoDe(ctx, DIA, 'dom.bree', RECURSO.viveres)).toMatchObject({ consumoTeorico: 0, consumido: 0 })
+  })
+
   it('sobre una fila que no existe hay 0 y el consumo cuenta como falta entera, sin crearla (TC10)', () => {
     const ctx = contexto([])
     expect(consumirDelAlmacen(ctx, DIA, 'dom.bree', RECURSO.cerveza, 5)).toBe(0)
