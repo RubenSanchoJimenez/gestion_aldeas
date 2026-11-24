@@ -44,7 +44,17 @@ Método ahorrador, elegido por el usuario el 2026-09-19 porque se llegaba al lí
 - **Rama por fase**: `implementacion/fase-N`, creada desde la rama de trabajo actual. Al cerrar la fase, fusiónala en local, borra la rama y sube la rama de trabajo a GitHub.
 - **Cierre de fase**: `npm test`, `npx tsc -b`, `npm run build` y `npm run lint` en verde, árbol de trabajo limpio y una revisión final de toda la fase.
 
+## Trabajo en sesión, sin subagentes (2026-11-24)
+
+El usuario pidió que Claude haga el trabajo **él mismo, en la conversación**, sin repartirlo entre subagentes ni flujos de agentes. Manda sobre el apartado anterior y sobre el de los modelos: nada de delegar tareas, revisiones, planes ni investigaciones. Lo que sí se sigue usando:
+
+- los **scripts** de `scripts/` (por ejemplo `comprobar-tarea.mjs`), que no gastan modelo;
+- los planes por fase ya escritos, que se ejecutan tarea a tarea en la conversación, con TDD y un commit por tarea;
+- las revisiones, que las hace Claude leyendo el código, al cerrar cada bloque de tareas y la fase.
+
 ## Qué modelo usa cada agente
+
+(Se mantiene solo como referencia por si el usuario vuelve a pedir subagentes; hoy no se usan.)
 
 Para gastar menos sin perder calidad (pedido por el usuario el 2026-09-18):
 
