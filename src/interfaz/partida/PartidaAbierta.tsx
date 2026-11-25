@@ -13,6 +13,8 @@ import { Ajustes } from '../pantallas/Ajustes'
 import { AvanzarDias, ResumenAvance } from './AvanzarDias'
 import { Calendario } from './Calendario'
 import { ContextoPartida, type ContextoDePartida } from './contexto'
+import { PantallaAsentamiento } from '../asentamiento/PantallaAsentamiento'
+import { DialogoAsentamiento } from '../asentamiento/DialogoAsentamiento'
 import { destinoDeAviso } from './destinos'
 import { PantallaPersonaje } from '../personaje/PantallaPersonaje'
 import { Inicio } from './Inicio'
@@ -54,6 +56,9 @@ export function PartidaAbierta({ inicial, alSalir }: PropsPartidaAbierta) {
     [documento, catalogo],
   )
 
+  // «Añadir asentamiento» es un diálogo sobre la pantalla actual: al cerrarlo sin crear, se vuelve a Inicio.
+  const cerrarAlta = (): void => setPantalla((p) => (p.tipo === 'anadirAsentamiento' ? { tipo: 'inicio' } : p))
+
   if (contexto === null) {
     return null
   }
@@ -80,13 +85,15 @@ export function PartidaAbierta({ inicial, alSalir }: PropsPartidaAbierta) {
   return (
     <ContextoPartida value={contexto}>
       <MarcoPartida documento={documento} pantalla={pantalla} alNavegar={setPantalla} extremo={extremo}>
-        {pantalla.tipo === 'inicio' ? (
+        {pantalla.tipo === 'inicio' || pantalla.tipo === 'anadirAsentamiento' ? (
           <Inicio alVerResumen={documento.avances.length > 0 ? () => setDialogo('resumen') : undefined} />
         ) : pantalla.tipo === 'calendario' ? (
           <Calendario />
         ) : pantalla.tipo === 'dominio' &&
           documento.dominios.find((d) => d.id === pantalla.dominioId)?.tipo === 'personaje' ? (
           <PantallaPersonaje dominioId={pantalla.dominioId} seccion={pantalla.seccion} />
+        ) : pantalla.tipo === 'dominio' && documento.dominios.some((d) => d.id === pantalla.dominioId) ? (
+          <PantallaAsentamiento dominioId={pantalla.dominioId} seccion={pantalla.seccion} />
         ) : pantalla.tipo === 'ajustes' ? (
           <Ajustes
             documento={documento}
@@ -102,6 +109,7 @@ export function PartidaAbierta({ inicial, alSalir }: PropsPartidaAbierta) {
           />
         )}
       </MarcoPartida>
+      {pantalla.tipo === 'anadirAsentamiento' && <DialogoAsentamiento alCerrar={cerrarAlta} />}
       {dialogo === 'avanzar' && (
         <AvanzarDias alCerrar={() => setDialogo(null)} alAvanzado={() => setDialogo('resumen')} />
       )}
