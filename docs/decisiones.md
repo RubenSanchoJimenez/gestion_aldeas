@@ -156,6 +156,16 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 | D-116 | Al borrar un movimiento que compró un objeto, el objeto se queda en el inventario. | **Pendiente:** la casilla «Quitar también … del inventario» de J2d. |
 | D-117 | La conversión de «Valor por unidad» al comprar es el importe dividido por la cantidad, sin campo para cambiarlo en ese diálogo (se cambia después en el inventario). | **Pendiente:** el campo editable de J2b. |
 
+## Fase 8 · Pantallas de los asentamientos (2026-11-25)
+
+| # | Decisión | Por qué |
+|---|---|---|
+| D-118 | Las pantallas que la especificación dibuja como varias vistas van juntas en pestañas dentro de su sección del menú: Tesorería (caja, impuestos, locales y deudas), Personal (trabajadores, guarnición y armería) y Producción (edificios, almacén y obras). | Son las secciones del menú de la especificación; las pestañas evitan añadir entradas. |
+| D-119 | Al eliminar un asentamiento, los gastos e ingresos recurrentes y los beneficios de inversiones del personaje que usaban su caja pasan a la bolsa. | La especificación no dice qué pasa con ellos, y no pueden quedarse apuntando a una caja que no existe. |
+| D-120 | Al añadir animales de un tipo y género que ya están, la cantidad se suma a esa fila; los datos nuevos de valor y notas no se mezclan. | Es lo que pide la especificación para la cantidad. |
+| D-121 | Una defensa con una obra de reparación que la tiene como objetivo no se puede borrar. | Como los edificios con una obra pendiente. |
+| D-122 | Las pantallas de los asentamientos priorizan que todo se pueda hacer sobre el dibujo exacto de cada vista. **Pendiente de pulir:** el detalle del evento seleccionado (A11), los resúmenes previos al guardar de obra, caravana y compra de víveres, los filtros por tipo de animal, el selector de «Nuevo mercado» dentro de la caravana y la fila de total de locales. | Pediste terminar todo el desarrollo; las reglas del juego ya están completas y probadas en el dominio. |
+
 ## Decisiones tuyas
 
 Estas no se tocan sin preguntarte. El texto completo está en la especificación (`docs/superpowers/specs/2026-09-15-gestion-aldeas-design.md`), marcado «decidido por el usuario».

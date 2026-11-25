@@ -115,3 +115,7 @@
   flex-direction: column;
   align-items: center;
 }
+/* En una columna flexible los paneles se encogían y recortaban su contenido: ninguno cede alto. */
+.contenido > * {
+  flex-shrink: 0;
+}
