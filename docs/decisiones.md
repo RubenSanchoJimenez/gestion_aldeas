@@ -93,6 +93,12 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 | D-068 | Todo lo demás de la fase 4 es técnico (cómo se guardan los decimales de las cantidades, en qué orden corren los pasos dentro del código, qué comprueba la validación de las copias, cómo se prueban las cifras) y no cambia nada de lo que ves ni de las reglas del juego. | Está explicado tarea a tarea en el plan de la fase 4. |
 | D-069 | Un edificio solo guarda un `avisoPendiente` a la vez: si una mejora o una reparación terminan sobre el mismo edificio en el mismo avance mientras ya tiene uno sin ver, el segundo evento se pierde en silencio y no pisa al primero. | Es el mismo `avisoPendiente` de un único campo por edificio, con la regla «gana el primero» que ya usa el resto del motor (por ejemplo D-060); commit f96487f, tarea 12. |
 
+## Fase 5 · Motor del personaje (2026-11-25)
+
+| # | Decisión | Por qué |
+|---|---|---|
+| D-100 | Un préstamo que te deben y está a punto de vencer avisa como préstamo: «El préstamo de 15 mo a Dalen vence el 18 de abril» y, el día antes, «Mañana vence el préstamo de 15 mo a Dalen». | La especificación solo da los dos textos del sentido «debo» y el de un préstamo ya vencido («Dalen no ha devuelto 15 mo»); este es el mismo aviso cambiando «la deuda … con» por «el préstamo … a», sin inventar nada más. |
+
 ## Fase 6a · Base de la interfaz (2026-09-18)
 
 | # | Decisión | Por qué |

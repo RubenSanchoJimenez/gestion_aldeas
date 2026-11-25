@@ -316,3 +316,31 @@ export function textoFaltan(faltas: readonly { cantidad: number; recurso: Recurs
   const verbo = faltas.length === 1 && esUnaUnidad(partes[0]) ? 'Falta' : 'Faltan'
   return `${verbo} ${enumerar(partes)}`
 }
+
+/** «Venció la deuda con Hobart: 4 mo pendientes»; si te deben, «Dalen no ha devuelto 15 mo» (esp l.1163). */
+export function avisoDeudaVencida(sentido: 'debo' | 'meDeben', contraparte: string, pendiente: string): string {
+  const texto =
+    sentido === 'debo'
+      ? `Venció la deuda con ${contraparte}: ${pendiente} pendientes`
+      : `${contraparte} no ha devuelto ${pendiente}`
+  return ajustarTexto(texto, MAXIMO_TEXTO)
+}
+
+/**
+ * «La deuda de 4 mo con Hobart vence el 20 de abril» y, el día antes, «Mañana vence la deuda de 4 mo con Hobart»
+ * (esp l.1163, l.1354). Un préstamo que te deben se nombra como préstamo (D-100).
+ */
+export function avisoDeudaQueVence(
+  sentido: 'debo' | 'meDeben',
+  contraparte: string,
+  pendiente: string,
+  fecha: string,
+  manana: boolean,
+): string {
+  const que =
+    sentido === 'debo'
+      ? `la deuda de ${pendiente} con ${contraparte}`
+      : `el préstamo de ${pendiente} a ${contraparte}`
+  const texto = manana ? `Mañana vence ${que}` : `${que[0].toUpperCase()}${que.slice(1)} vence el ${fecha}`
+  return ajustarTexto(texto, MAXIMO_TEXTO)
+}

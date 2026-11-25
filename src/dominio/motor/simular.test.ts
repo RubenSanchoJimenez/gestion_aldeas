@@ -150,7 +150,7 @@ describe('simular: P4 del 12 al 19 de abril', () => {
     ])
   })
 
-  it('devuelve los tres avisos de O10 (19 de abril) sin fecha y sin personas nuevas', () => {
+  it('devuelve los avisos de O10 (19 de abril) sin fecha y sin personas nuevas', () => {
     const resultado = simular(documentoDeEjemplo(), 7, opciones())
     expect(resultado.avisos).toEqual([
       {
@@ -158,6 +158,12 @@ describe('simular: P4 del 12 al 19 de abril', () => {
         color: 'rojo',
         dominioId: DOM.bree,
         texto: 'Los víveres de Bree se agotan el 23 de abril y la caravana de Tharbad no vuelve hasta el 25 de abril',
+      },
+      {
+        tipo: 'deudaQueVence',
+        color: 'ambar',
+        dominioId: DOM.tharan,
+        texto: 'Mañana vence la deuda de 4 mo con Hobart Brezal, herrero',
       },
       {
         tipo: 'recursoPerdido',

@@ -24,8 +24,15 @@ function aviso(texto: string, datos: Omit<AvisoConFecha, 'texto'>): AvisoConFech
 }
 
 describe('avisosEn (O10)', () => {
-  it('el 12 de abril: solo la falta prevista de víveres de Bree, en ámbar (a 11 días)', () => {
+  it('el 12 de abril: la deuda de Hobart y la falta prevista de víveres de Bree, en ámbar (esp l.1353)', () => {
     expect(avisosEn(estadoDe(documentoDeEjemplo()), catalogosDeEjemplo())).toEqual([
+      {
+        tipo: 'deudaQueVence',
+        color: 'ambar',
+        dominioId: DOM.tharan,
+        texto: 'La deuda de 4 mo con Hobart Brezal, herrero vence el 20 de abril',
+        fecha: { anio: 1640, mes: 4, dia: 20 },
+      },
       {
         tipo: 'faltaPrevista',
         color: 'ambar',
@@ -36,8 +43,37 @@ describe('avisosEn (O10)', () => {
     ])
   })
 
-  it('el 19 de julio, sin lo ocurrido: los diez avisos de O10, por color, fecha, tipo y dominio', () => {
+  it('el 19 de julio, sin lo ocurrido: los avisos de O10 más las cuatro deudas vencidas, por color, fecha, tipo y dominio', () => {
     expect(avisosTras({ anio: 1640, mes: 7, dia: 19 })).toEqual([
+      {
+        tipo: 'deudaVencida',
+        color: 'rojo',
+        dominioId: DOM.tharan,
+        texto: 'Venció la deuda con Hobart Brezal, herrero: 4 mo pendientes',
+        fecha: { anio: 1640, mes: 4, dia: 20 },
+      },
+      {
+        // Capital 40 mo y cuatro intereses mensuales de 2 mo (1 de abril a 1 de julio).
+        tipo: 'deudaVencida',
+        color: 'rojo',
+        dominioId: DOM.tharan,
+        texto: 'Venció la deuda con Gremio de mercaderes de Bree: 48 mo pendientes',
+        fecha: { anio: 1640, mes: 5, dia: 1 },
+      },
+      {
+        tipo: 'deudaVencida',
+        color: 'rojo',
+        dominioId: DOM.bree,
+        texto: 'Venció la deuda con Gremio de mercaderes de Bree: 30 mo pendientes',
+        fecha: { anio: 1640, mes: 6, dia: 1 },
+      },
+      {
+        tipo: 'deudaVencida',
+        color: 'rojo',
+        dominioId: DOM.tharan,
+        texto: 'Dalen, mercader de Esgaroth no ha devuelto 15 mo',
+        fecha: { anio: 1640, mes: 6, dia: 5 },
+      },
       {
         tipo: 'impago',
         color: 'rojo',
@@ -148,7 +184,7 @@ describe('ordenarAvisos y sinFecha', () => {
     ])
   })
 
-  it('guarda el aviso sin su fecha, y sin dominioId si no lo tiene (formato 1): los tres avisos de O10 a 19 de abril', () => {
+  it('guarda el aviso sin su fecha, y sin dominioId si no lo tiene (formato 1): los avisos de O10 a 19 de abril', () => {
     const fecha: Fecha = { anio: 1640, mes: 7, dia: 19 }
     expect(avisosTras({ anio: 1640, mes: 4, dia: 19 }).map(sinFecha)).toEqual([
       {
@@ -156,6 +192,12 @@ describe('ordenarAvisos y sinFecha', () => {
         color: 'rojo',
         dominioId: DOM.bree,
         texto: 'Los víveres de Bree se agotan el 23 de abril y la caravana de Tharbad no vuelve hasta el 25 de abril',
+      },
+      {
+        tipo: 'deudaQueVence',
+        color: 'ambar',
+        dominioId: DOM.tharan,
+        texto: 'Mañana vence la deuda de 4 mo con Hobart Brezal, herrero',
       },
       {
         tipo: 'recursoPerdido',
