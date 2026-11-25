@@ -1,21 +1,16 @@
 import { useState } from 'react'
 import { formatearOro } from '../../dominio/dinero/formato'
-import { personaPorNombre, ubicacionPorNombre } from '../../dominio/edicion/listas'
+import { ubicacionPorNombre } from '../../dominio/edicion/listas'
 import { crearObjeto, editarObjeto, eliminarObjeto } from '../../dominio/edicion/objetos'
-import { venderObjeto, vistaPreviaDeVenta } from '../../dominio/edicion/ventas'
 import type { ObjetoInventario } from '../../dominio/modelo/personaje'
 import { buscarEn } from '../../dominio/texto/buscar'
 import { Boton, BotonIcono } from '../comunes/Boton'
 import { CampoTexto } from '../comunes/Campo'
-import { CampoFecha } from '../comunes/CampoFecha'
 import { CampoImporte } from '../comunes/CampoImporte'
-import { leerImporte } from '../comunes/leerImporte'
 import { CabeceraPantalla, Nota, Panel } from '../comunes/Panel'
-import { ListaPares, Tabla } from '../comunes/Tabla'
+import { Tabla } from '../comunes/Tabla'
 import {
-  CampoCuenta,
   CampoOpcion,
-  CampoPersona,
   CampoUbicacion,
   NUEVA_UBICACION,
 } from '../formulario/campos'
@@ -23,6 +18,7 @@ import { claveDeUbicacion, ubicacionDeClave, ubicaciones } from '../formulario/u
 import { DialogoFormulario } from '../formulario/DialogoFormulario'
 import { enteroDe, importeDe, valorDe } from '../formulario/valores'
 import { usePartida } from '../partida/contexto'
+import { DialogoVenta } from './DialogoVenta'
 import estilos from '../partida/partida.module.css'
 
 function DialogoObjeto({ objeto, dominioId, alCerrar }: { objeto?: ObjetoInventario; dominioId: string; alCerrar: () => void }) {
@@ -87,68 +83,6 @@ function DialogoObjeto({ objeto, dominioId, alCerrar }: { objeto?: ObjetoInventa
       <CampoImporte etiqueta="Valor por unidad" valor={valor} alCambiar={setValor} equivalencias={eq} />
       <CampoUbicacion valor={ubicacion} alCambiar={setUbicacion} nombreNueva={nueva} alCambiarNombre={setNueva} />
       <CampoTexto etiqueta="Notas" maximo={1000} valor={notas} alCambiar={setNotas} />
-    </DialogoFormulario>
-  )
-}
-
-/** J3b: vender unidades de un objeto, viendo lo que cambia. */
-function DialogoVenta({ objeto, alCerrar }: { objeto: ObjetoInventario; alCerrar: () => void }) {
-  const { documento, editar } = usePartida()
-  const eq = documento.partida.equivalencias
-  const hoy = documento.partida.fechaActual
-  const [cantidad, setCantidad] = useState('1')
-  const [precio, setPrecio] = useState(valorDe(objeto.valorUnitario, eq))
-  const [cuenta, setCuenta] = useState(objeto.dominioId)
-  const [comprador, setComprador] = useState('')
-  const [fecha, setFecha] = useState(hoy)
-  const lectura = leerImporte(precio, eq)
-  const unidades = /^\d+$/.test(cantidad) ? Number(cantidad) : 0
-  const previa =
-    lectura.tipo === 'valido'
-      ? vistaPreviaDeVenta(documento, objeto.id, {
-          cantidad: unidades,
-          precioUnitario: { base: lectura.base },
-          cuentaId: cuenta,
-          fecha,
-        })
-      : null
-
-  async function vender(): Promise<void> {
-    const datos = {
-      cantidad: enteroDe(cantidad, 'Cantidad'),
-      precioUnitario: importeDe(precio, eq, 0),
-      cuentaId: cuenta,
-      fecha,
-    }
-    await editar((doc, sello) => {
-      let base = doc
-      let compradorId: string | undefined
-      if (comprador.trim() !== '') {
-        const persona = personaPorNombre(base, comprador, sello)
-        base = persona.estado
-        compradorId = persona.id
-      }
-      return venderObjeto(base, objeto.id, { ...datos, compradorId }, sello).estado
-    })
-  }
-
-  return (
-    <DialogoFormulario titulo="Vender objeto" subtitulo={`${objeto.nombre} · tienes ${objeto.cantidad}`} alCerrar={alCerrar} alGuardar={vender} textoGuardar="Vender">
-      <CampoTexto etiqueta="Cantidad" modoTeclado="numeric" valor={cantidad} alCambiar={setCantidad} />
-      <CampoImporte etiqueta="Precio por unidad" valor={precio} alCambiar={setPrecio} equivalencias={eq} />
-      <CampoCuenta etiqueta="Entra en" valor={cuenta} alCambiar={setCuenta} />
-      <CampoPersona etiqueta="Comprador (opcional)" valor={comprador} alCambiar={setComprador} />
-      <CampoFecha etiqueta="Fecha" valor={fecha} alCambiar={(f) => f !== null && setFecha(f)} hoy={hoy} edad={documento.partida.edad} maximo={hoy} />
-      {previa !== null && (
-        <ListaPares
-          filas={[
-            { etiqueta: 'Se cobra', valor: formatearOro(previa.total, eq) },
-            { etiqueta: 'Diferencia con el valor anotado', valor: formatearOro(previa.diferencia, eq, { signo: true }) },
-            { etiqueta: 'La cuenta quedará en', valor: formatearOro(previa.saldoDespues, eq) },
-            { etiqueta: 'Patrimonio', valor: formatearOro(previa.patrimonioDespues, eq) },
-          ]}
-        />
-      )}
     </DialogoFormulario>
   )
 }

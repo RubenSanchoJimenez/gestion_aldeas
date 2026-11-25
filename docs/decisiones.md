@@ -151,10 +151,10 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 | # | Decisión | Por qué |
 |---|---|---|
 | D-113 | Para elegir una persona (contraparte, comprador) se escribe su nombre con sugerencias de la lista; si no existe, se crea al guardar. Las ubicaciones tienen la opción «Nueva ubicación…». | Es el «nombre nuevo en el campo» de la especificación, sin esperar a las altas completas. |
-| D-114 | Una venta se abre desde el libro solo para verla o eliminarla: para cambiar precio o cantidad, se elimina y se vuelve a vender. | La edición ya está programada en el dominio. **Pendiente:** abrir J3b con los datos cargados, como pide la especificación. |
+| D-114 | Una venta se abre desde el libro solo para verla o eliminarla: para cambiar precio o cantidad, se elimina y se vuelve a vender. | La edición ya está programada en el dominio. Resuelto en la fase 9: la venta se abre en J3b con sus datos. |
 | D-115 | Editar cualquier otro movimiento vinculado (deuda, inversión, pergamino, obra, caravana, compra) lleva a la sección donde vive su origen. | **Pendiente:** abrir directamente su formulario. |
-| D-116 | Al borrar un movimiento que compró un objeto, el objeto se queda en el inventario. | **Pendiente:** la casilla «Quitar también … del inventario» de J2d. |
-| D-117 | La conversión de «Valor por unidad» al comprar es el importe dividido por la cantidad, sin campo para cambiarlo en ese diálogo (se cambia después en el inventario). | **Pendiente:** el campo editable de J2b. |
+| D-116 | Al borrar un movimiento que compró un objeto, el objeto se queda en el inventario. | Resuelto en la fase 9: J2d ofrece la casilla. |
+| D-117 | La conversión de «Valor por unidad» al comprar es el importe dividido por la cantidad, sin campo para cambiarlo en ese diálogo (se cambia después en el inventario). | Resuelto en la fase 9: el campo está en J2b. |
 
 ## Fase 8 · Pantallas de los asentamientos (2026-11-25)
 
@@ -165,6 +165,15 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 | D-120 | Al añadir animales de un tipo y género que ya están, la cantidad se suma a esa fila; los datos nuevos de valor y notas no se mezclan. | Es lo que pide la especificación para la cantidad. |
 | D-121 | Una defensa con una obra de reparación que la tiene como objetivo no se puede borrar. | Como los edificios con una obra pendiente. |
 | D-122 | Las pantallas de los asentamientos priorizan que todo se pueda hacer sobre el dibujo exacto de cada vista. **Pendiente de pulir:** el detalle del evento seleccionado (A11), los resúmenes previos al guardar de obra, caravana y compra de víveres, los filtros por tipo de animal, el selector de «Nuevo mercado» dentro de la caravana y la fila de total de locales. | Pediste terminar todo el desarrollo; las reglas del juego ya están completas y probadas en el dominio. |
+
+## Fase 9 · Listas, altas y cierre (2026-11-25)
+
+| # | Decisión | Por qué |
+|---|---|---|
+| D-123 | Antes de guardar cualquier cambio, la app comprueba la partida entera como al importar una copia. Si algo no cuadra, no guarda y dice qué falla. | Así nunca se queda guardada una partida cuya copia se rechazaría después. |
+| D-124 | En «Listas y catálogos», un recurso solo se elimina si no lo usa ninguna partida; no se reasigna. | Reasignar cantidades de un recurso a otro mezclaría unidades distintas. |
+| D-125 | Al eliminar una opción de catálogo o una persona, eliges a quién pasan sus registros dentro del formulario, antes de la doble confirmación. | Reutiliza el mismo diálogo J2d de toda la app. |
+| D-126 | De las altas desde los desplegables, por ahora hay: categoría (alta rápida), persona y ubicación (escribiendo el nombre). Oficios, tipos y recursos se añaden en «Listas y catálogos»; hechizos, mercados y tipos de local, en su pantalla. | Son las que se usan a mitad de otro formulario. **Pendiente:** las demás. |
 
 ## Decisiones tuyas
 
@@ -187,9 +196,20 @@ Estas no se tocan sin preguntarte. El texto completo está en la especificación
 
 ## Pendientes
 
-Claude los decidirá al llegar a su fase y los añadirá arriba como D-NNN, salvo que se los digas antes.
+### Para ti
 
-- **Interés de una deuda**: qué rango y cuántos decimales. Recomendación: del 0 al 100 con 2 decimales, como el resto de porcentajes.
-- **Formas de fecha que aún no existen** («viernes 13 de abril», «Abril de 1640 T.E.», «Del 12 al 19 de abril»). Recomendación: añadirlas al planificar las pantallas (la fase 3 ya añade las listas de meses y el día de un hecho).
-- **Ocho casos límite** de los campos de frecuencia cerca del año 9999 y de los horizontes de previsión. Recomendación: aplicar lo ya anotado al planificar esos formularios.
-- **Dos anotaciones del canvas de diseño** desfasadas (la de «Edificio» y la de «Avanzar días»). Recomendación: corregirlas al llegar a las vistas.
+- **Probar en la tablet** y elegir dónde se publica con HTTPS antes de la primera partida de verdad (D-099). Publicar se te pregunta antes.
+- **Pergaminos (D-104):** el precio de compra es su valor. ¿A veces pagas un precio distinto?
+- **Previsiones:** siguen vigentes los «criterios por defecto; revisables» de la especificación (año 9999 y horizonte de 366 días).
+
+### Por pulir en la app
+
+Las reglas del juego están completas. Falta acercar las pantallas al dibujo de las vistas:
+
+- Calendario: abrir desde el día el registro o su origen, «Añadir evento o pago» (incluidos los eventos de partida) y filtros de varias opciones (D-110, D-112).
+- Un movimiento vinculado abre la sección de su origen, no su formulario (D-115); desde el libro, una venta sí abre J3b.
+- Asentamiento: detalle del evento elegido, resumen antes de guardar obras, caravanas y víveres, filtro por tipo de animal, crear un mercado desde la caravana y fila de total de locales (D-122).
+- «Parecido» al escribir un nombre nuevo, valor por cabeza al unir dos tipos de animal y aviso al cambiar la unidad de un recurso.
+- Avanzar días: elegir «Otro…» también por fecha de destino.
+- Accesibilidad: en formularios con cantidad e importe, los dos campos se llaman «Cantidad».
+- Pruebas por pantalla de la interfaz (D-107).
