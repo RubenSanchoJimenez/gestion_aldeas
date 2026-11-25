@@ -102,7 +102,7 @@ export function EditarPartida({ resumen, alCerrar, alGuardada, alBorrada }: Prop
           <Boton variante="secundario" alPulsar={alCerrar}>
             Cancelar
           </Boton>
-          <Boton desactivado={errorNombre !== null || leida.error !== null} alPulsar={() => void guardar()}>
+          <Boton variante="principal" desactivado={errorNombre !== null || leida.error !== null} alPulsar={() => void guardar()}>
             Guardar cambios
           </Boton>
         </>

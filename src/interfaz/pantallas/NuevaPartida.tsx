@@ -165,6 +165,7 @@ export function NuevaPartida({ alCancelar, alCrear }: PropsNuevaPartida) {
             <div className={estilos.extremos}>
               <span />
               <Boton
+                variante="principal"
                 desactivado={errorDeNombre(nombre) !== null || leida.error !== null || !hayMonedas}
                 alPulsar={() => setPaso(2)}
               >
@@ -228,6 +229,7 @@ export function NuevaPartida({ alCancelar, alCrear }: PropsNuevaPartida) {
                 Atrás
               </Boton>
               <Boton
+                variante="principal"
                 desactivado={
                   creando || errorDeNombre(personaje.nombre) !== null || lecturas.some((l) => l.tipo === 'invalido')
                 }

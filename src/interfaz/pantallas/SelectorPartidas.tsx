@@ -95,7 +95,7 @@ export function SelectorPartidas({ alAbrir, alNuevaPartida }: PropsSelectorParti
         <div className={estilos.vacio}>
           <p>Todavía no tienes ninguna partida.</p>
           <div className={estilos.fila}>
-            <Boton icono="mas" alPulsar={alNuevaPartida}>
+            <Boton variante="principal" icono="mas" alPulsar={alNuevaPartida}>
               Nueva partida
             </Boton>
             <ImportarCopia origen="selector" variante="secundario" alImportar={recargar} />
