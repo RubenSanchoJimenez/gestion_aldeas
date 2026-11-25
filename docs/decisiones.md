@@ -146,6 +146,16 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 | D-111 | En el calendario, de lo ya pasado se marca lo que quedó registrado (cobros y pagos de reglas, producción, obras, caravanas, eventos, intentos y vencimientos). Un pago programado que ya se aplicó no se vuelve a marcar. | Una vez aplicado no se distingue de un movimiento manual, que no se marca. |
 | D-112 | Los filtros del calendario eligen un dominio y un tipo cada vez. | La especificación dice «filtro por dominios y tipos»; **pendiente:** permitir marcar varios a la vez. |
 
+## Fase 7 · Pantallas del personaje (2026-11-25)
+
+| # | Decisión | Por qué |
+|---|---|---|
+| D-113 | Para elegir una persona (contraparte, comprador) se escribe su nombre con sugerencias de la lista; si no existe, se crea al guardar. Las ubicaciones tienen la opción «Nueva ubicación…». | Es el «nombre nuevo en el campo» de la especificación, sin esperar a las altas completas. |
+| D-114 | Una venta se abre desde el libro solo para verla o eliminarla: para cambiar precio o cantidad, se elimina y se vuelve a vender. | La edición ya está programada en el dominio. **Pendiente:** abrir J3b con los datos cargados, como pide la especificación. |
+| D-115 | Editar cualquier otro movimiento vinculado (deuda, inversión, pergamino, obra, caravana, compra) lleva a la sección donde vive su origen. | **Pendiente:** abrir directamente su formulario. |
+| D-116 | Al borrar un movimiento que compró un objeto, el objeto se queda en el inventario. | **Pendiente:** la casilla «Quitar también … del inventario» de J2d. |
+| D-117 | La conversión de «Valor por unidad» al comprar es el importe dividido por la cantidad, sin campo para cambiarlo en ese diálogo (se cambia después en el inventario). | **Pendiente:** el campo editable de J2b. |
+
 ## Decisiones tuyas
 
 Estas no se tocan sin preguntarte. El texto completo está en la especificación (`docs/superpowers/specs/2026-09-15-gestion-aldeas-design.md`), marcado «decidido por el usuario».

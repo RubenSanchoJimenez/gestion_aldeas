@@ -3,7 +3,7 @@ import type { Importe } from '../dinero/importe'
 import { anadirObjetoComprado } from '../inventario/compra'
 import type { Id } from '../modelo/comunes'
 import type { EstadoPartida } from '../modelo/documento'
-import type { Movimiento } from '../modelo/movimientos'
+import type { Movimiento, ObjetoPendiente } from '../modelo/movimientos'
 import type { ObjetoInventario } from '../modelo/personaje'
 import { buscarPorId, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
 
@@ -15,10 +15,12 @@ export interface DatosMovimiento {
   categoriaId: Id
   concepto: string
   fecha: Fecha
+  /** «Añadir también al inventario» (J2b, solo en un gasto): con fecha futura se crea al aplicarse (§7). */
+  inventario?: ObjetoPendiente
 }
 
 /** Lo que J2c deja cambiar: todo menos el tipo (§6.2 l.348). */
-export type CambiosMovimiento = Partial<Omit<DatosMovimiento, 'tipo'>>
+export type CambiosMovimiento = Partial<Omit<DatosMovimiento, 'tipo' | 'inventario'>>
 
 /** Si el movimiento sale de otro registro y se edita desde allí (§6.4 l.751). */
 export function esVinculado(movimiento: Movimiento): boolean {
@@ -76,7 +78,19 @@ export function crearMovimiento<E extends EstadoPartida>(estado: E, datos: Datos
     origen: 'manual',
     programado: esFutura(estado, datos.fecha),
   }
-  return { estado: { ...estado, movimientos: [...estado.movimientos, movimiento] }, id }
+  let objetos = estado.objetos
+  if (datos.inventario !== undefined && datos.tipo === 'gasto') {
+    if (movimiento.programado) {
+      movimiento.objetoPendiente = datos.inventario
+    } else {
+      objetos = anadirObjetoComprado(estado.objetos, datos.inventario, {
+        personajeId: personajeDe(estado),
+        movimientoId: id,
+        nuevoId: sello.nuevoId,
+      })
+    }
+  }
+  return { estado: { ...estado, objetos, movimientos: [...estado.movimientos, movimiento] }, id }
 }
 
 /**

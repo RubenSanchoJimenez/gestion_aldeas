@@ -14,6 +14,7 @@ import { AvanzarDias, ResumenAvance } from './AvanzarDias'
 import { Calendario } from './Calendario'
 import { ContextoPartida, type ContextoDePartida } from './contexto'
 import { destinoDeAviso } from './destinos'
+import { PantallaPersonaje } from '../personaje/PantallaPersonaje'
 import { Inicio } from './Inicio'
 import estilos from './partida.module.css'
 
@@ -83,6 +84,9 @@ export function PartidaAbierta({ inicial, alSalir }: PropsPartidaAbierta) {
           <Inicio alVerResumen={documento.avances.length > 0 ? () => setDialogo('resumen') : undefined} />
         ) : pantalla.tipo === 'calendario' ? (
           <Calendario />
+        ) : pantalla.tipo === 'dominio' &&
+          documento.dominios.find((d) => d.id === pantalla.dominioId)?.tipo === 'personaje' ? (
+          <PantallaPersonaje dominioId={pantalla.dominioId} seccion={pantalla.seccion} />
         ) : pantalla.tipo === 'ajustes' ? (
           <Ajustes
             documento={documento}
