@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import { formatearOro } from '../../dominio/dinero/formato'
 import { saldosPorDominio } from '../../dominio/dinero/saldo'
 import type { OpcionCatalogo } from '../../dominio/modelo/catalogos'
@@ -6,6 +6,7 @@ import { ordenarDominios } from '../../dominio/partidas/orden'
 import { CampoTexto, EtiquetaCampo } from '../comunes/Campo'
 import { SelectorConBuscador, type GrupoSelector } from '../comunes/SelectorConBuscador'
 import { usePartida } from '../partida/contexto'
+import { NuevaCategoria } from './NuevaCategoria'
 import { ubicaciones } from './ubicaciones'
 import estilosCampo from '../comunes/campos.module.css'
 
@@ -87,15 +88,20 @@ export function CampoCategoria({ valor, alCambiar }: { valor: string; alCambiar:
     nombre: GRUPOS_CATEGORIA[grupo] ?? grupo,
     opciones: categorias.filter((c) => c.grupo === grupo).map((c) => ({ valor: c.id, texto: c.nombre })),
   }))
+  const [nueva, setNueva] = useState<string | null>(null)
   return (
-    <SelectorConBuscador
-      etiqueta="Categoría"
-      valor={valor}
-      textoSinValor="Elige una categoría"
-      grupos={grupos}
-      alCambiar={alCambiar}
-      sustantivo={{ singular: 'categoría', plural: 'categorías' }}
-    />
+    <>
+      <SelectorConBuscador
+        etiqueta="Categoría"
+        valor={valor}
+        textoSinValor="Elige una categoría"
+        grupos={grupos}
+        alCambiar={alCambiar}
+        sustantivo={{ singular: 'categoría', plural: 'categorías' }}
+        alta={{ texto: 'Nueva categoría', alPedir: setNueva }}
+      />
+      {nueva !== null && <NuevaCategoria inicial={nueva} alCreada={alCambiar} alCerrar={() => setNueva(null)} />}
+    </>
   )
 }
 

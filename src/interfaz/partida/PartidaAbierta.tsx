@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { leerCatalogo } from '../../datos/catalogos'
+import { leerPartida } from '../../datos/repositorio'
 import { guardarEdicion } from '../../datos/ediciones'
 import { avisosEn } from '../../dominio/avisos/avisos'
 import type { CatalogosEnCopia } from '../../dominio/modelo/catalogos'
 import type { DocumentoPartida } from '../../dominio/modelo/documento'
+import { problemaAlGuardar } from '../../dominio/validacion/guardado'
 import { tituloProvisional, type Pantalla } from '../app/navegacion'
 import { useServicios } from '../app/servicios'
 import { Aviso } from '../comunes/Aviso'
@@ -15,6 +17,7 @@ import { Calendario } from './Calendario'
 import { ContextoPartida, type ContextoDePartida } from './contexto'
 import { PantallaAsentamiento } from '../asentamiento/PantallaAsentamiento'
 import { DialogoAsentamiento } from '../asentamiento/DialogoAsentamiento'
+import { Listas } from '../pantallas/Listas'
 import { destinoDeAviso } from './destinos'
 import { PantallaPersonaje } from '../personaje/PantallaPersonaje'
 import { Inicio } from './Inicio'
@@ -40,15 +43,33 @@ export function PartidaAbierta({ inicial, alSalir }: PropsPartidaAbierta) {
   const editar = useCallback<ContextoDePartida['editar']>(
     async (cambio) => {
       const siguiente = cambio(documento, { ahora: ahora(), nuevoId })
+      if (siguiente !== documento) {
+        // El catálogo se relee: la propia edición puede acompañar a un alta recién hecha.
+        const problema = problemaAlGuardar(siguiente, await leerCatalogo(db))
+        if (problema !== null) {
+          throw new Error(problema)
+        }
+      }
       setDocumento(await guardarEdicion(db, documento, siguiente, ahora()))
     },
     [db, ahora, nuevoId, documento],
   )
 
+  const id = documento.partida.id
+  const recargar = useCallback(async () => {
+    const guardado = await leerPartida(db, id)
+    setCatalogo(await leerCatalogo(db))
+    if (guardado !== undefined) {
+      setDocumento(guardado)
+    }
+  }, [db, id])
+
   const contexto = useMemo<ContextoDePartida | null>(
     () =>
-      catalogo === null ? null : { documento, catalogo, reemplazar: setDocumento, editar, navegar: setPantalla },
-    [documento, catalogo, editar],
+      catalogo === null
+        ? null
+        : { documento, catalogo, reemplazar: setDocumento, recargar, editar, navegar: setPantalla },
+    [documento, catalogo, editar, recargar],
   )
 
   const proximo = useMemo(
@@ -94,6 +115,8 @@ export function PartidaAbierta({ inicial, alSalir }: PropsPartidaAbierta) {
           <PantallaPersonaje dominioId={pantalla.dominioId} seccion={pantalla.seccion} />
         ) : pantalla.tipo === 'dominio' && documento.dominios.some((d) => d.id === pantalla.dominioId) ? (
           <PantallaAsentamiento dominioId={pantalla.dominioId} seccion={pantalla.seccion} />
+        ) : pantalla.tipo === 'listas' ? (
+          <Listas />
         ) : pantalla.tipo === 'ajustes' ? (
           <Ajustes
             documento={documento}

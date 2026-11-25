@@ -21,6 +21,8 @@ export interface PropsDialogoFormulario {
     subtitulo: string
     resumen: readonly FilaPar[]
     alEliminar: () => Promise<void>
+    /** Casillas de lo que se puede devolver o quitar (J2d). */
+    extra?: ReactNode
   }
 }
 
@@ -30,6 +32,17 @@ export function DialogoFormulario(props: PropsDialogoFormulario) {
   const [fallo, setFallo] = useState<string | null>(null)
   const [borrando, setBorrando] = useState(false)
   const [ocupado, setOcupado] = useState(false)
+  const [tocado, setTocado] = useState(false)
+  const [descartando, setDescartando] = useState(false)
+
+  /** Con cambios sin guardar, «Cancelar» pregunta antes de perderlos (§6.4). */
+  const cancelar = (): void => {
+    if (tocado && !descartando) {
+      setDescartando(true)
+    } else {
+      alCerrar()
+    }
+  }
 
   async function hacer(accion: () => Promise<void>): Promise<void> {
     setOcupado(true)
@@ -52,9 +65,11 @@ export function DialogoFormulario(props: PropsDialogoFormulario) {
         ancho={700}
         titulo={titulo}
         subtitulo={subtitulo}
-        alCancelar={alCerrar}
+        alCancelar={cancelar}
         pieIzquierda={
-          fallo !== null ? (
+          descartando ? (
+            <MensajeError>Hay cambios sin guardar</MensajeError>
+          ) : fallo !== null ? (
             <MensajeError>{fallo}</MensajeError>
           ) : eliminar === undefined ? undefined : (
             <Boton variante="peligro" icono="x" alPulsar={() => setBorrando(true)}>
@@ -63,17 +78,40 @@ export function DialogoFormulario(props: PropsDialogoFormulario) {
           )
         }
         pieDerecha={
-          <>
-            <Boton variante="secundario" alPulsar={alCerrar}>
-              Cancelar
-            </Boton>
-            <Boton variante="principal" desactivado={ocupado} alPulsar={() => void hacer(alGuardar)}>
-              {textoGuardar}
-            </Boton>
-          </>
+          descartando ? (
+            <>
+              <Boton variante="secundario" alPulsar={() => setDescartando(false)}>
+                Seguir editando
+              </Boton>
+              <Boton variante="peligroLleno" alPulsar={alCerrar}>
+                Descartar
+              </Boton>
+            </>
+          ) : (
+            <>
+              <Boton variante="secundario" alPulsar={cancelar}>
+                Cancelar
+              </Boton>
+              <Boton variante="principal" desactivado={ocupado} alPulsar={() => void hacer(alGuardar)}>
+                {textoGuardar}
+              </Boton>
+            </>
+          )
         }
       >
-        <div className={estilos.cuerpo} onInput={() => setFallo(null)}>
+        <div
+          className={estilos.cuerpo}
+          onInput={() => {
+            setFallo(null)
+            setTocado(true)
+          }}
+          onClickCapture={(e) => {
+            // Elegir en un desplegable, un segmento o una fecha también es cambiar algo.
+            if ((e.target as Element).closest('[role="option"],[role="radio"],[aria-pressed],input[type="checkbox"]')) {
+              setTocado(true)
+            }
+          }}
+        >
           {children}
         </div>
       </Dialogo>
@@ -85,7 +123,9 @@ export function DialogoFormulario(props: PropsDialogoFormulario) {
           resumen={eliminar.resumen}
           alCancelar={() => setBorrando(false)}
           alEliminar={() => void hacer(eliminar.alEliminar)}
-        />
+        >
+          {eliminar.extra}
+        </ConfirmacionEliminar>
       )}
     </>
   )

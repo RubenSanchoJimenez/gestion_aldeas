@@ -4,8 +4,8 @@ import { formatearIntroducido, formatearOro } from '../../dominio/dinero/formato
 import { saldosPorDominio } from '../../dominio/dinero/saldo'
 import { crearMovimiento, editarMovimiento, eliminarMovimiento } from '../../dominio/edicion/movimientos'
 import { ubicacionPorNombre } from '../../dominio/edicion/listas'
+import { eliminarObjeto } from '../../dominio/edicion/objetos'
 import { crearTransferencia, editarTransferencia, eliminarTransferencia } from '../../dominio/edicion/transferencias'
-import { eliminarVenta } from '../../dominio/edicion/ventas'
 import type { Movimiento } from '../../dominio/modelo/movimientos'
 import { buscarEn } from '../../dominio/texto/buscar'
 import { Aviso } from '../comunes/Aviso'
@@ -14,7 +14,7 @@ import { CampoTexto } from '../comunes/Campo'
 import { CampoFecha } from '../comunes/CampoFecha'
 import { CampoImporte } from '../comunes/CampoImporte'
 import { Casilla } from '../comunes/Casilla'
-import { leerImporte } from '../comunes/leerImporte'
+import { leerImporte, type ValorImporte } from '../comunes/leerImporte'
 import { CabeceraPantalla, Nota, Panel } from '../comunes/Panel'
 import { Segmentos } from '../comunes/Segmentos'
 import { Tabla } from '../comunes/Tabla'
@@ -23,6 +23,7 @@ import { ubicacionDeClave } from '../formulario/ubicaciones'
 import { DialogoFormulario } from '../formulario/DialogoFormulario'
 import { enteroDe, fechaCorta, importeDe, valorDe } from '../formulario/valores'
 import { usePartida } from '../partida/contexto'
+import { DialogoVenta } from '../personaje/DialogoVenta'
 import estilos from '../partida/partida.module.css'
 
 /** J2b y J2c: el alta y la edición de un movimiento suelto. */
@@ -41,6 +42,9 @@ export function DialogoMovimiento(props: { dominioId: string; movimiento?: Movim
   const [cantidad, setCantidad] = useState('1')
   const [ubicacion, setUbicacion] = useState('encima')
   const [nuevaUbicacion, setNuevaUbicacion] = useState('')
+  const [valorUnidad, setValorUnidad] = useState<ValorImporte | null>(null)
+  const [quitarObjeto, setQuitarObjeto] = useState(false)
+  const objetoComprado = documento.objetos.find((o) => movimiento !== undefined && o.movimientoCompraId === movimiento.id)
   const saldo = saldosPorDominio(documento)[dominioId] ?? 0
   const lectura = leerImporte(importe, eq)
   const programado = compararFechas(fecha, hoy) > 0
@@ -78,7 +82,9 @@ export function DialogoMovimiento(props: { dominioId: string; movimiento?: Movim
         inventario = {
           nombre: concepto.trim().slice(0, 60),
           cantidad: unidades,
-          valorUnitario: { base: Math.round(total.base / unidades) },
+          // Propuesto: importe ÷ cantidad; si se escribe otro, manda el escrito (§6.2, J2b).
+          valorUnitario:
+            valorUnidad === null ? { base: Math.round(total.base / unidades) } : importeDe(valorUnidad, eq, 0),
           ubicacion: ubicacionDeClave(clave),
         }
       }
@@ -103,7 +109,21 @@ export function DialogoMovimiento(props: { dominioId: string; movimiento?: Movim
               titulo: `¿Eliminar «${movimiento.concepto}»?`,
               subtitulo: fechaCorta(movimiento.fecha, hoy),
               resumen: [{ etiqueta: 'Importe', valor: formatearOro(movimiento.importe.base, eq, { signo: true }) }],
-              alEliminar: () => editar((doc) => eliminarMovimiento(doc, movimiento.id)),
+              alEliminar: () =>
+                editar((doc) => {
+                  const sinMovimiento = eliminarMovimiento(doc, movimiento.id)
+                  return quitarObjeto && objetoComprado !== undefined
+                    ? eliminarObjeto(sinMovimiento, objetoComprado.id)
+                    : sinMovimiento
+                }),
+              extra:
+                objetoComprado === undefined ? undefined : (
+                  <Casilla
+                    etiqueta={`Quitar también «${objetoComprado.nombre}» del inventario`}
+                    marcada={quitarObjeto}
+                    alCambiar={setQuitarObjeto}
+                  />
+                ),
             }
       }
     >
@@ -141,6 +161,13 @@ export function DialogoMovimiento(props: { dominioId: string; movimiento?: Movim
           {alInventario && (
             <>
               <CampoTexto etiqueta="Cantidad" modoTeclado="numeric" valor={cantidad} alCambiar={setCantidad} />
+              <CampoImporte
+                etiqueta="Valor por unidad"
+                ayuda="Vacío: el importe repartido entre la cantidad"
+                valor={valorUnidad ?? { cantidad: '', moneda: importe.moneda }}
+                alCambiar={(v) => setValorUnidad(v.cantidad.trim() === '' ? null : v)}
+                equivalencias={eq}
+              />
               <CampoUbicacion
                 valor={ubicacion}
                 alCambiar={setUbicacion}
@@ -225,7 +252,7 @@ type Abierto = { tipo: 'nuevo' } | { tipo: 'transferencia'; id?: string } | { ti
 
 /** J2 y A2: el libro de una bolsa o de una caja, con lo programado encima (§6.2). */
 export function Libro({ dominioId, titulo }: { dominioId: string; titulo: string }) {
-  const { documento, catalogo, editar, navegar } = usePartida()
+  const { documento, catalogo, navegar } = usePartida()
   const [abierto, setAbierto] = useState<Abierto | null>(null)
   const [periodo, setPeriodo] = useState('')
   const [categoria, setCategoria] = useState('')
@@ -356,23 +383,7 @@ export function Libro({ dominioId, titulo }: { dominioId: string; titulo: string
       {abierto?.tipo === 'transferencia' && (
         <DialogoTransferencia dominioId={dominioId} transferenciaId={abierto.id} alCerrar={() => setAbierto(null)} />
       )}
-      {venta !== undefined && (
-        <DialogoFormulario
-          titulo="Venta"
-          subtitulo={`${venta.cantidad} × ${venta.nombre}`}
-          alCerrar={() => setAbierto(null)}
-          alGuardar={async () => undefined}
-          textoGuardar="Cerrar"
-          eliminar={{
-            titulo: `¿Eliminar la venta de «${venta.nombre}»?`,
-            subtitulo: 'Se borra su cobro y vuelven las unidades',
-            resumen: [{ etiqueta: 'Cobrado', valor: formatearOro(venta.cantidad * venta.precioUnitario.base, eq) }],
-            alEliminar: () => editar((doc, sello) => eliminarVenta(doc, venta.id, sello)),
-          }}
-        >
-          <Nota>Para cambiar el precio o la cantidad, elimina la venta y vuelve a venderlo.</Nota>
-        </DialogoFormulario>
-      )}
+      {venta !== undefined && <DialogoVenta venta={venta} alCerrar={() => setAbierto(null)} />}
     </>
   )
 }

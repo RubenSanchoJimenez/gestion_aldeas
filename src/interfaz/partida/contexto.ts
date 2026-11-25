@@ -15,6 +15,8 @@ export interface ContextoDePartida {
   editar: (cambio: (documento: DocumentoPartida, sello: Sello) => DocumentoPartida) => Promise<void>
   /** Sustituye el documento por uno ya guardado (avanzar, deshacer o importar). */
   reemplazar: (documento: DocumentoPartida) => void
+  /** Relee la partida y los catálogos de la tablet: tras cambiar un catálogo. */
+  recargar: () => Promise<void>
   navegar: (pantalla: Pantalla) => void
 }
 
