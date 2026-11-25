@@ -1,9 +1,26 @@
+import './interfaz/estilos/fuentes'
+import './interfaz/estilos/variables.css'
+import './interfaz/estilos/global.css'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
+import { BaseDeDatos } from './datos/baseDeDatos'
+import { nuevoId } from './datos/ids'
+import App from './interfaz/app/App'
+import { descargarArchivo, pedirAlmacenamientoPersistente } from './interfaz/app/navegador'
+import { ContextoServicios, type Servicios } from './interfaz/app/servicios'
+
+const servicios: Servicios = {
+  db: new BaseDeDatos(),
+  ahora: () => new Date().toISOString(),
+  nuevoId,
+  descargar: descargarArchivo,
+}
+void pedirAlmacenamientoPersistente()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <ContextoServicios value={servicios}>
+      <App />
+    </ContextoServicios>
   </StrictMode>,
 )

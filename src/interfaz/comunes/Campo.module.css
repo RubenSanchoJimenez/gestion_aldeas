@@ -1,0 +1,69 @@
+/* Campo de texto y su etiqueta (§6.5, mjs L191-194). */
+.etiquetaCampo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--fuente-ui);
+  min-width: 0;
+}
+.etiqueta {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tinta);
+}
+/* Sigue siendo el nombre accesible del campo (etiquetaOculta): solo desaparece de la vista. */
+.etiquetaOculta {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.controlConSufijo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.control {
+  flex: 1;
+  min-width: 0;
+  height: var(--alto-campo);
+  padding: 0 14px;
+  background: var(--campo);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+  font-size: var(--texto-campo);
+  color: var(--tinta);
+}
+.control:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.control[aria-invalid='true'] {
+  border-color: var(--lacre);
+}
+.alineadoDerecha {
+  text-align: right;
+}
+.sufijo {
+  font-size: 14px;
+  color: var(--tinta-suave);
+  white-space: nowrap;
+}
+.ayuda {
+  margin: 0;
+  font-size: 13px;
+  color: var(--tinta-suave);
+}
+.mensajeError {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--lacre);
+}

@@ -130,6 +130,13 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 | D-098 | La app instalada se llama «Gestión de Aldeas» («Aldeas» bajo el icono). Su icono es el emblema de oro sobre papel. Se abre en horizontal y a pantalla completa, se actualiza sola cuando hay una versión nueva y pide al navegador que no borre sus datos. | La especificación fija la tablet en horizontal (§2) y el emblema ya está dibujado en las vistas. |
 | D-099 | En la fase 6a, la tablet abre la app desde el ordenador por USB (`adb reverse`, en la dirección `localhost`). Antes de la primera partida de verdad hay que elegir un sitio HTTPS fijo, como GitHub Pages u otro. Publicarla se te pregunta antes, y cambiar después de sitio obliga a exportar e importar las partidas. | Chrome solo instala una app y la deja usar sin conexión si viene de HTTPS o de `localhost`, y las partidas quedan guardadas en ese sitio. |
 
+### Al programarla (2026-11-25)
+
+| # | Decisión | Por qué |
+|---|---|---|
+| D-107 | Las últimas tareas de la 6a (campos, marco y pantallas) llevan menos pruebas que las que pedía el contrato: se comprueban con un recorrido completo de la app (abrir el ejemplo, crear, exportar, importar y borrar) en vez de una batería por pantalla. | Pediste terminar todo el desarrollo; las reglas del juego siguen probadas una a una en el dominio. **Pendiente:** completar las pruebas por pantalla en el cierre (fase 9). |
+| D-108 | La prueba en la tablet y la publicación en un sitio HTTPS quedan para ti. | Hace falta el aparato, y publicar se pregunta antes (D-099). |
+
 ## Decisiones tuyas
 
 Estas no se tocan sin preguntarte. El texto completo está en la especificación (`docs/superpowers/specs/2026-09-15-gestion-aldeas-design.md`), marcado «decidido por el usuario».

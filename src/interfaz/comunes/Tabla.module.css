@@ -1,0 +1,76 @@
+/* Tabla y lista de pares (mjs L158-172). */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--fuente-ui);
+}
+.cabecera {
+  height: 38px;
+  padding: 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--tinta-suave);
+  text-align: left;
+}
+.cabecera[data-derecha] {
+  text-align: right;
+}
+.celda {
+  padding: 0 8px;
+  font-size: 15px;
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+.celda[data-derecha] {
+  text-align: right;
+}
+tbody tr:not(:last-child) .celda {
+  border-bottom: 1px solid var(--borde);
+}
+.celdaTotal {
+  padding: 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+  border-top: var(--filete);
+  text-align: left;
+}
+.celdaTotal[data-derecha] {
+  text-align: right;
+}
+
+.listaPares {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+.filaPar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--borde);
+}
+.filaPar[data-ultima] {
+  border-bottom: none;
+}
+.etiquetaPar {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-size: 15px;
+  color: var(--tinta);
+}
+.subPar {
+  font-size: 13px;
+  color: var(--tinta-suave);
+}
+.valorPar {
+  margin: 0;
+  font-size: 15px;
+  color: var(--tinta);
+}

@@ -1,0 +1,190 @@
+.fila {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 150px;
+  gap: 10px;
+  align-items: end;
+}
+.conQuitar {
+  grid-template-columns: 110px minmax(0, 1fr) 150px 44px;
+}
+.cantidad {
+  height: var(--alto-campo);
+  width: 100%;
+  padding: 0 14px;
+  background: var(--campo);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+  font-size: var(--texto-campo);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.cantidad[aria-invalid='true'] {
+  border-color: var(--lacre);
+}
+.enOro {
+  height: var(--alto-campo);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  background: var(--oro-tinte);
+  border: 1px solid var(--oro);
+  border-radius: var(--radio-control);
+  color: var(--oro-oscuro);
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.enOro small {
+  font-size: var(--texto-etiqueta);
+  font-weight: 400;
+}
+.resumen {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 22px;
+  background: var(--vitela);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+}
+.medallon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--oro-tinte);
+  border: 1px solid var(--oro);
+  color: var(--oro-oscuro);
+  font-family: var(--fuente-marca);
+  font-size: 16px;
+}
+.cifra {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.suave {
+  color: var(--tinta-suave);
+  font-size: var(--texto-etiqueta);
+}
+.derecha {
+  margin-left: auto;
+  text-align: right;
+}
+.contenedor {
+  position: relative;
+}
+.botonFecha {
+  width: 100%;
+  height: var(--alto-campo);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 14px;
+  background: var(--campo);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+  font-size: var(--texto-campo);
+  text-align: left;
+  cursor: pointer;
+}
+.botonFecha[aria-expanded='true'] {
+  border: 2px solid var(--oro);
+  padding: 0 13px;
+}
+.botonFecha:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.panel {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: var(--vitela);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-panel);
+  box-shadow: var(--sombra-flotante);
+}
+.linea {
+  display: flex;
+  gap: 8px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.mes {
+  flex: 1;
+}
+.anio {
+  width: 76px;
+}
+.dias {
+  border-collapse: collapse;
+}
+.dias th {
+  font-size: var(--texto-secundario);
+  color: var(--tinta-suave);
+  font-weight: 400;
+}
+.dias td {
+  padding: 0;
+}
+.dia {
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radio-control);
+  cursor: pointer;
+}
+.dia[aria-pressed='true'] {
+  background: var(--oro-tinte);
+  border-color: var(--oro);
+  font-weight: 600;
+}
+.dia:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.frecuencia {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.frecuencia legend {
+  font-size: var(--texto-etiqueta);
+  color: var(--tinta-suave);
+  margin-bottom: 4px;
+}
+.corto {
+  width: 160px;
+}
+.fechaInicial {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 140px minmax(0, 1.6fr);
+  gap: 14px;
+  align-items: end;
+}
+.equivale {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.equivale .numero {
+  width: 80px;
+}

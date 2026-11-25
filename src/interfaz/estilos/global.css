@@ -1,0 +1,34 @@
+/* Base de la app: tamaño mínimo 1024×700 (espec. L826), foco visible y cifras tabulares (§10). */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--fuente-ui);
+  font-size: var(--texto-lectura);
+  -webkit-tap-highlight-color: transparent;
+}
+#root {
+  min-width: 1024px;
+  min-height: 700px;
+}
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+/* Foco de teclado: oro oscuro, que da 5,15:1 sobre papel; el oro da 2,94:1 (crítica C13). */
+:focus-visible {
+  outline: 2px solid var(--oro-oscuro);
+  outline-offset: 2px;
+}

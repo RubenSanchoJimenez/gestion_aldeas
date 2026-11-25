@@ -1,0 +1,89 @@
+/* Botón, botón de icono y enlace (mjs L106-119): variantes por color, 44 px de alto para el toque. */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--toque);
+  padding: 0 18px;
+  border-radius: var(--radio-control);
+  font-family: var(--fuente-ui);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.botonPrincipal {
+  background: var(--oro-oscuro);
+  color: var(--vitela);
+  border: 1px solid var(--oro-oscuro);
+}
+.botonSecundario {
+  background: var(--vitela);
+  color: var(--tinta);
+  border: 1px solid var(--borde);
+}
+.botonFantasma {
+  background: transparent;
+  color: var(--tinta);
+  border: 1px solid transparent;
+}
+.botonPeligro {
+  background: transparent;
+  color: var(--lacre);
+  border: 1px solid var(--lacre);
+}
+.botonPeligroLleno {
+  background: var(--lacre);
+  color: var(--vitela);
+  border: 1px solid var(--lacre);
+}
+
+.botonIcono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--toque);
+  height: var(--toque);
+  border-radius: var(--radio-control);
+  color: var(--tinta);
+  cursor: pointer;
+}
+.botonIcono:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.botonIconoSecundario {
+  background: var(--vitela);
+  border: 1px solid var(--borde);
+}
+.botonIconoFantasma {
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--toque);
+  padding: 0 12px;
+  background: none;
+  border: none;
+  font-family: var(--fuente-ui);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--oro-oscuro);
+  white-space: nowrap;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .enlace:hover {
+    color: var(--tinta);
+  }
+}
