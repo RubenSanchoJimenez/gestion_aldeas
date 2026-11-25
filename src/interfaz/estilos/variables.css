@@ -1,0 +1,52 @@
+/* Sistema visual «pergamino legible» (§10, espec. L1379-1406; valores de build-artboards.mjs L11-22). */
+:root {
+  /* Colores de la tabla de §10 */
+  --papel: #F2E8D0;
+  --vitela: #FBF6E9;
+  --pliegue: #E6D8B8;
+  --borde: #D4C29C;
+  --tinta: #2B2118;
+  --tinta-suave: #6B5A45;
+  --lacre: #8E2A1F;
+  --oro: #A9812F;
+  --oro-oscuro: #7A5B1F;
+  --bosque: #3F5E3A;
+
+  /* Colores del generador que §10 no nombra (mjs L12-14) */
+  --campo: #FFFDF6;
+  --lacre-tinte: #F4DED6;
+  --oro-tinte: #F1E3BF;
+  --bosque-tinte: #DFE7D5;
+
+  /* Borde de avisos: el color del tono al 25 % (mjs L185, «${fg}40»; neutro = tinta-suave) */
+  --lacre-borde: #8E2A1F40;
+  --oro-borde: #7A5B1F40;
+  --bosque-borde: #3F5E3A40;
+  --neutro-borde: #6B5A4540;
+
+  /* Tipografía (mjs L16-20; tamaños de §10, espec. L1395-1400) */
+  --fuente-titulo: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --fuente-ui: 'Source Sans 3', 'Segoe UI', Helvetica, Arial, sans-serif;
+  --fuente-marca: Cinzel, 'Trajan Pro', Georgia, serif;
+  --texto-lectura: 15px;
+  --texto-etiqueta: 14px;
+  --texto-secundario: 13px;
+  --texto-calendario: 12px;
+  --texto-cifra: 28px;
+  --texto-campo: 16px;
+
+  /* Medidas (§10 L1401; mjs L114, L191, L247, L257) */
+  --toque: 44px;
+  --alto-campo: 48px;
+  --alto-barra: 64px;
+  --ancho-menu: 232px;
+  --radio-control: 6px;
+  --radio-panel: 8px;
+  --radio-tarjeta: 10px;
+
+  /* Sombras (mjs L266, L278, L1397) y filete doble de las cabeceras (mjs L141, L268; §10 L1403) */
+  --sombra-dialogo: 0 24px 60px rgba(43, 33, 24, 0.35);
+  --sombra-dialogo-apilado: 0 24px 60px rgba(43, 33, 24, 0.45);
+  --sombra-flotante: 0 12px 32px rgba(43, 33, 24, 0.28);
+  --filete: 3px double #D4C29C;
+}
