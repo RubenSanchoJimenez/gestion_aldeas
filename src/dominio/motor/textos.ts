@@ -366,3 +366,13 @@ export function conceptoVenta(nombre: string, cantidad: number): string {
   const texto = cantidad === 1 ? `Venta de ${nombre}` : `Venta de ${cantidad} × ${nombre}`
   return ajustarTexto(texto, MAXIMO_CONCEPTO)
 }
+
+/** «Capital en El Tonel Dorado» (D-105). */
+export function conceptoCapitalInversion(negocio: string): string {
+  return ajustarTexto(`Capital en ${negocio}`, MAXIMO_CONCEPTO)
+}
+
+/** «Retirada de El Tonel Dorado» (D-105). */
+export function conceptoRetiradaInversion(negocio: string): string {
+  return ajustarTexto(`Retirada de ${negocio}`, MAXIMO_CONCEPTO)
+}

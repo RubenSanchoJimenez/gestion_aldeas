@@ -196,7 +196,7 @@ export function registrarPagoDeuda<E extends EstadoPartida>(
       concepto: conceptoPagoDeuda(deuda.sentido, nombreDe(estado, deuda.contraparteId)),
       entra: deuda.sentido === 'meDeben',
     },
-    { tipo: 'pagoDeuda', id: deudaId },
+    { tipo: 'pagoDeuda', id },
   )
   const pago: PagoDeuda = {
     id,

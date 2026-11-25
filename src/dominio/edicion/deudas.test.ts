@@ -189,7 +189,7 @@ describe('registrarPagoDeuda (J4b)', () => {
     expect(cuentas.capital).toBe(2700000)
     expect(cuentas.interesesPendientes).toBe(0)
     expect(cuentas.pendiente).toBe(2700000)
-    const movimiento = vinculadoA(nuevo, 'pagoDeuda', DEUDA.gremioTharan)
+    const movimiento = vinculadoA(nuevo, 'pagoDeuda', id)
     expect(movimiento).toMatchObject({
       dominioId: DOM.tharan,
       tipo: 'gasto',
@@ -202,7 +202,7 @@ describe('registrarPagoDeuda (J4b)', () => {
   })
 
   it('cobrar un préstamo que te deben mete el dinero en la cuenta', () => {
-    const { estado: nuevo } = registrarPagoDeuda(
+    const { estado: nuevo, id } = registrarPagoDeuda(
       estado(),
       DEUDA.dalen,
       {
@@ -213,7 +213,7 @@ describe('registrarPagoDeuda (J4b)', () => {
       },
       sello(),
     )
-    expect(vinculadoA(nuevo, 'pagoDeuda', DEUDA.dalen)).toMatchObject({
+    expect(vinculadoA(nuevo, 'pagoDeuda', id)).toMatchObject({
       tipo: 'ingreso',
       importe: { base: 1500000 },
       concepto: 'Cobro del préstamo a Dalen, mercader de Esgaroth',
