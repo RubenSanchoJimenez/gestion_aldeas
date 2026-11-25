@@ -360,3 +360,9 @@ export function conceptoPagoDeuda(sentido: 'debo' | 'meDeben', contraparte: stri
     sentido === 'debo' ? `Pago de la deuda con ${contraparte}` : `Cobro del préstamo a ${contraparte}`
   return ajustarTexto(texto, MAXIMO_CONCEPTO)
 }
+
+/** Concepto del cobro de una venta: «Venta de Cota de malla», «Venta de 2 × Esmeralda tallada» (D-102). */
+export function conceptoVenta(nombre: string, cantidad: number): string {
+  const texto = cantidad === 1 ? `Venta de ${nombre}` : `Venta de ${cantidad} × ${nombre}`
+  return ajustarTexto(texto, MAXIMO_CONCEPTO)
+}
