@@ -344,3 +344,19 @@ export function avisoDeudaQueVence(
   const texto = manana ? `Mañana vence ${que}` : `${que[0].toUpperCase()}${que.slice(1)} vence el ${fecha}`
   return ajustarTexto(texto, MAXIMO_TEXTO)
 }
+
+/**
+ * Concepto del movimiento del alta de una deuda: «Préstamo del Gremio de mercaderes de Bree» cuando el dinero
+ * entra y «Préstamo a Dalen» cuando sale. Con notas, manda la nota (D-101).
+ */
+export function conceptoAltaDeuda(sentido: 'debo' | 'meDeben', contraparte: string, notas?: string): string {
+  const texto = notas ?? (sentido === 'debo' ? `Préstamo de ${contraparte}` : `Préstamo a ${contraparte}`)
+  return ajustarTexto(texto, MAXIMO_CONCEPTO)
+}
+
+/** Concepto del movimiento de un pago o un cobro de deuda: «Pago de la deuda con Hobart» (D-101). */
+export function conceptoPagoDeuda(sentido: 'debo' | 'meDeben', contraparte: string): string {
+  const texto =
+    sentido === 'debo' ? `Pago de la deuda con ${contraparte}` : `Cobro del préstamo a ${contraparte}`
+  return ajustarTexto(texto, MAXIMO_CONCEPTO)
+}

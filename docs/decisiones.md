@@ -97,6 +97,7 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 
 | # | Decisión | Por qué |
 |---|---|---|
+| D-101 | El concepto del movimiento de una deuda: en el alta, lo que escribas en notas y, si no hay notas, «Préstamo de Hobart» (si debes) o «Préstamo a Dalen» (si te deben); en un pago, «Pago de la deuda con Hobart» o «Cobro del préstamo a Dalen». | La especificación no da estos textos y las deudas guardan el concepto en las notas (D-012): así el libro de la bolsa enseña lo que tú escribiste, y cuando no escribiste nada, algo que se entiende solo. |
 | D-100 | Un préstamo que te deben y está a punto de vencer avisa como préstamo: «El préstamo de 15 mo a Dalen vence el 18 de abril» y, el día antes, «Mañana vence el préstamo de 15 mo a Dalen». | La especificación solo da los dos textos del sentido «debo» y el de un préstamo ya vencido («Dalen no ha devuelto 15 mo»); este es el mismo aviso cambiando «la deuda … con» por «el préstamo … a», sin inventar nada más. |
 
 ## Fase 6a · Base de la interfaz (2026-09-18)
