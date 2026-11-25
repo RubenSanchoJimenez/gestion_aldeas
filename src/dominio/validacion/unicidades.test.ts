@@ -247,3 +247,46 @@ describe('validarUnicidades', () => {
     ])
   })
 })
+
+describe('validarUnicidades: deudas de impago (D-043)', () => {
+  /** Una deuda de impago abierta de los salarios de `origenId`, cargada a la caja `dominioId`. */
+  function deImpago(id: string, dominioId: string, origenId: string) {
+    return {
+      id,
+      dominioId,
+      sentido: 'debo' as const,
+      contraparteId: 'persona.gremio-bree',
+      fecha: { anio: 1640, mes: 4, dia: 1 },
+      principal: { base: 100000 },
+      interesPct: 0,
+      estado: 'abierta' as const,
+      impago: true,
+      origenImpago: { tipo: 'salarios' as const, id: origenId },
+      cargos: [{ fecha: { anio: 1640, mes: 4, dia: 1 }, importe: { base: 100000 }, avanceId: 'av.1' }],
+      pagos: [],
+      devengos: [],
+    }
+  }
+
+  it('el mismo origen en dos cajas distintas vale: cada caja lleva su deuda', () => {
+    const documento = documentoMinimo()
+    documento.personas = [{ id: 'persona.gremio-bree', nombre: 'Gremio de mercaderes de Bree' }]
+    documento.deudas = [
+      deImpago('deuda.1', 'dom.tharan', 'dom.bree'),
+      deImpago('deuda.2', 'dom.bree', 'dom.bree'),
+    ]
+    expect(validarUnicidades(documento, catalogosMinimos())).toEqual([])
+  })
+
+  it('dos deudas abiertas del mismo origen en la misma caja no valen', () => {
+    const documento = documentoMinimo()
+    documento.personas = [{ id: 'persona.gremio-bree', nombre: 'Gremio de mercaderes de Bree' }]
+    documento.deudas = [
+      deImpago('deuda.1', 'dom.bree', 'dom.bree'),
+      deImpago('deuda.2', 'dom.bree', 'dom.bree'),
+    ]
+    expect(validarUnicidades(documento, catalogosMinimos())).toEqual([
+      { ruta: 'deudas[1]', mensaje: 'Hay dos deudas de impago abiertas del mismo origen en la misma caja' },
+    ])
+  })
+})

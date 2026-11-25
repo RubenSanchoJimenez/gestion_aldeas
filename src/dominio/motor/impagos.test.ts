@@ -116,6 +116,33 @@ describe('registrarImpago', () => {
     expect(EsquemaDeuda.safeParse(tributo).success).toBe(true)
   })
 
+  it('el mismo origen en otra caja abre su propia deuda, y la vieja no recibe el cargo (D-043)', () => {
+    const ctx = contexto()
+    const enArchet = registrarImpago(ctx, SALARIOS_26_JULIO)
+    const enBree = registrarImpago(ctx, { ...SALARIOS_26_JULIO, dominioId: DOM.bree, importe: 50000 })
+    expect(enBree.deudaId).not.toBe(enArchet.deudaId)
+    expect(enBree.indice).toBe(0)
+    const deImpago = ctx.deudas.filter((d) => d.impago)
+    expect(deImpago).toHaveLength(2)
+    expect(deImpago.map((d) => [d.dominioId, d.principal.base])).toEqual([
+      [DOM.archet, 320000],
+      [DOM.bree, 50000],
+    ])
+    expect(deImpago.map((d) => d.cargos?.length)).toEqual([1, 1])
+    // Las dos comparten contraparte: la persona se reutiliza, no se crea otra.
+    expect(deImpago[0].contraparteId).toBe(deImpago[1].contraparteId)
+    expect(ctx.personasNuevas).toHaveLength(1)
+  })
+
+  it('después de cambiar de caja, un impago nuevo de la caja vieja vuelve a su deuda (D-043)', () => {
+    const ctx = contexto()
+    const enArchet = registrarImpago(ctx, SALARIOS_26_JULIO)
+    registrarImpago(ctx, { ...SALARIOS_26_JULIO, dominioId: DOM.bree, importe: 50000 })
+    const otra = registrarImpago(ctx, { ...SALARIOS_26_JULIO, importe: 10000 })
+    expect(otra).toEqual({ deudaId: enArchet.deudaId, indice: 1 })
+    expect(ctx.deudas.filter((d) => d.impago)).toHaveLength(2)
+  })
+
   it('una deuda de impago saldada ya no recibe cargos: se abre otra', () => {
     const ctx = contexto()
     const vieja = registrarImpago(ctx, TRIBUTO_19_JULIO)
