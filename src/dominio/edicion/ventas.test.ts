@@ -36,7 +36,8 @@ describe('venderObjeto (J3b, O4)', () => {
       categoriaId: 'cat.venta-de-objetos',
       concepto: 'Venta de Esmeralda tallada',
     })
-    expect(nuevo.partida.cambiosDesdeUltimoAvance).toBe(estado().partida.cambiosDesdeUltimoAvance + 1)
+    // El cambio lo cuenta guardarEdicion al guardar, no la edición (D-038).
+    expect(nuevo.partida).toEqual(estado().partida)
   })
 
   it('no deja vender más de lo que hay, ni 0, ni con fecha futura', () => {

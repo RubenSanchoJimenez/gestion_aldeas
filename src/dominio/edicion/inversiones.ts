@@ -6,7 +6,7 @@ import type { Movimiento } from '../modelo/movimientos'
 import type { Inversion } from '../modelo/personaje'
 import { conceptoCapitalInversion, conceptoRetiradaInversion } from '../motor/textos'
 import { sinVacios } from './opcionales'
-import { buscarPorId, contarCambio, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
+import { buscarPorId, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
 
 /** Lo que pide el formulario «Inversión» (J6). */
 export interface DatosInversion {
@@ -78,7 +78,7 @@ export function crearInversion<E extends EstadoPartida>(estado: E, datos: DatosI
     movimientos = [...movimientos, capital]
   }
   return {
-    estado: contarCambio({ ...estado, movimientos, inversiones: [...estado.inversiones, inversion] }),
+    estado: { ...estado, movimientos, inversiones: [...estado.inversiones, inversion] },
     id,
   }
 }
@@ -124,7 +124,7 @@ export function editarInversion<E extends EstadoPartida>(
         ? [...movimientos, capital]
         : reemplazarPorId(movimientos, { ...capital, editadoEl: anterior.editadoEl }, sello.ahora)
   }
-  return contarCambio({ ...estado, inversiones, movimientos })
+  return { ...estado, inversiones, movimientos }
 }
 
 /** «Retirar inversión»: cobra lo recuperado y la saca del patrimonio. */
@@ -157,11 +157,11 @@ export function retirarInversion<E extends EstadoPartida>(
     estado: 'retirada',
     retirada: { fecha: datos.fecha, importe: datos.importe, movimientoId },
   }
-  return contarCambio({
+  return {
     ...estado,
     inversiones: reemplazarPorId(estado.inversiones, retirada, sello.ahora),
     movimientos: [...estado.movimientos, cobro],
-  })
+  }
 }
 
 /** Revierte la retirada (se hace editando la inversión): borra su cobro y vuelve a estar activa. */
@@ -172,11 +172,11 @@ export function reactivarInversion<E extends EstadoPartida>(estado: E, id: Id, s
   }
   const { retirada, ...resto } = actual
   const activa: Inversion = { ...resto, estado: 'activa' }
-  return contarCambio({
+  return {
     ...estado,
     inversiones: reemplazarPorId(estado.inversiones, activa, sello.ahora),
     movimientos: quitarPorId(estado.movimientos, retirada.movimientoId),
-  })
+  }
 }
 
 /**
@@ -200,5 +200,5 @@ export function eliminarInversion<E extends EstadoPartida>(estado: E, id: Id): E
       delete suelto.regla
       return suelto
     })
-  return contarCambio({ ...estado, movimientos, inversiones: quitarPorId(estado.inversiones, id) })
+  return { ...estado, movimientos, inversiones: quitarPorId(estado.inversiones, id) }
 }

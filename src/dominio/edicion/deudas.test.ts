@@ -74,7 +74,8 @@ describe('crearDeuda', () => {
       programado: false,
     })
     expect(EsquemaMovimiento.safeParse(movimiento).success).toBe(true)
-    expect(nuevo.partida.cambiosDesdeUltimoAvance).toBe(estado().partida.cambiosDesdeUltimoAvance + 1)
+    // El cambio lo cuenta guardarEdicion al guardar, no la edición (D-038).
+    expect(nuevo.partida).toEqual(estado().partida)
   })
 
   it('un préstamo que te deben saca el dinero de la cuenta', () => {
