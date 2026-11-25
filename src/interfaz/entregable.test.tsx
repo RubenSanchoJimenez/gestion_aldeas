@@ -26,7 +26,7 @@ describe('entregable de la fase 6a', () => {
     const menu = screen.getByRole('navigation', { name: 'Menú de la partida' })
     expect(within(menu).getByRole('button', { name: /Bree/ })).toHaveTextContent('pueblo')
 
-    await usuario.click(boton('Ir a Ajustes y copias'))
+    await usuario.click(boton('Ajustes y copias'))
     expect(await screen.findByText('Jueves, 12 de abril de 1640 T.E.')).toBeInTheDocument()
     await usuario.click(boton('Exportar copia'))
     expect(await screen.findByText('18 de septiembre de 2026')).toBeInTheDocument()

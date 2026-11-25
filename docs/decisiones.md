@@ -137,6 +137,15 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 | D-107 | Las últimas tareas de la 6a (campos, marco y pantallas) llevan menos pruebas que las que pedía el contrato: se comprueban con un recorrido completo de la app (abrir el ejemplo, crear, exportar, importar y borrar) en vez de una batería por pantalla. | Pediste terminar todo el desarrollo; las reglas del juego siguen probadas una a una en el dominio. **Pendiente:** completar las pruebas por pantalla en el cierre (fase 9). |
 | D-108 | La prueba en la tablet y la publicación en un sitio HTTPS quedan para ti. | Hace falta el aparato, y publicar se pregunta antes (D-099). |
 
+## Fase 6b · Pantallas del motor (2026-11-25)
+
+| # | Decisión | Por qué |
+|---|---|---|
+| D-109 | Inicio tiene el botón «Resumen del último avance» cuando hay alguno; abre la misma pantalla que sale al avanzar, con «Deshacer avance». | La especificación pide un enlace al resumen, sin decir su texto. |
+| D-110 | En el detalle de un día del calendario, cada elemento lleva un botón que va al dominio al que pertenece. | Es lo más simple mientras se completan las pantallas. **Pendiente:** que abra directamente el registro, la regla o el origen, y «Añadir evento o pago». |
+| D-111 | En el calendario, de lo ya pasado se marca lo que quedó registrado (cobros y pagos de reglas, producción, obras, caravanas, eventos, intentos y vencimientos). Un pago programado que ya se aplicó no se vuelve a marcar. | Una vez aplicado no se distingue de un movimiento manual, que no se marca. |
+| D-112 | Los filtros del calendario eligen un dominio y un tipo cada vez. | La especificación dice «filtro por dominios y tipos»; **pendiente:** permitir marcar varios a la vez. |
+
 ## Decisiones tuyas
 
 Estas no se tocan sin preguntarte. El texto completo está en la especificación (`docs/superpowers/specs/2026-09-15-gestion-aldeas-design.md`), marcado «decidido por el usuario».

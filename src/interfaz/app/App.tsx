@@ -3,11 +3,9 @@ import { sembrarCatalogo } from '../../datos/catalogos'
 import { abrirPartida, ultimaPartidaUsada } from '../../datos/repositorio'
 import type { DocumentoPartida } from '../../dominio/modelo/documento'
 import { CabeceraPantalla, Nota } from '../comunes/Panel'
-import { MarcoPartida, PantallaPendiente } from '../marco/MarcoPartida'
-import { Ajustes } from '../pantallas/Ajustes'
+import { PartidaAbierta } from '../partida/PartidaAbierta'
 import { NuevaPartida } from '../pantallas/NuevaPartida'
 import { SelectorPartidas } from '../pantallas/SelectorPartidas'
-import { tituloProvisional, type Pantalla } from './navegacion'
 import { textoDeError, useServicios } from './servicios'
 
 type Vista =
@@ -15,7 +13,7 @@ type Vista =
   | { tipo: 'error'; mensaje: string }
   | { tipo: 'selector' }
   | { tipo: 'nuevaPartida' }
-  | { tipo: 'partida'; documento: DocumentoPartida; pantalla: Pantalla }
+  | { tipo: 'partida'; documento: DocumentoPartida }
 
 /** El arranque y las vistas de la app (§5; D-081). */
 export default function App() {
@@ -36,14 +34,14 @@ export default function App() {
       setVista(
         documento === undefined
           ? { tipo: 'selector' }
-          : { tipo: 'partida', documento, pantalla: { tipo: 'inicio' } },
+          : { tipo: 'partida', documento },
       )
     }
     arrancar().catch((error: unknown) => setVista({ tipo: 'error', mensaje: textoDeError(error) }))
   }, [db, ahora])
 
   const abrir = (documento: DocumentoPartida): void =>
-    setVista({ tipo: 'partida', documento, pantalla: { tipo: 'inicio' } })
+    setVista({ tipo: 'partida', documento })
   const alSelector = (): void => setVista({ tipo: 'selector' })
 
   switch (vista.tipo) {
@@ -60,27 +58,7 @@ export default function App() {
       return <SelectorPartidas alAbrir={abrir} alNuevaPartida={() => setVista({ tipo: 'nuevaPartida' })} />
     case 'nuevaPartida':
       return <NuevaPartida alCancelar={alSelector} alCrear={abrir} />
-    case 'partida': {
-      const { documento, pantalla } = vista
-      const navegar = (p: Pantalla): void => setVista({ ...vista, pantalla: p })
-      return (
-        <MarcoPartida documento={documento} pantalla={pantalla} alNavegar={navegar}>
-          {pantalla.tipo === 'ajustes' ? (
-            <Ajustes
-              documento={documento}
-              alCambiarDocumento={(d) => setVista({ ...vista, documento: d })}
-              alCambiarDePartida={alSelector}
-              alBorrada={alSelector}
-              alGestionarListas={() => navegar({ tipo: 'listas' })}
-            />
-          ) : (
-            <PantallaPendiente
-              {...tituloProvisional(pantalla, documento)}
-              alIrAAjustes={() => navegar({ tipo: 'ajustes' })}
-            />
-          )}
-        </MarcoPartida>
-      )
-    }
+    case 'partida':
+      return <PartidaAbierta key={vista.documento.partida.id} inicial={vista.documento} alSalir={alSelector} />
   }
 }
