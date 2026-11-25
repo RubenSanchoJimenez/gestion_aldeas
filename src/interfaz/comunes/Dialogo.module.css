@@ -1,0 +1,63 @@
+.dialogo {
+  background: var(--vitela);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  box-shadow: var(--sombra-dialogo);
+  max-height: calc(100dvh - 48px);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.dialogo::backdrop {
+  background: rgba(43, 33, 24, 0.55);
+}
+.dialogo[data-apilado='true'] {
+  box-shadow: var(--sombra-dialogo-apilado);
+  margin-top: 24px;
+}
+.dialogo[data-apilado='true']::backdrop {
+  background: rgba(43, 33, 24, 0.35);
+}
+.cabecera {
+  padding: 18px 16px 14px 28px;
+  border-bottom: var(--filete);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0;
+}
+.subtitulo {
+  font-size: 15px;
+  color: var(--tinta-suave);
+  margin: 4px 0 0;
+}
+.cuerpo {
+  padding: 18px 28px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pie {
+  padding: 14px 20px 14px 28px;
+  border-top: var(--filete);
+  background: var(--papel);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pieDerecha {
+  display: flex;
+  gap: 10px;
+}
+.lineas p {
+  font-size: 15px;
+  margin: 0;
+}

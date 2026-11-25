@@ -1,0 +1,43 @@
+/* Casilla de verificación con caja propia; el input real queda oculto a la vista (mjs L1371-1372). */
+.fila {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--toque);
+  font-family: var(--fuente-ui);
+  font-size: 15px;
+  color: var(--tinta);
+  cursor: pointer;
+}
+.fila[data-desactivada] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.entrada {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.caja {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: 2px solid var(--tinta-suave);
+}
+.fila[data-desactivada] .caja {
+  border-color: var(--borde);
+}
+.caja[data-marcada] {
+  border-color: var(--oro-oscuro);
+  background: var(--oro-oscuro);
+}

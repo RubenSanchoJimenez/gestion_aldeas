@@ -61,9 +61,9 @@ const DOCUMENTO: DocumentoPartida = {
 }
 
 describe('resumenDePartida', () => {
-  it('pone el personaje primero y los asentamientos por su alta y, si empatan, por su id', () => {
+  it('pone el personaje primero y los asentamientos por su alta y, si empatan, en el orden del documento', () => {
     const resumen = resumenDePartida(DOCUMENTO, { abiertaEl: '2026-09-17T19:00:00.000Z' })
-    expect(resumen.dominios).toEqual(['Tharan', 'Bree', 'Zarcero', 'Archet'])
+    expect(resumen.dominios).toEqual(['Tharan', 'Zarcero', 'Bree', 'Archet'])
     expect(resumen.id).toBe('p.sombra-del-este')
     expect(resumen.nombre).toBe('La Sombra del Este')
     expect(resumen.edad).toBe('tercera')
