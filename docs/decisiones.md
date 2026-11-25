@@ -93,6 +93,18 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 | D-068 | Todo lo demás de la fase 4 es técnico (cómo se guardan los decimales de las cantidades, en qué orden corren los pasos dentro del código, qué comprueba la validación de las copias, cómo se prueban las cifras) y no cambia nada de lo que ves ni de las reglas del juego. | Está explicado tarea a tarea en el plan de la fase 4. |
 | D-069 | Un edificio solo guarda un `avisoPendiente` a la vez: si una mejora o una reparación terminan sobre el mismo edificio en el mismo avance mientras ya tiene uno sin ver, el segundo evento se pierde en silencio y no pisa al primero. | Es el mismo `avisoPendiente` de un único campo por edificio, con la regla «gana el primero» que ya usa el resto del motor (por ejemplo D-060); commit f96487f, tarea 12. |
 
+## Fase 5 · Motor del personaje (2026-11-25)
+
+| # | Decisión | Por qué |
+|---|---|---|
+| D-106 | El objeto de un pergamino vendido y vuelto a recuperar vuelve con 1 unidad y su pergamino en «poseído», aunque antes lo hubieras marcado como perdido. | «Eliminar la venta lo devuelve a poseído» (§7). |
+| D-105 | El capital de una inversión sale con la fecha de hoy de la partida, y sus movimientos se llaman «Capital en El Tonel Dorado» y «Retirada de El Tonel Dorado». | El formulario no pide fecha del capital. |
+| D-104 | En «Pergamino», lo que pagaste al marcar «Lo he comprado» es su valor: no hay un precio aparte. Si lo cambias, cambia también el gasto; si desmarcas la casilla, el gasto se borra. | El formulario solo tiene un campo de importe. **Duda para ti:** si a veces pagas un precio distinto del valor, habría que añadir el campo. |
+| D-103 | Borrar un objeto del inventario no borra el movimiento con el que lo compraste, y sus ventas se quedan con el nombre y el valor. | Es lo que dice «Al eliminar»; el dinero se gastó de verdad. |
+| D-102 | Una venta, la compra de un pergamino y la retirada de una inversión no admiten fecha futura. El cobro de una venta se llama «Venta de Cota de malla» o «Venta de 2 × Esmeralda tallada». | Solo los movimientos sueltos y los de obras, caravanas y compras pueden quedar programados (D-033). |
+| D-101 | El concepto del movimiento de una deuda: en el alta, lo que escribas en notas y, si no hay notas, «Préstamo de Hobart» (si debes) o «Préstamo a Dalen» (si te deben); en un pago, «Pago de la deuda con Hobart» o «Cobro del préstamo a Dalen». | La especificación no da estos textos y las deudas guardan el concepto en las notas (D-012): así el libro de la bolsa enseña lo que tú escribiste, y cuando no escribiste nada, algo que se entiende solo. |
+| D-100 | Un préstamo que te deben y está a punto de vencer avisa como préstamo: «El préstamo de 15 mo a Dalen vence el 18 de abril» y, el día antes, «Mañana vence el préstamo de 15 mo a Dalen». | La especificación solo da los dos textos del sentido «debo» y el de un préstamo ya vencido («Dalen no ha devuelto 15 mo»); este es el mismo aviso cambiando «la deuda … con» por «el préstamo … a», sin inventar nada más. |
+
 ## Fase 6a · Base de la interfaz (2026-09-18)
 
 | # | Decisión | Por qué |

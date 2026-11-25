@@ -32,11 +32,15 @@ export function personaPara(ctx: Contexto, nombre: string): Id {
   return persona.id
 }
 
-/** Si una deuda es la de impago abierta de ese origen: solo hay una por origen (unicidades.ts). */
-function esAbiertaDe(deuda: Deuda, origen: OrigenImpago): boolean {
+/**
+ * Si una deuda es la de impago abierta de ese origen en esa caja: solo hay una por origen y caja (unicidades.ts).
+ * Si un gasto cambia de «Sale de», la caja nueva abre su propia deuda y la vieja se queda con lo suyo (D-043).
+ */
+function esAbiertaDe(deuda: Deuda, origen: OrigenImpago, dominioId: Id): boolean {
   return (
     deuda.impago &&
     deuda.estado !== 'saldada' &&
+    deuda.dominioId === dominioId &&
     deuda.origenImpago?.tipo === origen.tipo &&
     deuda.origenImpago.id === origen.id
   )
@@ -49,7 +53,7 @@ export function registrarImpago(ctx: Contexto, impago: Impago): CargoAbierto {
     importe: { base: impago.importe },
     avanceId: ctx.opciones.avanceId,
   }
-  const indice = ctx.deudas.findIndex((d) => esAbiertaDe(d, impago.origen))
+  const indice = ctx.deudas.findIndex((d) => esAbiertaDe(d, impago.origen, impago.dominioId))
   if (indice >= 0) {
     const abierta = ctx.deudas[indice]
     const cargos = [...(abierta.cargos ?? []), cargo]

@@ -179,7 +179,8 @@ function problemasDelEstado(documento: DocumentoPartida): ProblemaDeCoherencia[]
       return
     }
     exige(
-      d.vencimiento !== undefined && compararFechas(d.vencimiento, hoy) < 0,
+      // El mismo día del vencimiento ya vale: el paso 10 suma el interés y marca la deuda vencida ese día (§9 l.1320).
+      d.vencimiento !== undefined && compararFechas(d.vencimiento, hoy) <= 0,
       `deudas[${i}].vencimiento`,
       `La deuda con «${d.contraparteId}» está marcada vencida y no ha vencido`,
     )

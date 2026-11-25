@@ -42,7 +42,7 @@ function ingreso(estado: EstadoPartida, id: string, concepto: string, recurrenci
 
 describe('PASOS_DEL_DIA y pasoEventos', () => {
   it('lleva los pasos del almacén y del dinero de §9, con los números en orden y sin bajar nunca', () => {
-    expect(PASOS_DEL_DIA.map((p) => p.numero)).toEqual([1, 3, 4, 5, 6, 7, 7, 8, 9])
+    expect(PASOS_DEL_DIA.map((p) => p.numero)).toEqual([1, 3, 4, 5, 6, 7, 7, 8, 9, 10])
     expect(PASOS_DEL_DIA.map((p) => p.nombre)).toEqual([
       'eventos',
       'inicio',
@@ -53,6 +53,7 @@ describe('PASOS_DEL_DIA y pasoEventos', () => {
       'llegadaDeCaravanas',
       'cobros',
       'pagos',
+      'deudas',
     ])
   })
 

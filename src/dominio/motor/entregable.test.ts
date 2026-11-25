@@ -251,6 +251,12 @@ describe('P4: el avance del 12 al 19 de abril de 1640', () => {
         texto: 'Los víveres de Bree se agotan el 23 de abril y la caravana de Tharbad no vuelve hasta el 25 de abril',
       },
       {
+        tipo: 'deudaQueVence',
+        color: 'ambar',
+        dominioId: DOM.tharan,
+        texto: 'Mañana vence la deuda de 4 mo con Hobart Brezal, herrero',
+      },
+      {
         tipo: 'recursoPerdido',
         color: 'ambar',
         dominioId: DOM.bree,
@@ -265,6 +271,13 @@ describe('P4: el avance del 12 al 19 de abril de 1640', () => {
     ])
     expect(resultado.personasNuevas).toEqual([])
     expect(avisosEn(estadoDe(documentoDeEjemplo()), catalogosDeEjemplo())).toEqual([
+      {
+        tipo: 'deudaQueVence',
+        color: 'ambar',
+        dominioId: DOM.tharan,
+        texto: 'La deuda de 4 mo con Hobart Brezal, herrero vence el 20 de abril',
+        fecha: { anio: 1640, mes: 4, dia: 20 },
+      },
       {
         tipo: 'faltaPrevista',
         color: 'ambar',
@@ -477,10 +490,34 @@ describe('el impago de Archet que anuncia P4', () => {
 
     expect(resultado.avisos).toEqual([
       {
+        tipo: 'deudaVencida',
+        color: 'rojo',
+        dominioId: DOM.tharan,
+        texto: 'Venció la deuda con Hobart Brezal, herrero: 4 mo pendientes',
+      },
+      {
         tipo: 'faltaDeRecurso',
         color: 'rojo',
         dominioId: DOM.bree,
         texto: 'Los víveres de Bree se agotaron el 23 de abril: faltaron 2.217 sacos',
+      },
+      {
+        tipo: 'deudaVencida',
+        color: 'rojo',
+        dominioId: DOM.tharan,
+        texto: 'Venció la deuda con Gremio de mercaderes de Bree: 48 mo pendientes',
+      },
+      {
+        tipo: 'deudaVencida',
+        color: 'rojo',
+        dominioId: DOM.bree,
+        texto: 'Venció la deuda con Gremio de mercaderes de Bree: 30 mo pendientes',
+      },
+      {
+        tipo: 'deudaVencida',
+        color: 'rojo',
+        dominioId: DOM.tharan,
+        texto: 'Dalen, mercader de Esgaroth no ha devuelto 15 mo',
       },
       {
         tipo: 'faltaDeRecurso',

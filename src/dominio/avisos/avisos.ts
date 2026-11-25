@@ -5,6 +5,7 @@ import type { EstadoPartida } from '../modelo/documento'
 import type { Dominio } from '../modelo/dominios'
 import type { AvisoConFecha, FlujoAlmacen } from '../motor/tipos'
 import { avisosDeAlmacen } from './almacen'
+import { avisosDeDeudas } from './deudas'
 import { avisosDeImpago, avisosDeSaldoNegativo } from './dinero'
 import { avisosDePagoNoCubierto } from './pagoNoCubierto'
 import { avisosDeEdificios, avisosDeObrasYCaravanas } from './pendientes'
@@ -18,6 +19,7 @@ export function avisosEn(estado: EstadoPartida, catalogo: CatalogosEnCopia, ocur
     [
       ...avisosDeSaldoNegativo(estado),
       ...avisosDeImpago(estado),
+      ...avisosDeDeudas(estado),
       ...avisosDePagoNoCubierto(estado, catalogo),
       ...avisosDeAlmacen(estado, catalogo, ocurrido),
       ...avisosDeObrasYCaravanas(estado, catalogo),

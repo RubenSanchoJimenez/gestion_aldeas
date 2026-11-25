@@ -316,3 +316,63 @@ export function textoFaltan(faltas: readonly { cantidad: number; recurso: Recurs
   const verbo = faltas.length === 1 && esUnaUnidad(partes[0]) ? 'Falta' : 'Faltan'
   return `${verbo} ${enumerar(partes)}`
 }
+
+/** «Venció la deuda con Hobart: 4 mo pendientes»; si te deben, «Dalen no ha devuelto 15 mo» (esp l.1163). */
+export function avisoDeudaVencida(sentido: 'debo' | 'meDeben', contraparte: string, pendiente: string): string {
+  const texto =
+    sentido === 'debo'
+      ? `Venció la deuda con ${contraparte}: ${pendiente} pendientes`
+      : `${contraparte} no ha devuelto ${pendiente}`
+  return ajustarTexto(texto, MAXIMO_TEXTO)
+}
+
+/**
+ * «La deuda de 4 mo con Hobart vence el 20 de abril» y, el día antes, «Mañana vence la deuda de 4 mo con Hobart»
+ * (esp l.1163, l.1354). Un préstamo que te deben se nombra como préstamo (D-100).
+ */
+export function avisoDeudaQueVence(
+  sentido: 'debo' | 'meDeben',
+  contraparte: string,
+  pendiente: string,
+  fecha: string,
+  manana: boolean,
+): string {
+  const que =
+    sentido === 'debo'
+      ? `la deuda de ${pendiente} con ${contraparte}`
+      : `el préstamo de ${pendiente} a ${contraparte}`
+  const texto = manana ? `Mañana vence ${que}` : `${que[0].toUpperCase()}${que.slice(1)} vence el ${fecha}`
+  return ajustarTexto(texto, MAXIMO_TEXTO)
+}
+
+/**
+ * Concepto del movimiento del alta de una deuda: «Préstamo del Gremio de mercaderes de Bree» cuando el dinero
+ * entra y «Préstamo a Dalen» cuando sale. Con notas, manda la nota (D-101).
+ */
+export function conceptoAltaDeuda(sentido: 'debo' | 'meDeben', contraparte: string, notas?: string): string {
+  const texto = notas ?? (sentido === 'debo' ? `Préstamo de ${contraparte}` : `Préstamo a ${contraparte}`)
+  return ajustarTexto(texto, MAXIMO_CONCEPTO)
+}
+
+/** Concepto del movimiento de un pago o un cobro de deuda: «Pago de la deuda con Hobart» (D-101). */
+export function conceptoPagoDeuda(sentido: 'debo' | 'meDeben', contraparte: string): string {
+  const texto =
+    sentido === 'debo' ? `Pago de la deuda con ${contraparte}` : `Cobro del préstamo a ${contraparte}`
+  return ajustarTexto(texto, MAXIMO_CONCEPTO)
+}
+
+/** Concepto del cobro de una venta: «Venta de Cota de malla», «Venta de 2 × Esmeralda tallada» (D-102). */
+export function conceptoVenta(nombre: string, cantidad: number): string {
+  const texto = cantidad === 1 ? `Venta de ${nombre}` : `Venta de ${cantidad} × ${nombre}`
+  return ajustarTexto(texto, MAXIMO_CONCEPTO)
+}
+
+/** «Capital en El Tonel Dorado» (D-105). */
+export function conceptoCapitalInversion(negocio: string): string {
+  return ajustarTexto(`Capital en ${negocio}`, MAXIMO_CONCEPTO)
+}
+
+/** «Retirada de El Tonel Dorado» (D-105). */
+export function conceptoRetiradaInversion(negocio: string): string {
+  return ajustarTexto(`Retirada de ${negocio}`, MAXIMO_CONCEPTO)
+}

@@ -293,10 +293,11 @@ export function validarUnicidades(documento: DocumentoPartida, catalogos: Catalo
   sinRepetir(
     documento.deudas.flatMap((d, i) =>
       d.impago && d.estado !== 'saldada' && d.origenImpago !== undefined
-        ? [{ ruta: `deudas[${i}]`, clave: `${d.origenImpago.tipo}|${d.origenImpago.id}` }]
+        ? // Por origen y caja: si un gasto cambia de «Sale de», cada caja lleva su propia deuda (D-043).
+          [{ ruta: `deudas[${i}]`, clave: `${d.origenImpago.tipo}|${d.origenImpago.id}|${d.dominioId}` }]
         : [],
     ),
-    () => 'Hay dos deudas de impago abiertas del mismo origen',
+    () => 'Hay dos deudas de impago abiertas del mismo origen en la misma caja',
   )
 
   return problemas

@@ -8,6 +8,7 @@ import { cerrarDiarios } from './diarios'
 import { pasoLlegadaDeCaravanas, pasoVueltaDeVentas } from './pasos/caravanas'
 import { pasoCobros } from './pasos/cobros'
 import { pasoConsumo } from './pasos/consumo'
+import { pasoDeudas } from './pasos/deudas'
 import { pasoInicio } from './pasos/inicio'
 import { pasoObras } from './pasos/obras'
 import { pasoPagos } from './pasos/pagos'
@@ -37,6 +38,7 @@ export const PASOS_DEL_DIA: readonly PasoDelDia[] = [
   { numero: 7, nombre: 'llegadaDeCaravanas', paso: pasoLlegadaDeCaravanas },
   { numero: 8, nombre: 'cobros', paso: pasoCobros },
   { numero: 9, nombre: 'pagos', paso: pasoPagos },
+  { numero: 10, nombre: 'deudas', paso: pasoDeudas },
 ]
 
 /** Lo que deja un recorrido, sin cambios ni avisos. */
