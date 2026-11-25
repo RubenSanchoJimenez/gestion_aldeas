@@ -99,7 +99,7 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 |---|---|---|
 | D-106 | El objeto de un pergamino vendido y vuelto a recuperar vuelve con 1 unidad y su pergamino en «poseído», aunque antes lo hubieras marcado como perdido. | «Eliminar la venta lo devuelve a poseído» (§7). |
 | D-105 | El capital de una inversión sale con la fecha de hoy de la partida, y sus movimientos se llaman «Capital en El Tonel Dorado» y «Retirada de El Tonel Dorado». | El formulario no pide fecha del capital. |
-| D-104 | En «Pergamino», lo que pagaste al marcar «Lo he comprado» es su valor: no hay un precio aparte. Si lo cambias, cambia también el gasto; si desmarcas la casilla, el gasto se borra. | El formulario solo tiene un campo de importe. **Duda para ti:** si a veces pagas un precio distinto del valor, habría que añadir el campo. |
+| D-104 | **Sustituida** el 2026-11-25 por decisión tuya (ver «Decisiones tuyas»): lo que pagas por un pergamino ya no es su valor. | — |
 | D-103 | Borrar un objeto del inventario no borra el movimiento con el que lo compraste, y sus ventas se quedan con el nombre y el valor. | Es lo que dice «Al eliminar»; el dinero se gastó de verdad. |
 | D-102 | Una venta, la compra de un pergamino y la retirada de una inversión no admiten fecha futura. El cobro de una venta se llama «Venta de Cota de malla» o «Venta de 2 × Esmeralda tallada». | Solo los movimientos sueltos y los de obras, caravanas y compras pueden quedar programados (D-033). |
 | D-101 | El concepto del movimiento de una deuda: en el alta, lo que escribas en notas y, si no hay notas, «Préstamo de Hobart» (si debes) o «Préstamo a Dalen» (si te deben); en un pago, «Pago de la deuda con Hobart» o «Cobro del préstamo a Dalen». | La especificación no da estos textos y las deudas guardan el concepto en las notas (D-012): así el libro de la bolsa enseña lo que tú escribiste, y cuando no escribiste nada, algo que se entiende solo. |
@@ -193,13 +193,13 @@ Estas no se tocan sin preguntarte. El texto completo está en la especificación
 | 2026-09-17 | La partida de ejemplo lleva un historial corto (finales de marzo y abril de 1640), aunque los recuentos de alguna pantalla queden bajos hasta la fase 9. |
 | 2026-09-17 | «Ingreso o tributo» lleva categoría editable, para que salgan Impuestos, Rentas y Tributos por separado. |
 | 2026-09-18 | La fase 6 se parte en dos: la base de la interfaz (instalación en la tablet, aspecto, componentes, partidas y ajustes) se hace en paralelo con el motor, y las pantallas que usan el motor (Inicio, calendario, avanzar días) llegan al terminar la fase 5. |
+| 2026-11-25 | Un pergamino tiene un valor de mercado, pero no tienes por qué pagar siempre eso, ni te lo compran por un precio fijo. «Lo he comprado» pide el precio pagado aparte del valor; la venta ya pide su propio precio. En el patrimonio cuenta el valor de mercado. |
 
 ## Pendientes
 
 ### Para ti
 
 - **Probar en la tablet** y elegir dónde se publica con HTTPS antes de la primera partida de verdad (D-099). Publicar se te pregunta antes.
-- **Pergaminos (D-104):** el precio de compra es su valor. ¿A veces pagas un precio distinto?
 - **Previsiones:** siguen vigentes los «criterios por defecto; revisables» de la especificación (año 9999 y horizonte de 366 días).
 
 ### Por pulir en la app

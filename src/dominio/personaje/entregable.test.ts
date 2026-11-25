@@ -220,6 +220,34 @@ describe('Entregable de la fase 5', () => {
     expect(sin.pergaminos.find((p) => p.id === PERGAMINO.pasoSinRastro)).toMatchObject({ nombre: 'Paso sin rastro' })
   })
 
+  it('lo que pagas por un pergamino no es su valor de mercado, ni al comprarlo ni al venderlo (D-104)', () => {
+    const s = nuevoSello()
+    const datos: DatosPergamino = {
+      dominioId: DOM.tharan,
+      nombre: 'Escudo',
+      estado: 'poseido',
+      valor: { base: 800000 },
+      ubicacion: { tipo: 'encima' },
+      compra: { cuentaId: DOM.tharan, fecha: HOY, precio: { base: 500000 } },
+    }
+    const { estado: creado, id } = crearPergamino(ejemplo(), datos, s)
+    exigeValida(creado)
+    // Pagas 5 mo por algo que vale 8: la bolsa baja 5 y el patrimonio sube 3.
+    expect(saldosPorDominio(creado)[DOM.tharan]).toBe(4651800 - 500000)
+    expect(patrimonioDelPersonaje(creado).neto).toBe(16711800 + 300000)
+    expect(editarPergamino(creado, id, datos, s)).toBe(creado)
+    const otroValor = exigeValida(editarPergamino(creado, id, { ...datos, valor: { base: 900000 } }, s))
+    expect(saldosPorDominio(otroValor)[DOM.tharan]).toBe(4651800 - 500000)
+    const objeto = creado.pergaminos.find((p) => p.id === id)!.objetoInventarioId!
+    const venta = venderObjeto(
+      creado,
+      objeto,
+      { cantidad: 1, precioUnitario: { base: 1100000 }, cuentaId: DOM.tharan, fecha: HOY },
+      s,
+    )
+    expect(saldosPorDominio(exigeValida(venta.estado))[DOM.tharan]).toBe(4651800 - 500000 + 1100000)
+  })
+
   it('pergaminos: comprar, editar, perder y borrar', () => {
     const s = nuevoSello()
     const datos: DatosPergamino = {
@@ -228,7 +256,7 @@ describe('Entregable de la fase 5', () => {
       estado: 'poseido',
       valor: { base: 500000 },
       ubicacion: { tipo: 'encima' },
-      compra: { cuentaId: DOM.tharan, fecha: HOY },
+      compra: { cuentaId: DOM.tharan, fecha: HOY, precio: { base: 500000 } },
     }
     const { estado: creado, id } = crearPergamino(ejemplo(), datos, s)
     exigeValida(creado)

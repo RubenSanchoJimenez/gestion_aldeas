@@ -8,13 +8,15 @@ import { conEstadoDePergamino, nombreDeObjetoPergamino, objetoSegunPergamino } f
 import { sinVacios } from './opcionales'
 import { buscarPorId, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
 
-/** «Lo he comprado»: de qué cuenta sale y cuándo (§6.6, formulario «Pergamino»). */
+/** «Lo he comprado»: de qué cuenta sale, cuándo y cuánto pagaste (§6.6; D-104). */
 export interface CompraPergamino {
   cuentaId: Id
   fecha: Fecha
+  /** Lo pagado de verdad, que no tiene por qué ser el valor de mercado del pergamino. */
+  precio: { base: number }
 }
 
-/** Lo que pide el formulario «Pergamino». El precio de la compra es su valor (D-104). */
+/** Lo que pide el formulario «Pergamino». `valor` es el de mercado, el que cuenta en el patrimonio. */
 export interface DatosPergamino {
   dominioId: Id
   hechizoId?: Id
@@ -45,7 +47,6 @@ function movimientoDeCompra(
   id: Id,
   pergaminoId: Id,
   nombre: string,
-  importe: number,
   compra: CompraPergamino,
   hoy: Fecha,
 ): Movimiento {
@@ -57,7 +58,7 @@ function movimientoDeCompra(
     dominioId: compra.cuentaId,
     fecha: compra.fecha,
     tipo: 'gasto',
-    importe: { base: -importe },
+    importe: { base: -compra.precio.base },
     categoriaId: CATEGORIA.pergaminosYEstudio,
     concepto: nombreDeObjetoPergamino(nombre),
     origen: 'manual',
@@ -86,14 +87,7 @@ export function crearPergamino<E extends EstadoPartida>(estado: E, datos: DatosP
   let movimientoCompraId: Id | undefined
   if (datos.compra !== undefined) {
     movimientoCompraId = sello.nuevoId()
-    const gasto = movimientoDeCompra(
-      movimientoCompraId,
-      id,
-      nombre,
-      datos.valor.base,
-      datos.compra,
-      estado.partida.fechaActual,
-    )
+    const gasto = movimientoDeCompra(movimientoCompraId, id, nombre, datos.compra, estado.partida.fechaActual)
     movimientos = [...movimientos, gasto]
   }
   const pergamino: Pergamino = sinVacios({
@@ -146,14 +140,19 @@ export function editarPergamino<E extends EstadoPartida>(
   } else {
     const movimientoId = actual.movimientoCompraId ?? sello.nuevoId()
     const anterior = estado.movimientos.find((m) => m.id === movimientoId)
-    const gasto = movimientoDeCompra(movimientoId, id, nombre, datos.valor.base, datos.compra, estado.partida.fechaActual)
+    const gasto = movimientoDeCompra(movimientoId, id, nombre, datos.compra, estado.partida.fechaActual)
     // El concepto de un movimiento ya registrado no cambia (§7).
     movimientos =
       anterior === undefined
         ? [...copiaMovimientos, gasto]
         : reemplazarPorId(
             copiaMovimientos,
-            { ...gasto, concepto: anterior.concepto, editadoEl: anterior.editadoEl },
+            {
+              ...gasto,
+              importe: anterior.importe.base === gasto.importe.base ? anterior.importe : gasto.importe,
+              concepto: anterior.concepto,
+              editadoEl: anterior.editadoEl,
+            },
             sello.ahora,
           )
     nuevo.movimientoCompraId = movimientoId

@@ -18,6 +18,7 @@ import { CampoTexto } from '../comunes/Campo'
 import { CampoFecha } from '../comunes/CampoFecha'
 import { CampoImporte } from '../comunes/CampoImporte'
 import { Casilla } from '../comunes/Casilla'
+import type { ValorImporte } from '../comunes/leerImporte'
 import { CabeceraPantalla, Nota, Panel } from '../comunes/Panel'
 import { Segmentos } from '../comunes/Segmentos'
 import { ListaPares, Tabla } from '../comunes/Tabla'
@@ -212,6 +213,12 @@ function DialogoPergamino(props: { dominioId: string; pergamino?: Pergamino; alC
   const [ubicacion, setUbicacion] = useState(objeto === undefined ? 'encima' : claveDeUbicacion(objeto.ubicacion))
   const [nueva, setNueva] = useState('')
   const [comprado, setComprado] = useState(compraAnterior !== undefined)
+  // Vacío en una compra nueva: lo que pagas se propone igual al valor, pero se escribe aparte.
+  const [pagado, setPagado] = useState<ValorImporte | null>(
+    compraAnterior === undefined
+      ? null
+      : valorDe({ ...compraAnterior.importe, base: Math.abs(compraAnterior.importe.base) }, eq),
+  )
   const [cuenta, setCuenta] = useState(compraAnterior?.dominioId ?? props.dominioId)
   const [fecha, setFecha] = useState(compraAnterior?.fecha ?? hoy)
   const aMano = estado === 'poseido' || estado === 'perdido'
@@ -233,7 +240,9 @@ function DialogoPergamino(props: { dominioId: string; pergamino?: Pergamino; alC
         nivel: nivelNumero,
         valor: importe,
         ubicacion: ubicacionDeClave(clave),
-        compra: comprado ? { cuentaId: cuenta, fecha } : undefined,
+        compra: comprado
+          ? { cuentaId: cuenta, fecha, precio: pagado === null ? importe : importeDe(pagado, eq, 0) }
+          : undefined,
       }
       if (pergamino === undefined) {
         const aCrear = { ...datos, dominioId: props.dominioId, estado: estado === 'perdido' ? ('perdido' as const) : ('poseido' as const) }
@@ -280,11 +289,18 @@ function DialogoPergamino(props: { dominioId: string; pergamino?: Pergamino; alC
       ) : (
         <Nota>Está {estado === 'consumido' ? 'consumido' : 'vendido'}.</Nota>
       )}
-      <CampoImporte etiqueta="Valor" valor={valor} alCambiar={setValor} equivalencias={eq} />
+      <CampoImporte etiqueta="Valor de mercado" valor={valor} alCambiar={setValor} equivalencias={eq} />
       <CampoUbicacion valor={ubicacion} alCambiar={setUbicacion} nombreNueva={nueva} alCambiarNombre={setNueva} />
       <Casilla etiqueta="Lo he comprado" marcada={comprado} alCambiar={setComprado} />
       {comprado && (
         <>
+          <CampoImporte
+            etiqueta="Precio pagado"
+            ayuda="Vacío: has pagado su valor de mercado"
+            valor={pagado ?? { cantidad: '', moneda: valor.moneda }}
+            alCambiar={(v) => setPagado(v.cantidad.trim() === '' ? null : v)}
+            equivalencias={eq}
+          />
           <CampoCuenta etiqueta="Sale de" valor={cuenta} alCambiar={setCuenta} />
           <CampoFecha etiqueta="Fecha de la compra" valor={fecha} alCambiar={(f) => f !== null && setFecha(f)} hoy={hoy} edad={documento.partida.edad} maximo={hoy} />
         </>
