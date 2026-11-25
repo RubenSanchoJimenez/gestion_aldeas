@@ -6,7 +6,7 @@ import type { AplicarPagoA, Deuda, PagoDeuda } from '../modelo/deudas'
 import type { EstadoPartida } from '../modelo/documento'
 import type { Movimiento } from '../modelo/movimientos'
 import { conceptoAltaDeuda, conceptoPagoDeuda } from '../motor/textos'
-import { buscarPorId, contarCambio, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
+import { buscarPorId, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
 
 /** Lo que pide el formulario de «Deuda o préstamo» (§6.6, n.º 664). */
 export interface DatosDeuda {
@@ -124,7 +124,7 @@ export function crearDeuda<E extends EstadoPartida>(estado: E, datos: DatosDeuda
     movimientos = [...movimientos, movimiento]
     guardada = { ...conEstado, cuentaAltaId: datos.cuentaId }
   }
-  return { estado: contarCambio({ ...estado, movimientos, deudas: [...estado.deudas, guardada] }), id }
+  return { estado: { ...estado, movimientos, deudas: [...estado.deudas, guardada] }, id }
 }
 
 /**
@@ -161,7 +161,7 @@ export function editarDeuda<E extends EstadoPartida>(estado: E, id: Id, cambios:
   if (deudas === copiaDeudas && movimientos === copiaMovimientos) {
     return estado
   }
-  return contarCambio({ ...estado, deudas, movimientos })
+  return { ...estado, deudas, movimientos }
 }
 
 /** Borra una deuda con sus pagos, el movimiento de cada pago y el del alta (§6.4, tabla de vinculados). */
@@ -171,7 +171,7 @@ export function eliminarDeuda<E extends EstadoPartida>(estado: E, id: Id): E {
   const movimientos = estado.movimientos.filter(
     (m) => !aBorrar.has(m.id) && !(m.vinculo?.tipo === 'altaDeuda' && m.vinculo.id === id),
   )
-  return contarCambio({ ...estado, deudas: quitarPorId([...estado.deudas], id), movimientos })
+  return { ...estado, deudas: quitarPorId([...estado.deudas], id), movimientos }
 }
 
 /**
@@ -207,11 +207,11 @@ export function registrarPagoDeuda<E extends EstadoPartida>(
   }
   const nueva = conPagos(deuda, [...deuda.pagos, pago], estado.partida.fechaActual)
   return {
-    estado: contarCambio({
+    estado: {
       ...estado,
       deudas: reemplazarPorId([...estado.deudas], nueva, sello.ahora),
       movimientos: [...estado.movimientos, movimiento],
-    }),
+    },
     id,
   }
 }
@@ -254,11 +254,11 @@ export function editarPagoDeuda<E extends EstadoPartida>(
     return estado
   }
   const nueva = conPagos(deuda, pagos, estado.partida.fechaActual)
-  return contarCambio({
+  return {
     ...estado,
     deudas: reemplazarPorId([...estado.deudas], nueva, sello.ahora),
     movimientos,
-  })
+  }
 }
 
 /** Borra un pago con su movimiento y recalcula la deuda; los devengos no cambian (§6.4, tabla de vinculados). */
@@ -270,9 +270,9 @@ export function eliminarPagoDeuda<E extends EstadoPartida>(estado: E, deudaId: I
     deuda.pagos.filter((p) => p.id !== pagoId),
     estado.partida.fechaActual,
   )
-  return contarCambio({
+  return {
     ...estado,
     deudas: reemplazarPorId([...estado.deudas], nueva, sello.ahora),
     movimientos: quitarPorId([...estado.movimientos], pago.movimientoId),
-  })
+  }
 }

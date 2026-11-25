@@ -6,7 +6,7 @@ import type { Movimiento } from '../modelo/movimientos'
 import type { ObjetoInventario, Pergamino } from '../modelo/personaje'
 import { conEstadoDePergamino, nombreDeObjetoPergamino, objetoSegunPergamino } from './pergaminoObjeto'
 import { sinVacios } from './opcionales'
-import { buscarPorId, contarCambio, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
+import { buscarPorId, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
 
 /** «Lo he comprado»: de qué cuenta sale y cuándo (§6.6, formulario «Pergamino»). */
 export interface CompraPergamino {
@@ -107,12 +107,12 @@ export function crearPergamino<E extends EstadoPartida>(estado: E, datos: DatosP
     movimientoCompraId,
   })
   return {
-    estado: contarCambio({
+    estado: {
       ...estado,
       objetos: [...estado.objetos, objeto],
       pergaminos: [...estado.pergaminos, pergamino],
       movimientos,
-    }),
+    },
     id,
   }
 }
@@ -181,12 +181,12 @@ export function editarPergamino<E extends EstadoPartida>(
   if (pergaminos === copiaPergaminos && objetos === copiaObjetos && movimientos === copiaMovimientos) {
     return estado
   }
-  return contarCambio({ ...estado, pergaminos, objetos, movimientos })
+  return { ...estado, pergaminos, objetos, movimientos }
 }
 
 /**
  * Quita el pergamino, su objeto y su gasto de compra; los intentos que lo usaron dicen «con un pergamino
- * eliminado» (§6.4, «Al eliminar»). No cuenta el cambio: lo hace quien la llama.
+ * eliminado» (§6.4, «Al eliminar»). 
  */
 export function quitarPergamino<E extends EstadoPartida>(estado: E, id: Id): E {
   const pergamino = buscarPorId(estado.pergaminos, id)
@@ -228,5 +228,5 @@ export function quitarPergamino<E extends EstadoPartida>(estado: E, id: Id): E {
 
 /** Elimina un pergamino (§6.4). */
 export function eliminarPergamino<E extends EstadoPartida>(estado: E, id: Id): E {
-  return contarCambio(quitarPergamino(estado, id))
+  return quitarPergamino(estado, id)
 }

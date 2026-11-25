@@ -4,7 +4,7 @@ import type { ObjetoInventario } from '../modelo/personaje'
 import { sinVacios } from './opcionales'
 import { pergaminoDeObjeto } from './pergaminoObjeto'
 import { quitarPergamino } from './pergaminos'
-import { buscarPorId, contarCambio, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
+import { buscarPorId, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
 
 /** Lo que pide el formulario «Objeto» (J3). */
 export interface DatosObjeto {
@@ -31,7 +31,7 @@ export function crearObjeto<E extends EstadoPartida>(estado: E, datos: DatosObje
   exigeValido(datos, 1)
   const id = sello.nuevoId()
   const objeto: ObjetoInventario = sinVacios({ id, ...datos })
-  return { estado: contarCambio({ ...estado, objetos: [...estado.objetos, objeto] }), id }
+  return { estado: { ...estado, objetos: [...estado.objetos, objeto] }, id }
 }
 
 /** Edita un objeto; el de un pergamino tiene siempre 1 unidad (§6.6). */
@@ -49,7 +49,7 @@ export function editarObjeto<E extends EstadoPartida>(
   }
   const copia = [...estado.objetos]
   const objetos = reemplazarPorId(copia, sinVacios({ ...actual, ...datos, notas: datos.notas }), sello.ahora)
-  return objetos === copia ? estado : contarCambio({ ...estado, objetos })
+  return objetos === copia ? estado : { ...estado, objetos }
 }
 
 /**
@@ -60,7 +60,7 @@ export function eliminarObjeto<E extends EstadoPartida>(estado: E, id: Id): E {
   buscarPorId(estado.objetos, id)
   const pergamino = pergaminoDeObjeto(estado.pergaminos, id)
   if (pergamino !== undefined) {
-    return contarCambio(quitarPergamino(estado, pergamino.id))
+    return quitarPergamino(estado, pergamino.id)
   }
   const ventas = estado.ventas.map((v) => {
     if (v.objetoId !== id) {
@@ -70,5 +70,5 @@ export function eliminarObjeto<E extends EstadoPartida>(estado: E, id: Id): E {
     delete suelta.objetoId
     return suelta
   })
-  return contarCambio({ ...estado, ventas, objetos: quitarPorId(estado.objetos, id) })
+  return { ...estado, ventas, objetos: quitarPorId(estado.objetos, id) }
 }

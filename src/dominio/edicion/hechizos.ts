@@ -6,7 +6,7 @@ import type { Hechizo, IntentoAprendizaje, ObjetoInventario, Pergamino } from '.
 import { mismoNombre } from '../texto/normalizar'
 import { sinVacios } from './opcionales'
 import { conEstadoDePergamino, nombreDeObjetoPergamino, objetoSegunPergamino } from './pergaminoObjeto'
-import { buscarPorId, contarCambio, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
+import { buscarPorId, quitarPorId, reemplazarPorId, type Creado, type Sello } from './registros'
 
 /** Lo que pide el formulario «Hechizo» (§6.6). */
 export interface DatosHechizo {
@@ -92,7 +92,7 @@ export function crearHechizo<E extends EstadoPartida>(estado: E, datos: DatosHec
   const nombre = exigeValido(estado, datos)
   const id = sello.nuevoId()
   const hechizo = registro(id, datos.dominioId, nombre, datos)
-  return { estado: contarCambio({ ...estado, hechizos: [...estado.hechizos, hechizo] }), id }
+  return { estado: { ...estado, hechizos: [...estado.hechizos, hechizo] }, id }
 }
 
 /** Edita un hechizo; al renombrarlo cambian sus pergaminos y los objetos que aún llevan el nombre viejo (§7). */
@@ -124,7 +124,7 @@ export function editarHechizo<E extends EstadoPartida>(
       }
     }
   }
-  return contarCambio({ ...estado, hechizos, pergaminos, objetos })
+  return { ...estado, hechizos, pergaminos, objetos }
 }
 
 /** Borra el hechizo y sus intentos; sus pergaminos se conservan sin hechizo (decidido por el usuario). */
@@ -138,12 +138,12 @@ export function eliminarHechizo<E extends EstadoPartida>(estado: E, id: Id): E {
     delete suelto.hechizoId
     return suelto
   })
-  return contarCambio({
+  return {
     ...estado,
     pergaminos,
     intentos: estado.intentos.filter((i) => i.hechizoId !== id),
     hechizos: quitarPorId(estado.hechizos, id),
-  })
+  }
 }
 
 /** Lo que pide J8. */
@@ -220,7 +220,7 @@ export function registrarIntento<E extends EstadoPartida>(estado: E, datos: Dato
   const id = sello.nuevoId()
   const base = aplicarPergamino(estado, datos, sello)
   const intento: IntentoAprendizaje = sinVacios({ id, ...datos })
-  return { estado: contarCambio({ ...base, intentos: [...base.intentos, intento] }), id }
+  return { estado: { ...base, intentos: [...base.intentos, intento] }, id }
 }
 
 /** Edita un intento (J8): primero deshace lo que consumió y después aplica lo nuevo. */
@@ -237,11 +237,11 @@ export function editarIntento<E extends EstadoPartida>(estado: E, id: Id, datos:
     return estado
   }
   const base = aplicarPergamino(devolverPergamino(estado, actual, sello), datos, sello)
-  return contarCambio({ ...base, intentos })
+  return { ...base, intentos }
 }
 
 export function eliminarIntento<E extends EstadoPartida>(estado: E, id: Id, sello: Sello): E {
   const actual = buscarPorId(estado.intentos, id)
   const base = devolverPergamino(estado, actual, sello)
-  return contarCambio({ ...base, intentos: quitarPorId(base.intentos, id) })
+  return { ...base, intentos: quitarPorId(base.intentos, id) }
 }

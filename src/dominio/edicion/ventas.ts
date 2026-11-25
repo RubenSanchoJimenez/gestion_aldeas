@@ -10,7 +10,6 @@ import { patrimonioDelPersonaje } from '../personaje/patrimonio'
 import { conEstadoDePergamino, objetoSegunPergamino, pergaminoDeObjeto } from './pergaminoObjeto'
 import {
   buscarPorId,
-  contarCambio,
   mismoRegistro,
   quitarPorId,
   reemplazarPorId,
@@ -123,11 +122,11 @@ export function venderObjeto<E extends EstadoPartida>(
   }
   const base = sacarUnidades(estado, objetoId, datos.cantidad, sello.ahora)
   return {
-    estado: contarCambio({
+    estado: {
       ...base,
       ventas: [...base.ventas, venta],
       movimientos: [...base.movimientos, movimientoDeVenta(movimientoId, id, objeto.nombre, datos)],
-    }),
+    },
     id,
   }
 }
@@ -159,11 +158,11 @@ export function editarVenta<E extends EstadoPartida>(estado: E, id: Id, datos: D
   } else if (datos.cantidad !== venta.cantidad) {
     throw new Error('El objeto ya no existe: no se puede cambiar la cantidad')
   }
-  return contarCambio({
+  return {
     ...base,
     ventas: reemplazarPorId(base.ventas, nueva, sello.ahora),
     movimientos: reemplazarPorId(base.movimientos, movimientoNuevo, sello.ahora),
-  })
+  }
 }
 
 /** Borra la venta y su ingreso y devuelve las unidades; el objeto archivado se restaura (§6.4, «Al eliminar»). */
@@ -171,9 +170,9 @@ export function eliminarVenta<E extends EstadoPartida>(estado: E, id: Id, sello:
   const venta = buscarPorId(estado.ventas, id)
   const base =
     venta.objetoId === undefined ? estado : sacarUnidades(estado, venta.objetoId, -venta.cantidad, sello.ahora)
-  return contarCambio({
+  return {
     ...base,
     ventas: quitarPorId(base.ventas, id),
     movimientos: quitarPorId(base.movimientos, venta.movimientoId),
-  })
+  }
 }
