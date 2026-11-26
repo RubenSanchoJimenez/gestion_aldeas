@@ -251,7 +251,7 @@ export function DialogoTransferencia(props: { dominioId: string; transferenciaId
 type Abierto = { tipo: 'nuevo' } | { tipo: 'transferencia'; id?: string } | { tipo: 'editar'; movimiento: Movimiento } | { tipo: 'venta'; movimiento: Movimiento }
 
 /** J2 y A2: el libro de una bolsa o de una caja, con lo programado encima (§6.2). */
-export function Libro({ dominioId, titulo }: { dominioId: string; titulo: string }) {
+export function Libro({ dominioId, titulo, enPestana }: { dominioId: string; titulo: string; enPestana?: boolean }) {
   const { documento, catalogo, navegar } = usePartida()
   const [abierto, setAbierto] = useState<Abierto | null>(null)
   const [periodo, setPeriodo] = useState('')
@@ -325,22 +325,31 @@ export function Libro({ dominioId, titulo }: { dominioId: string; titulo: string
   const venta =
     abierto?.tipo === 'venta' ? documento.ventas.find((v) => v.id === abierto.movimiento.vinculo?.id) : undefined
 
+  const acciones = (
+    <div className={estilos.fila}>
+      <Boton variante="secundario" icono="cambio" alPulsar={() => setAbierto({ tipo: 'transferencia' })}>
+        Transferencia
+      </Boton>
+      <Boton variante="principal" icono="mas" alPulsar={() => setAbierto({ tipo: 'nuevo' })}>
+        Nuevo movimiento
+      </Boton>
+    </div>
+  )
+
   return (
     <>
-      <CabeceraPantalla
-        titulo={titulo}
-        subtitulo={`${dominio?.nombre ?? ''} · ${formatearOro(saldosPorDominio(documento)[dominioId] ?? 0, eq)}`}
-        acciones={
-          <div className={estilos.fila}>
-            <Boton variante="secundario" icono="cambio" alPulsar={() => setAbierto({ tipo: 'transferencia' })}>
-              Transferencia
-            </Boton>
-            <Boton variante="principal" icono="mas" alPulsar={() => setAbierto({ tipo: 'nuevo' })}>
-              Nuevo movimiento
-            </Boton>
-          </div>
-        }
-      />
+      {enPestana ? (
+        <div className={estilos.extremos}>
+          <strong className={estilos.cifra}>{formatearOro(saldosPorDominio(documento)[dominioId] ?? 0, eq)}</strong>
+          {acciones}
+        </div>
+      ) : (
+        <CabeceraPantalla
+          titulo={titulo}
+          subtitulo={`${dominio?.nombre ?? ''} · ${formatearOro(saldosPorDominio(documento)[dominioId] ?? 0, eq)}`}
+          acciones={acciones}
+        />
+      )}
       <div className={estilos.rejilla3}>
         <CampoOpcion
           etiqueta="Periodo"

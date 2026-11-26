@@ -38,6 +38,9 @@ const MESES = Array.from({ length: 12 }, (_, i) => ({
   texto: conMayuscula(nombreDeMesEnMensaje(i + 1)),
 }))
 
+/** Desplaza lo justo para que el calendario se vea entero. Es estable: solo actúa al abrirse. */
+const verEntero = (panel: HTMLElement | null): void => panel?.scrollIntoView?.({ block: 'nearest' })
+
 /** Selector de fecha de la partida (§6.5, n.º 3; D-097): escrita, con atajos o en el calendario del mes. */
 export function CampoFecha(props: PropsCampoFecha) {
   const { etiqueta, valor, alCambiar, hoy, edad, minimo, maximo = FECHA_MAXIMA, opcional, desactivado } = props
@@ -140,7 +143,12 @@ export function CampoFecha(props: PropsCampoFecha) {
           <Icono nombre="calendario" tamano={18} />
         </button>
         {abierto && (
-          <div className={estilos.panel} role="dialog" aria-label={etiqueta}>
+          <div
+            className={estilos.panel}
+            role="dialog"
+            aria-label={etiqueta}
+            ref={verEntero}
+          >
             <div
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {

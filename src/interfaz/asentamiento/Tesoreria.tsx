@@ -20,6 +20,7 @@ import { eliminarImpuestoRenta } from '../../dominio/edicion/reglas'
 import { crearRegistro, editarRegistro } from '../../dominio/edicion/simples'
 import { estadoVigenteDelLocal, impuestoDeLocal, produccionDelMes, type EstadoLocal } from '../../dominio/locales/impuesto'
 import type { ImpuestoRenta, LocalComercial, TipoLocal } from '../../dominio/modelo/asentamiento'
+import { Boton } from '../comunes/Boton'
 import { CampoTexto } from '../comunes/Campo'
 import { CampoFrecuencia } from '../comunes/CampoFrecuencia'
 import { CampoImporte } from '../comunes/CampoImporte'
@@ -361,9 +362,9 @@ function Locales({ dominioId }: { dominioId: string }) {
             formatearOro(l.produccionHabitual.base, eq),
             `${formatearOro(produccion.importe, eq)}, ${produccion.anotada ? 'anotada' : 'habitual'}`,
             tipo === undefined ? '' : formatearOro(impuestoDeLocal(produccion.importe, tipo), eq),
-            <button key="p" type="button" onClick={() => setAbierto({ clase: 'produccion', local: l })}>
+            <Boton key="p" variante="secundario" alPulsar={() => setAbierto({ clase: 'produccion', local: l })}>
               Anotar
-            </button>,
+            </Boton>,
           ]
         }}
         alEditar={(local) => setAbierto({ clase: 'local', local })}
@@ -391,6 +392,7 @@ export function Tesoreria({ dominioId }: { dominioId: string }) {
   const [pestana, setPestana] = useState<Pestana>('caja')
   return (
     <>
+      <CabeceraPantalla titulo="Tesorería" />
       <Segmentos<Pestana>
         etiqueta="Tesorería"
         etiquetaOculta
@@ -403,8 +405,7 @@ export function Tesoreria({ dominioId }: { dominioId: string }) {
         valor={pestana}
         alCambiar={setPestana}
       />
-      {pestana === 'caja' && <Libro key={dominioId} dominioId={dominioId} titulo="Tesorería" />}
-      {pestana !== 'caja' && <CabeceraPantalla titulo="Tesorería" />}
+      {pestana === 'caja' && <Libro key={dominioId} dominioId={dominioId} titulo="Caja y movimientos" enPestana />}
       {pestana === 'impuestos' && <Impuestos dominioId={dominioId} />}
       {pestana === 'locales' && <Locales dominioId={dominioId} />}
       {pestana === 'deudas' && <Deudas dominioId={dominioId} conCabecera={false} />}

@@ -332,7 +332,7 @@ export function Hechizos({ dominioId }: { dominioId: string }) {
     <>
       <CabeceraPantalla
         titulo="Estudio de hechizos"
-        subtitulo={`${enEstudio} en estudio · ${hechizos.length - enEstudio} aprendidos`}
+        subtitulo={`${enEstudio} en estudio · ${hechizos.length - enEstudio} ${hechizos.length - enEstudio === 1 ? 'aprendido' : 'aprendidos'}`}
         acciones={
           <span className={estilos.fila}>
             <Boton variante="secundario" icono="mas" alPulsar={() => setAbierto({ tipo: 'hechizo' })}>

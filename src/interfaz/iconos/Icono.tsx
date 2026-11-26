@@ -12,6 +12,7 @@ export function Icono({ nombre, tamano = 20, color = 'currentColor' }: PropsIcon
     <svg
       aria-hidden="true"
       focusable="false"
+      style={{ flexShrink: 0 }}
       data-nombre={nombre}
       width={tamano}
       height={tamano}

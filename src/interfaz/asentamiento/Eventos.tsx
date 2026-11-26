@@ -170,8 +170,12 @@ export function Eventos({ dominioId }: { dominioId: string }) {
                 {e.nombre}
                 {e.notas !== undefined && <span className={estilos.suave}> · {e.notas}</span>}
               </span>,
-              `${fechaCorta(e.inicio, hoy)} – ${fechaCorta(sumarDias(e.inicio, e.duracionDias - 1), hoy)}`,
-              e.efectos.map((f) => `${AMBITOS[f.ambito]} ${f.pct > 0 ? '+' : ''}${f.pct} %`).join(', ') || 'Ninguno',
+              e.duracionDias === 1
+                ? fechaCorta(e.inicio, hoy)
+                : `${fechaCorta(e.inicio, hoy)} – ${fechaCorta(sumarDias(e.inicio, e.duracionDias - 1), hoy)}`,
+              e.efectos
+                .map((f) => `${AMBITOS[f.ambito]}\u00a0${f.pct > 0 ? '+' : '−'}${String(Math.abs(f.pct)).replace('.', ',')}\u00a0%`)
+                .join(', ') || 'Ninguno',
               eventoActivoEl(e, hoy) ? (
                 <Boton key="t" variante="secundario" alPulsar={() => void editar((doc, sello) => terminarEventoHoy(doc, e.id, sello))}>
                   Terminar hoy

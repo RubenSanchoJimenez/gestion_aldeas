@@ -98,7 +98,9 @@ export function PartidaAbierta({ inicial, alSalir }: PropsPartidaAbierta) {
         </button>
       )}
       <Boton variante="principal" icono="reloj_arena" alPulsar={() => setDialogo('avanzar')}>
-        Avanzar días
+        <span>
+          Avanzar<span className={estilos.largo}> días</span>
+        </span>
       </Boton>
     </div>
   )

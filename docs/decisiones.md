@@ -181,6 +181,7 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 |---|---|---|
 | D-127 | En el teléfono (menos de 900 px de ancho o 500 de alto) el menú es un cajón con el botón «Menú», las columnas se apilan, las tablas se desplazan de lado, los diálogos ocupan toda la pantalla, el calendario marca cada día con rayas de color y la barra no repite el próximo aviso. La app ya no fuerza la orientación horizontal. | Cambia lo que decía la especificación (solo tablet en horizontal), por tu decisión de usarla también en el teléfono. En la tablet en horizontal se ve igual que antes. |
 | D-128 | Se publica en GitHub Pages cada vez que cambia la rama `main`, solo si pasan las pruebas. El trabajo sigue en la rama de desarrollo y pasa a `main` cuando está listo. | Así lo que usas en la mesa no cambia a medias. Resuelve lo pendiente de D-099. |
+| D-129 | Las tablas solo se convierten en fichas (una por fila) en pantallas de menos de 768 px de ancho. En la tablet en vertical siguen siendo tablas. En el almacén la unidad se escribe una vez: «180 de 400 carretadas». | Sustituye la parte de las tablas de D-127. A 820 px las fichas quedaban muy estiradas, y repetir la unidad hacía que la tabla no cupiera a 1024 px. |
 
 ## Decisiones tuyas
 

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { deshacerAvanceGuardado, guardarAvance } from '../../datos/avances'
-import { cantidadDeRecurso, formatearCantidad } from '../../dominio/almacen/cantidades'
+import { formatearCantidad } from '../../dominio/almacen/cantidades'
 import { cambiosQueSePerderan, puedeDeshacer } from '../../dominio/avance/deshacer'
 import { DIAS_CON_AVISO, errorDeDiasDeAvance } from '../../dominio/avance/dias'
 import { sumarDias } from '../../dominio/calendario/fecha'
@@ -71,7 +71,7 @@ function Resultado({ cambios, avisos, personasNuevas = [] }: PropsResultado) {
             return [
               `${recurso.nombre} de ${nombre(c.dominioId)}`,
               formatearCantidad(c.antes, recurso),
-              cantidadDeRecurso(c.despues, recurso),
+              formatearCantidad(c.despues, recurso),
             ]
           })}
         />

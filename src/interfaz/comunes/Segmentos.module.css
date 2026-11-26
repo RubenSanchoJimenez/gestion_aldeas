@@ -30,6 +30,16 @@
   .contenedor {
     flex-wrap: wrap;
   }
+  /* Los siete días de la semana, en una sola fila. */
+  .contenedor:has(> :nth-child(7):last-child) {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 2px;
+  }
+  .contenedor:has(> :nth-child(7):last-child) > .opcion {
+    padding: 0;
+    font-size: 13px;
+  }
   .opcion {
     flex: 1 1 auto;
     padding: 0 10px;

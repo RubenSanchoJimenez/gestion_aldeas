@@ -6,7 +6,7 @@ import { diasQueCaben } from '../../dominio/avance/dias'
 import { sumarDias } from '../../dominio/calendario/fecha'
 import { marcasDelCalendario } from '../../dominio/calendario/marcas'
 import { balanceMensual } from '../../dominio/dinero/balance'
-import { formatearOro, formatearOroProrrateado } from '../../dominio/dinero/formato'
+import { formatearNumero, formatearOro, formatearOroProrrateado } from '../../dominio/dinero/formato'
 import { saldosPorDominio } from '../../dominio/dinero/saldo'
 import { eventoActivoEl } from '../../dominio/eventos/efectos'
 import { habitantesDe } from '../../dominio/poblacion/habitantes'
@@ -53,7 +53,7 @@ export function ResumenAsentamiento({ dominioId }: { dominioId: string }) {
     <>
       <CabeceraPantalla
         titulo={dominio?.nombre ?? ''}
-        subtitulo={`${habitantesDe(documento, dominioId, hoy)} habitantes`}
+        subtitulo={`${formatearNumero(habitantesDe(documento, dominioId, hoy), 0)} habitantes`}
         acciones={
           <span className={estilos.fila}>
             <Boton variante="secundario" icono="editar" alPulsar={() => setAbierto('editar')}>

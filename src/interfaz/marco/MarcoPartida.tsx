@@ -43,7 +43,7 @@ export function MarcoPartida({ documento, pantalla, alNavegar, extremo, children
           <span>{nombre}</span>
         </div>
         <div className={estilos.fecha}>
-          <strong>{formatearFecha(fechaActual, { edad })}</strong>
+          <strong>{formatearFecha(fechaActual, { edad }).replace(/ (?=[SCT]\.E\.)/, '\u00a0')}</strong>
           <span className={estilos.suave}>{nombreDelDia(fechaActual)}</span>
         </div>
         {extremo}

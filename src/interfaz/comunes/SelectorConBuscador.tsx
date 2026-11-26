@@ -96,6 +96,9 @@ function Fila<V extends string>(props: {
   )
 }
 
+/** Desplaza lo justo para que el panel se vea entero. Es estable: solo actúa al abrirse. */
+const verEntero = (panel: HTMLElement | null): void => panel?.scrollIntoView?.({ block: 'nearest' })
+
 /**
  * SelectorConBuscador de §6.10: un combobox con buscador, grupos, «Recientes», modo filtro y pie de alta.
  * Con más de 12 opciones el buscador recibe el foco al abrir (espec. L860).
@@ -208,6 +211,7 @@ export function SelectorConBuscador<V extends string>(props: PropsSelectorConBus
     <div ref={referenciaRaiz} className={estilos.raiz}>
       <span
         id={idEtiqueta}
+        className={estilos.etiqueta}
         style={props.etiquetaOculta ? { position: 'absolute', width: 1, height: 1, overflow: 'hidden' } : undefined}
       >
         {props.etiqueta}
@@ -228,7 +232,8 @@ export function SelectorConBuscador<V extends string>(props: PropsSelectorConBus
         <Icono nombre="abajo" tamano={18} color="var(--tinta-suave)" />
       </button>
       {abierto ? (
-        <div className={estilos.panel} style={{ [props.alinear === 'derecha' ? 'right' : 'left']: 0 }}>
+        <div className={estilos.panel}
+          ref={verEntero} style={{ [props.alinear === 'derecha' ? 'right' : 'left']: 0 }}>
           <div className={estilos.buscador}>
             <Icono nombre="buscar" tamano={18} />
             <input

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { sacosPorPersonas } from '../../dominio/almacen/cantidades'
 import { DIAS_DE_PREVISION, diasDeReserva, preverAlmacen, resumirFilas } from '../../dominio/almacen/prevision'
 import { RECURSO } from '../../dominio/catalogo/inicial'
-import { formatearOro } from '../../dominio/dinero/formato'
+import { formatearNumero, formatearOro } from '../../dominio/dinero/formato'
 import { crearEntradaAlmacen, eliminarEntradaAlmacen } from '../../dominio/edicion/entradas'
 import { bloqueoAlEliminarFila, editarExistencia, eliminarAjuste, eliminarFila } from '../../dominio/edicion/existencias'
 import type { EntradaAlmacen, Existencia } from '../../dominio/modelo/almacen'
@@ -185,13 +185,16 @@ export function Almacen({ dominioId }: { dominioId: string }) {
           const cifra = (n: number): string => soloCantidad(catalogo, e.recursoId, n)
           return [
             nombreDelRecurso(catalogo, e.recursoId),
-            `${cifra(e.cantidad)}${e.capacidad === undefined ? '' : ` de ${cifra(e.capacidad)}`}`,
+            e.capacidad === undefined
+              ? cifra(e.cantidad)
+              : // La unidad se escribe una vez: «180 de 400 carretadas».
+                `${formatearNumero(Math.round(e.cantidad), 0)} de ${cifra(e.capacidad)}`,
             <span key="e">
               +{cifra(r?.entradas ?? 0)}
               {(r?.perdido ?? 0) > 1e-6 && <span className={estilos.suave}> se pierden {cifra(r!.perdido)}</span>}
             </span>,
             (r?.consumido ?? 0) + (r?.sacado ?? 0) > 1e-6 ? `−${cifra((r?.consumido ?? 0) + (r?.sacado ?? 0))}` : '0',
-            conUnidad(catalogo, e.recursoId, r?.final ?? e.cantidad),
+            cifra(r?.final ?? e.cantidad),
             reserva === undefined || reserva.tipo === 'sinConsumo'
               ? '—'
               : reserva.tipo === 'sinFalta'
@@ -226,7 +229,7 @@ export function Almacen({ dominioId }: { dominioId: string }) {
           ) : (
             <ListaPares
               filas={ajustes.map((a) => ({
-                etiqueta: `${nombreDelRecurso(catalogo, a.recursoId)} · ${a.delta > 0 ? '+' : ''}${a.delta}`,
+                etiqueta: `${nombreDelRecurso(catalogo, a.recursoId)} · ${a.delta > 0 ? '+' : '−'}${soloCantidad(catalogo, a.recursoId, Math.abs(a.delta))}`,
                 sub: `${fechaCorta(a.fecha, hoy)} · ${a.motivo}`,
                 valor: <BotonIcono icono="x" variante="fantasma" etiqueta="Eliminar el ajuste" alPulsar={() => intentar(editar((doc) => eliminarAjuste(doc, a.id, catalogo)))} />,
               }))}

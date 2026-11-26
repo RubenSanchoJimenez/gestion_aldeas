@@ -14,6 +14,7 @@ import { Segmentos } from '../comunes/Segmentos'
 import { DialogoFormulario } from '../formulario/DialogoFormulario'
 import { decimalDe, enteroDe, fechaCorta } from '../formulario/valores'
 import { usePartida } from '../partida/contexto'
+import estilos from '../partida/partida.module.css'
 import { CampoCatalogo, CampoRecurso, ListaRegistros } from './comunes'
 import { conUnidad, nombreDelRecurso, nombreDeOpcion } from './nombres'
 
@@ -111,7 +112,7 @@ function DialogoEdificio(props: { dominioId: string; edificio?: Edificio; alCerr
         alCambiar={setEstado}
       />
       {filas.map((f, i) => (
-        <fieldset key={f.id ?? i}>
+        <fieldset key={f.id ?? i} className={estilos.grupo}>
           <legend>Producción {i + 1}</legend>
           <CampoRecurso valor={f.recursoId} alCambiar={(recursoId) => cambiar(i, { recursoId })} />
           <CampoTexto etiqueta="Cantidad base" modoTeclado="decimal" valor={f.cantidad} alCambiar={(cantidad) => cambiar(i, { cantidad })} />
@@ -172,7 +173,10 @@ export function Edificios({ dominioId }: { dominioId: string }) {
         fila={(e) => {
           const renta = documento.impuestosRentas.find((r) => r.edificioId === e.id)
           return [
-            `${e.nombre} · ${nombreDeOpcion(catalogo, e.tipoId)}`,
+            // El tipo solo se añade si el nombre no lo dice ya.
+            e.nombre === nombreDeOpcion(catalogo, e.tipoId)
+              ? e.nombre
+              : `${e.nombre} · ${nombreDeOpcion(catalogo, e.tipoId)}`,
             `${ESTADOS[e.estado]}${renta === undefined ? '' : ` · renta ${formatearOro(renta.importe.base, eq)}`}`,
             `${asignados.get(e.id) ?? 0} de ${e.trabajadoresNecesarios}`,
             <span key="p">
@@ -180,7 +184,7 @@ export function Edificios({ dominioId }: { dominioId: string }) {
                 <span key={p.produccionId} style={{ display: 'block' }}>
                   {p.cantidad === undefined
                     ? nombreDelRecurso(catalogo, p.recursoId)
-                    : `${nombreDelRecurso(catalogo, p.recursoId)} ${conUnidad(catalogo, p.recursoId, p.cantidad)}`}
+                    : conUnidad(catalogo, p.recursoId, p.cantidad)}
                   {p.fecha === null ? '' : ` el ${fechaCorta(p.fecha, hoy)}`}
                 </span>
               ))}

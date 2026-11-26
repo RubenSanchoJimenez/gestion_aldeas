@@ -195,7 +195,7 @@ export function Comercio({ dominioId }: { dominioId: string }) {
   const columnas = [{ titulo: 'Caravana' }, { titulo: 'Carga' }, { titulo: 'Importe', derecha: true }, { titulo: 'Salida y vuelta' }, { titulo: 'Avance' }]
   const fila = (c: Caravana) => [
     `${OPERACIONES[c.operacion]} · ${destinoDe(c)}${c.estado === 'programada' ? ' · programada' : ''}`,
-    `${nombreDelRecurso(catalogo, c.carga.recursoId)} ${conUnidad(catalogo, c.carga.recursoId, c.carga.cantidad)}`,
+    conUnidad(catalogo, c.carga.recursoId, c.carga.cantidad),
     c.importe === undefined ? '—' : formatearOro(c.importe.base, eq),
     `${fechaCorta(c.salida, hoy)} – ${fechaCorta(c.vuelta, hoy)}`,
     `${progresoDeCaravana(c, hoy)} %`,

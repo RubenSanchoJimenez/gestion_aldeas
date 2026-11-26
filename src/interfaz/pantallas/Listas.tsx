@@ -42,6 +42,29 @@ const TITULOS: Record<Lista, string> = {
   personas: 'Personas y entidades',
 }
 
+const NOMBRES_GRUPO: Record<string, string> = {
+  campo: 'Campo',
+  materiasPrimas: 'Materias primas',
+  oficios: 'Oficios',
+  servicios: 'Servicios',
+  alimentos: 'Alimentos',
+  artesania: 'Artesanía',
+  almacenaje: 'Almacenaje',
+  tropa: 'Tropa',
+  mandos: 'Mandos',
+  bovino: 'Bovino',
+  caballar: 'Caballar',
+  ovinoYCaprino: 'Ovino y caprino',
+  porcino: 'Porcino',
+  avesDeCorral: 'Aves de corral',
+  perrosYGatos: 'Perros y gatos',
+  cetreria: 'Cetrería',
+  pequeniosAnimales: 'Pequeños animales',
+  cargaExotica: 'Carga exótica',
+  estanques: 'Estanques',
+  enCercado: 'En cercado',
+}
+
 interface Fila {
   id: string
   nombre: string
@@ -149,7 +172,7 @@ function DialogoElemento({ lista, id, alCerrar }: { lista: Lista; id?: string; a
     >
       <CampoTexto etiqueta="Nombre" maximo={60} valor={nombre} alCambiar={setNombre} />
       {pideGrupo && (
-        <CampoOpcion etiqueta="Grupo" valor={grupo} opciones={grupos.map((g) => ({ valor: g, texto: g }))} alCambiar={setGrupo} />
+        <CampoOpcion etiqueta="Grupo" valor={grupo} opciones={grupos.map((g) => ({ valor: g, texto: NOMBRES_GRUPO[g] ?? g }))} alCambiar={setGrupo} />
       )}
       {lista === 'recursos' && (
         <>

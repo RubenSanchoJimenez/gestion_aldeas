@@ -1,7 +1,15 @@
 .raiz {
   position: relative;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   width: 100%;
+  min-width: 0;
+}
+.etiqueta {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tinta);
 }
 .campo {
   height: var(--alto-campo);

@@ -84,10 +84,15 @@ export function CampoCategoria({ valor, alCambiar }: { valor: string; alCambiar:
     (o): o is Extract<OpcionCatalogo, { lista: 'categorias' }> =>
       o.lista === 'categorias' && !('borrada' in o && o.borrada === true),
   )
-  const grupos = [...new Set(categorias.map((c) => c.grupo))].map((grupo) => ({
-    nombre: GRUPOS_CATEGORIA[grupo] ?? grupo,
-    opciones: categorias.filter((c) => c.grupo === grupo).map((c) => ({ valor: c.id, texto: c.nombre })),
-  }))
+  const grupos = Object.keys(GRUPOS_CATEGORIA)
+    .map((grupo) => ({
+      nombre: GRUPOS_CATEGORIA[grupo],
+      opciones: categorias
+        .filter((c) => c.grupo === grupo)
+        .map((c) => ({ valor: c.id, texto: c.nombre }))
+        .sort((a, b) => a.texto.localeCompare(b.texto, 'es')),
+    }))
+    .filter((g) => g.opciones.length > 0)
   const [nueva, setNueva] = useState<string | null>(null)
   return (
     <>

@@ -115,7 +115,7 @@ export function Calendario() {
                     >
                       <strong>{dia}</strong>
                       {suyas.slice(0, suyas.length > 2 ? 1 : 2).map((m, k) => (
-                        <span key={k} className={estilos.marca} data-tipo={m.tipo}>
+                        <span key={k} className={estilos.marca} data-tipo={m.tipo} title={m.texto}>
                           {m.texto}
                         </span>
                       ))}
@@ -135,7 +135,7 @@ export function Calendario() {
           </span>
         ))}
       </div>
-      <Panel titulo={formatearFecha(elegido, { edad, diaSemana: true })}>
+      <Panel titulo={conMayuscula(formatearFecha(elegido, { edad, diaSemana: true }))}>
         {delDia.length === 0 ? (
           <Nota>Nada este día</Nota>
         ) : (

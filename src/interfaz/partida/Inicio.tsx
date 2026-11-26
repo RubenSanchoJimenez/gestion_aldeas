@@ -6,7 +6,7 @@ import { formatearDiaMes } from '../../dominio/calendario/formatoFecha'
 import { marcasDelCalendario } from '../../dominio/calendario/marcas'
 import { nombreDelDia } from '../../dominio/calendario/textosFecha'
 import { balanceMensual } from '../../dominio/dinero/balance'
-import { formatearOro, formatearOroProrrateado } from '../../dominio/dinero/formato'
+import { formatearNumero, formatearOro, formatearOroProrrateado } from '../../dominio/dinero/formato'
 import { saldosPorDominio } from '../../dominio/dinero/saldo'
 import { ordenarDominios } from '../../dominio/partidas/orden'
 import { patrimonioDelPersonaje } from '../../dominio/personaje/patrimonio'
@@ -80,7 +80,7 @@ export function Inicio({ alVerResumen }: { alVerResumen?: () => void }) {
                   },
                 ]
               : [
-                  { etiqueta: 'Habitantes', valor: String(habitantesDe(documento, d.id, hoy)) },
+                  { etiqueta: 'Habitantes', valor: formatearNumero(habitantesDe(documento, d.id, hoy), 0) },
                   {
                     etiqueta: 'Balance mensual',
                     valor: formatearOroProrrateado(balanceMensual(documento, d.id).balance, eq, { signo: true }),

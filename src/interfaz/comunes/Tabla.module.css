@@ -75,8 +75,16 @@ tbody tr:not(:last-child) .celda {
   color: var(--tinta);
 }
 
+.celda[data-derecha],
+.celdaTotal[data-derecha] {
+  white-space: nowrap;
+}
+.valorPar {
+  text-align: right;
+}
+
 /* Teléfono, en vertical o en horizontal: cada fila es una ficha, sin nada fuera de la vista. */
-@media (max-width: 899px), (max-height: 500px) {
+@media (max-width: 767px) {
   .tabla,
   .tabla tbody,
   .tabla tr {
@@ -127,5 +135,49 @@ tbody tr:not(:last-child) .celda {
   }
   .filaPar {
     flex-wrap: wrap;
+  }
+  /* El lápiz de la ficha va arriba a la derecha, junto a su nombre. */
+  .tabla tr {
+    position: relative;
+  }
+  .tabla .celda[data-columna='']:last-child:has(> button[aria-label]:only-child) {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    padding: 0;
+  }
+  .tabla tr:has(> .celda[data-columna='']:last-child > button[aria-label]:only-child) > .celda:first-child {
+    padding-right: 52px;
+    min-height: var(--toque);
+  }
+  /* El detalle que acompaña al nombre va debajo. */
+  .tabla .celda:first-child > span > span {
+    display: block;
+    font-weight: 400;
+  }
+  /* La tabla de monedas es corta y estrecha: sigue siendo una tabla. */
+  .tabla[aria-label='Monedas'] {
+    display: table;
+  }
+  .tabla[aria-label='Monedas'] thead {
+    display: table-header-group;
+  }
+  .tabla[aria-label='Monedas'] tbody {
+    display: table-row-group;
+  }
+  .tabla[aria-label='Monedas'] tr {
+    display: table-row;
+    height: 44px !important;
+  }
+  .tabla[aria-label='Monedas'] .celda {
+    display: table-cell;
+    min-width: 0;
+    border-bottom: 1px solid var(--borde);
+  }
+  .tabla[aria-label='Monedas'] .celda:not([data-derecha]) {
+    text-align: left;
+  }
+  .tabla[aria-label='Monedas'] .celda::before {
+    display: none;
   }
 }

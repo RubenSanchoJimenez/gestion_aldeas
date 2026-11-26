@@ -141,6 +141,45 @@
   text-overflow: ellipsis;
 }
 
+.proximo svg {
+  flex-shrink: 0;
+}
+.proximo span {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.proximo > div {
+  min-width: 0;
+}
+/* Las acciones de una ficha van en una línea; lo que cede es el texto. */
+.extremos > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.extremos > .fila {
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+.grupo {
+  margin: 0;
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-panel);
+}
+.grupo legend {
+  padding: 0 6px;
+  font-size: var(--texto-etiqueta);
+  font-weight: 600;
+}
+.linea {
+  display: block;
+}
+
 /* Teléfono, en vertical o en horizontal. */
 @media (max-width: 899px), (max-height: 500px) {
   .rejilla2,
@@ -164,6 +203,18 @@
   }
   .celda .suave {
     font-size: 10px;
+  }
+  .extremos {
+    flex-wrap: wrap;
+  }
+  .extremos > .fila {
+    flex-wrap: wrap;
+  }
+  .extremos > .cifra {
+    flex: 1 0 100%;
+  }
+  .largo {
+    display: none;
   }
   .barraExtremo {
     margin-left: auto;

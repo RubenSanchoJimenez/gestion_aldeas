@@ -226,7 +226,7 @@ export function Obras({ dominioId }: { dominioId: string }) {
               const fin = finDeObra(o)
               return [
                 `${o.nombre} · ${resultadoDe(o)}`,
-                [formatearOro(o.coste.base, eq), ...Object.entries(o.materiales).map(([r, n]) => `${nombreDelRecurso(catalogo, r)} ${conUnidad(catalogo, r, n)}`)].join(', '),
+                [formatearOro(o.coste.base, eq), ...Object.entries(o.materiales).map(([r, n]) => conUnidad(catalogo, r, n))].join(', '),
                 o.inicio === undefined ? '—' : `${fechaCorta(o.inicio, hoy)}${fin === null ? '' : ` – ${fechaCorta(fin, hoy)}`}`,
                 `${progresoDeObra(o, hoy).pct} %`,
                 o.estado === 'planificada' ? (

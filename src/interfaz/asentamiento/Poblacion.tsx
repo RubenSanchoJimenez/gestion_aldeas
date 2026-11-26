@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { diasDeReserva } from '../../dominio/almacen/prevision'
 import { eliminarCambioDePoblacion, eliminarConsumo, guardarCambioDePoblacion, guardarConsumo } from '../../dominio/edicion/asentamientos'
 import type { CambioPoblacion, ConsumoPorHabitante } from '../../dominio/modelo/almacen'
+import { formatearNumero } from '../../dominio/dinero/formato'
 import { habitantesDe } from '../../dominio/poblacion/habitantes'
 import { CampoTexto } from '../comunes/Campo'
 import { CampoFecha } from '../comunes/CampoFecha'
@@ -96,7 +97,7 @@ export function Poblacion({ dominioId }: { dominioId: string }) {
   const habitantes = habitantesDe(documento, dominioId, hoy)
   return (
     <>
-      <CabeceraPantalla titulo="Población" subtitulo={`${habitantes} habitantes`} />
+      <CabeceraPantalla titulo="Población" subtitulo={`${formatearNumero(habitantes, 0)} habitantes`} />
       <ListaRegistros
         titulo="Cambios de población"
         textoAlta="Añadir cambio"
@@ -106,7 +107,7 @@ export function Poblacion({ dominioId }: { dominioId: string }) {
         nombreDe={(c) => c.motivo}
         fila={(c) => [fechaCorta(c.fecha, hoy), c.motivo, c.delta > 0 ? `+${c.delta}` : `−${-c.delta}`]}
         alEditar={(cambio) => setAbierto({ cambio })}
-        pie={<Nota>Iniciales: {poblacion?.habitantesIniciales ?? 0}</Nota>}
+        pie={<Nota>Iniciales: {formatearNumero(poblacion?.habitantesIniciales ?? 0, 0)}</Nota>}
       />
       <ListaRegistros
         titulo="Consumo diario"
