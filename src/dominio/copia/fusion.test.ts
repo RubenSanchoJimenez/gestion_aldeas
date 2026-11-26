@@ -27,7 +27,7 @@ function catalogosDeLaCopia(opciones: OpcionEnCopia[], recursos: RecursoEnCopia[
   return { opciones, recursos }
 }
 
-/** El catálogo de esta tablet. */
+/** El catálogo de este dispositivo. */
 function catalogoDeLaTablet(opciones: OpcionCatalogo[], recursos: RecursoCatalogo[] = []): CatalogoApp {
   return { opciones, recursos }
 }
@@ -37,7 +37,7 @@ function categoriaEnCopia(id: Id, nombre: string, propia = false): OpcionEnCopia
   return { id, nombre, propia, lista: 'categorias', grupo: propia ? 'tuyas' : 'gastosPersonaje' }
 }
 
-/** Una categoría del catálogo de esta tablet. */
+/** Una categoría del catálogo de este dispositivo. */
 function categoriaEnLaTablet(id: Id, nombre: string, extra: { propia?: boolean; borrada?: boolean } = {}): OpcionCatalogo {
   const propia = extra.propia ?? false
   return {
@@ -55,7 +55,7 @@ function oficioEnCopia(id: Id, nombre: string, plural: string, propia = false): 
   return { id, nombre, plural, propia, lista: 'oficios', grupo: 'oficios' }
 }
 
-/** Un oficio del catálogo de esta tablet. */
+/** Un oficio del catálogo de este dispositivo. */
 function oficioEnLaTablet(id: Id, nombre: string, plural: string): OpcionCatalogo {
   return { id, nombre, plural, propia: false, lista: 'oficios', grupo: 'oficios', borrada: false }
 }
@@ -71,7 +71,7 @@ function recursoEnCopia(
   return { id, nombre, unidadSingular, unidadPlural, propia }
 }
 
-/** Un recurso del catálogo de esta tablet. */
+/** Un recurso del catálogo de este dispositivo. */
 function recursoEnLaTablet(
   id: Id,
   nombre: string,
@@ -373,7 +373,7 @@ function remapeoDeTodo(documento: DocumentoPartida): Record<Id, Id> {
 }
 
 describe('fusionarCatalogos: las opciones de la app', () => {
-  it('se casan por id: manda el nombre de esta tablet y el resumen lo dice', () => {
+  it('se casan por id: manda el nombre de este dispositivo y el resumen lo dice', () => {
     const fusion = fusionarCatalogos(
       catalogosDeLaCopia([categoriaEnCopia('cat.alojamiento', 'Hospedaje')]),
       catalogoDeLaTablet([categoriaEnLaTablet('cat.alojamiento', 'Alojamiento')]),
@@ -391,7 +391,7 @@ describe('fusionarCatalogos: las opciones de la app', () => {
     ])
   })
 
-  it('una opción borrada en esta tablet se reactiva (decisión 7)', () => {
+  it('una opción borrada en este dispositivo se reactiva (decisión 7)', () => {
     const fusion = fusionarCatalogos(
       catalogosDeLaCopia([categoriaEnCopia('cat.comercio', 'Comercio')]),
       catalogoDeLaTablet([categoriaEnLaTablet('cat.comercio', 'Comercio', { borrada: true })]),
@@ -403,7 +403,7 @@ describe('fusionarCatalogos: las opciones de la app', () => {
     expect(fusion.remapeo).toEqual({})
   })
 
-  it('una opción de la app que esta tablet no conoce se crea tal cual, con su id', () => {
+  it('una opción de la app que este dispositivo no conoce se crea tal cual, con su id', () => {
     const fusion = fusionarCatalogos(
       catalogosDeLaCopia([categoriaEnCopia('cat.peajes', 'Peajes')]),
       catalogoDeLaTablet([]),
@@ -427,7 +427,7 @@ describe('fusionarCatalogos: las opciones de la app', () => {
 })
 
 describe('fusionarCatalogos: las opciones propias', () => {
-  it('se unen por nombre normalizado a la de esta tablet y el registro se remapea', () => {
+  it('se unen por nombre normalizado a la de este dispositivo y el registro se remapea', () => {
     const fusion = fusionarCatalogos(
       catalogosDeLaCopia([categoriaEnCopia('cat.copia.posadas', 'Posadas del camino', true)]),
       catalogoDeLaTablet([categoriaEnLaTablet('cat.mias.posadas', 'Posadas del Camino', { propia: true })]),
@@ -546,7 +546,7 @@ describe('fusionarCatalogos: los recursos', () => {
     ])
   })
 
-  it('un recurso con otras unidades conserva las de esta tablet y lo anota', () => {
+  it('un recurso con otras unidades conserva las de este dispositivo y lo anota', () => {
     const fusion = fusionarCatalogos(
       catalogosDeLaCopia([], [recursoEnCopia('recurso.sal', 'Sal', 'fardo', 'fardos')]),
       catalogoDeLaTablet([], [recursoEnLaTablet('recurso.sal', 'Sal', 'saco', 'sacos')]),
@@ -587,14 +587,14 @@ describe('lineasDeFusion', () => {
       ],
     }
     expect(lineasDeFusion(resumen)).toEqual([
-      'La categoría «Alojamiento» se llama «Hospedaje» en la copia: se conserva el nombre de esta tablet.',
+      'La categoría «Alojamiento» se llama «Hospedaje» en la copia: se conserva el nombre de este dispositivo.',
       'Se ha recuperado la categoría «Comercio», que estaba eliminada.',
       'Se ha recuperado el oficio «Molinero», que estaba eliminado.',
       'La categoría «Posadas del camino» de la copia se ha unido a la tuya con el mismo nombre.',
       'Se ha añadido tu categoría «Posadas del camino».',
-      'Se ha añadido la categoría «Peajes», que esta tablet no tenía.',
-      'Se ha añadido el recurso «Cal», que esta tablet no tenía.',
-      'El recurso «Sal» se mide aquí en «saco / sacos» y en la copia en «fardo / fardos»: se conservan las unidades de esta tablet.',
+      'Se ha añadido la categoría «Peajes», que este dispositivo no tenía.',
+      'Se ha añadido el recurso «Cal», que este dispositivo no tenía.',
+      'El recurso «Sal» se mide aquí en «saco / sacos» y en la copia en «fardo / fardos»: se conservan las unidades de este dispositivo.',
     ])
   })
 })

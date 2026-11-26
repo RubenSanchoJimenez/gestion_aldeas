@@ -24,3 +24,15 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Teléfono, en vertical o en horizontal. */
+@media (max-width: 899px), (max-height: 500px) {
+  .contenedor {
+    flex-wrap: wrap;
+  }
+  .opcion {
+    flex: 1 1 auto;
+    padding: 0 10px;
+    font-size: 14px;
+  }
+}

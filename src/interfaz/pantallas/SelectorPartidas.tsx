@@ -51,7 +51,7 @@ export function SelectorPartidas({ alAbrir, alNuevaPartida }: PropsSelectorParti
     intentar(async () => {
       const documento = await abrirPartida(db, id, ahora())
       if (documento === undefined) {
-        setMensaje({ titulo: 'No se ha podido abrir la partida', lineas: ['No está guardada en esta tablet.'] })
+        setMensaje({ titulo: 'No se ha podido abrir la partida', lineas: ['No está guardada en este dispositivo.'] })
         recargar()
       } else {
         alAbrir(documento)
@@ -79,7 +79,7 @@ export function SelectorPartidas({ alAbrir, alNuevaPartida }: PropsSelectorParti
   const hayEjemplo = partidas.some((p) => p.id === PARTIDA_ID)
   const nota = (
     <Nota>
-      Tus partidas se guardan solo en esta tablet. Exporta una copia de vez en cuando para no perderlas.
+      Tus partidas se guardan solo en este dispositivo. Exporta una copia de vez en cuando para no perderlas.
     </Nota>
   )
 

@@ -84,7 +84,7 @@ export function Ajustes(props: PropsAjustes) {
           </Panel>
           <Panel titulo="Copias de seguridad">
             <p>
-              Tus datos solo están en esta tablet. Exporta una copia para no perderlos si se borra o se cambia de
+              Tus datos solo están en este dispositivo. Exporta una copia para no perderlos si se borra o se cambia de
               dispositivo.
             </p>
             <ListaPares

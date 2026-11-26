@@ -160,3 +160,55 @@
   color: var(--lacre);
   margin: 0;
 }
+
+/* Teléfono, en vertical o en horizontal. */
+@media (max-width: 899px), (max-height: 500px) {
+  .cabeceraP0 {
+    padding: 24px 16px 0;
+    text-align: center;
+  }
+  .cabeceraP0 h1 {
+    font-size: 28px;
+  }
+  .lema {
+    font-size: 19px;
+  }
+  .lista {
+    width: calc(100% - 24px);
+    margin-top: 24px;
+  }
+  .titulo {
+    flex-wrap: wrap;
+  }
+  .titulo h2 {
+    flex: 1 0 100%;
+  }
+  .tarjeta {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px;
+  }
+  .datos {
+    flex: 1 1 200px;
+  }
+  .fila {
+    justify-content: center;
+  }
+  .caja {
+    flex-wrap: wrap;
+  }
+  .rejilla2,
+  .columnas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .barraAsistente {
+    padding: 0 8px 0 12px;
+  }
+  .asistente {
+    width: calc(100% - 24px);
+    padding-top: 14px;
+  }
+  .asistente h1 {
+    font-size: 28px;
+  }
+}

@@ -84,7 +84,7 @@ function resumenDePrueba(id: Id, nombre: string, abiertaEl: Instante): ResumenPa
   }
 }
 
-/** Una categoría de catálogo, con los campos que lleva en esta tablet (tarea 6). */
+/** Una categoría de catálogo, con los campos que lleva en este dispositivo (tarea 6). */
 function categoria(id: Id, nombre: string): OpcionCatalogo {
   return { id, nombre, lista: 'categorias', grupo: 'gastosPersonaje', propia: false, borrada: false, protegida: false }
 }

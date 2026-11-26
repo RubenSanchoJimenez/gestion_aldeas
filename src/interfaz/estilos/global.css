@@ -1,4 +1,4 @@
-/* Base de la app: tamaño mínimo 1024×700 (espec. L826), foco visible y cifras tabulares (§10). */
+/* Base de la app, para tablet y teléfono: foco visible y cifras tabulares (§10). */
 *,
 *::before,
 *::after {
@@ -16,10 +16,6 @@ body {
   font-family: var(--fuente-ui);
   font-size: var(--texto-lectura);
   -webkit-tap-highlight-color: transparent;
-}
-#root {
-  min-width: 1024px;
-  min-height: 700px;
 }
 button,
 input,

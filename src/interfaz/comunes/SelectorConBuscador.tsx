@@ -112,7 +112,11 @@ export function SelectorConBuscador<V extends string>(props: PropsSelectorConBus
 
   const todasLasOpciones = useMemo(() => props.grupos.flatMap((grupo) => grupo.opciones), [props.grupos])
   const opcionElegida =
-    props.valor === null ? null : (todasLasOpciones.find((opcion) => opcion.valor === props.valor) ?? null)
+    props.valor === null
+      ? null
+      : ([...(props.filtro ? [props.filtro.todas] : []), ...todasLasOpciones].find(
+          (opcion) => opcion.valor === props.valor,
+        ) ?? null)
 
   function cerrar(devolverFoco: boolean) {
     establecerAbierto(false)

@@ -268,7 +268,7 @@ describe('importarCopia', () => {
     expect(resultado.lineas).toContain('Se ha añadido tu categoría «Posadas del camino».')
   })
 
-  it('la categoría propia se une a la de esta tablet por nombre normalizado y no se duplica', async () => {
+  it('la categoría propia se une a la de este dispositivo por nombre normalizado y no se duplica', async () => {
     await sembrarCatalogo(db)
     const posadasDeLaTablet: OpcionCatalogo = {
       id: 'cat.mias.posadas',

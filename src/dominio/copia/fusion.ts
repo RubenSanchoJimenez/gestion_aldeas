@@ -34,14 +34,14 @@ export interface ResumenFusion {
   unidadesConservadas: { id: Id; nombre: string; enLaCopia: string; enLaTablet: string }[]
 }
 
-/** Resultado de casar los catálogos de la copia con los de esta tablet. */
+/** Resultado de casar los catálogos de la copia con los de este dispositivo. */
 export interface ResultadoFusion {
   cambios: CambiosCatalogo
   remapeo: Record<Id, Id>
   resumen: ResumenFusion
 }
 
-/** Una opción de la copia con el id que le toca en esta tablet, lista para escribirse (decisión 7). */
+/** Una opción de la copia con el id que le toca en este dispositivo, lista para escribirse (decisión 7). */
 function opcionParaLaTablet(opcion: OpcionEnCopia, id: Id): OpcionCatalogo {
   switch (opcion.lista) {
     case 'categorias':
@@ -95,7 +95,7 @@ function opcionParaLaTablet(opcion: OpcionEnCopia, id: Id): OpcionCatalogo {
   }
 }
 
-/** Un recurso de la copia con el id que le toca en esta tablet. `protegido` es de la app y no viaja (§6.1). */
+/** Un recurso de la copia con el id que le toca en este dispositivo. `protegido` es de la app y no viaja (§6.1). */
 function recursoParaLaTablet(recurso: RecursoEnCopia, id: Id): RecursoCatalogo {
   return {
     id,
@@ -112,7 +112,7 @@ function unidadesDe(recurso: { unidadSingular: string; unidadPlural: string }): 
   return `${recurso.unidadSingular} / ${recurso.unidadPlural}`
 }
 
-/** Anota que las unidades de la copia difieren: mandan las de esta tablet, y las cantidades dependen de ellas. */
+/** Anota que las unidades de la copia difieren: mandan las de este dispositivo, y las cantidades dependen de ellas. */
 function anotarUnidades(enLaTablet: RecursoCatalogo, enLaCopia: RecursoEnCopia, resumen: ResumenFusion): void {
   if (
     enLaTablet.unidadSingular !== enLaCopia.unidadSingular ||
@@ -410,7 +410,7 @@ export function lineasDeFusion(resumen: ResumenFusion): string[] {
     const lista = `${ARTICULO_FUSIONADA[conservado.lista]} ${NOMBRE_FUSIONADA[conservado.lista]}`
     lineas.push(
       `${lista} «${conservado.enLaTablet}» se llama «${conservado.enLaCopia}» en la copia: ` +
-        'se conserva el nombre de esta tablet.',
+        'se conserva el nombre de este dispositivo.',
     )
   }
   for (const reactivada of resumen.reactivadas) {
@@ -430,13 +430,13 @@ export function lineasDeFusion(resumen: ResumenFusion): string[] {
       lineas.push(`Se ha añadido tu ${nombreDeLista} «${creada.nombre}».`)
     } else {
       const articulo = ARTICULO_FUSIONADA[creada.lista].toLowerCase()
-      lineas.push(`Se ha añadido ${articulo} ${nombreDeLista} «${creada.nombre}», que esta tablet no tenía.`)
+      lineas.push(`Se ha añadido ${articulo} ${nombreDeLista} «${creada.nombre}», que este dispositivo no tenía.`)
     }
   }
   for (const unidades of resumen.unidadesConservadas) {
     lineas.push(
       `El recurso «${unidades.nombre}» se mide aquí en «${unidades.enLaTablet}» y en la copia en ` +
-        `«${unidades.enLaCopia}»: se conservan las unidades de esta tablet.`,
+        `«${unidades.enLaCopia}»: se conservan las unidades de este dispositivo.`,
     )
   }
   return lineas

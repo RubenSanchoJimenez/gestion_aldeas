@@ -5,6 +5,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // En GitHub Pages la app vive en /gestion_aldeas/; en el ordenador, en la raíz.
+  base: process.env.BASE_PATH ?? '/',
   plugins: [
     react(),
     // PWA instalable y sin conexión (D-098): precachea la app, las 6 fuentes y los iconos del manifiesto.
@@ -19,7 +21,8 @@ export default defineConfig({
         start_url: '.',
         scope: '.',
         display: 'standalone',
-        orientation: 'landscape',
+        // Sin orientación fija: en el teléfono se usa en vertical (D-127).
+        orientation: 'any',
         background_color: '#F2E8D0',
         theme_color: '#FBF6E9',
         icons: [

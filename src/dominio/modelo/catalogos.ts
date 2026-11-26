@@ -23,7 +23,7 @@ const CAMPOS_OPCION_EN_COPIA = {
 }
 
 /**
- * Campos que solo existen en esta tablet y **no viajan en la copia** (§6.1): al importar mandan los de aquí,
+ * Campos que solo existen en este dispositivo y **no viajan en la copia** (§6.1): al importar mandan los de aquí,
  * y una opción borrada se reactiva (decisión 7).
  */
 const CAMPOS_OPCION_EN_LA_TABLET = {
@@ -68,7 +68,7 @@ export const EsquemaOpcionEnCopia = z.discriminatedUnion('lista', [
 ])
 export type OpcionEnCopia = z.infer<typeof EsquemaOpcionEnCopia>
 
-/** Una opción de catálogo tal como vive en la tabla `opcionesCatalogo` de esta tablet (§6.5, decisión 17). */
+/** Una opción de catálogo tal como vive en la tabla `opcionesCatalogo` de este dispositivo (§6.5, decisión 17). */
 export const EsquemaOpcionCatalogo = z.discriminatedUnion('lista', [
   z.object({
     ...CAMPOS_OPCION_EN_COPIA,
@@ -130,14 +130,14 @@ export const EsquemaRecursoCatalogo = EsquemaRecursoEnCopia.extend({
 })
 export type RecursoCatalogo = z.infer<typeof EsquemaRecursoCatalogo>
 
-/** Los catálogos que acompañan a una copia (§6.1, decisión 6). La copia no lleva lo que es de esta tablet. */
+/** Los catálogos que acompañan a una copia (§6.1, decisión 6). La copia no lleva lo que es de este dispositivo. */
 export const EsquemaCatalogosEnCopia = z.object({
   opciones: z.array(EsquemaOpcionEnCopia),
   recursos: z.array(EsquemaRecursoEnCopia),
 })
 export type CatalogosEnCopia = z.infer<typeof EsquemaCatalogosEnCopia>
 
-/** El catálogo de la app tal como está en esta tablet (opciones y recursos, borrados incluidos). */
+/** El catálogo de la app tal como está en este dispositivo (opciones y recursos, borrados incluidos). */
 export interface CatalogoApp {
   opciones: OpcionCatalogo[]
   recursos: RecursoCatalogo[]

@@ -44,6 +44,9 @@ describe('pantallas del motor (fase 6b)', () => {
     const { usuario } = await abrirEjemplo()
     await usuario.click(boton('Calendario'))
     expect(screen.getByRole('table', { name: 'Mes' })).toBeInTheDocument()
+    // Sin nada elegido, los filtros dicen «Todos».
+    expect(screen.getByRole('combobox', { name: 'Dominio' })).toHaveTextContent('Todos')
+    expect(screen.getByRole('combobox', { name: 'Tipo' })).toHaveTextContent('Todos')
     await usuario.click(boton('20 de abril de 1640'))
     expect(screen.getByText('Vence · 4 mo pendientes')).toBeInTheDocument()
   })

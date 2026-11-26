@@ -175,6 +175,13 @@ Aquí está, en una línea cada una, todo lo que Claude ha decidido por su cuent
 | D-125 | Al eliminar una opción de catálogo o una persona, eliges a quién pasan sus registros dentro del formulario, antes de la doble confirmación. | Reutiliza el mismo diálogo J2d de toda la app. |
 | D-126 | De las altas desde los desplegables, por ahora hay: categoría (alta rápida), persona y ubicación (escribiendo el nombre). Oficios, tipos y recursos se añaden en «Listas y catálogos»; hechizos, mercados y tipos de local, en su pantalla. | Son las que se usan a mitad de otro formulario. **Pendiente:** las demás. |
 
+## Teléfono y publicación (2026-11-26)
+
+| # | Decisión | Por qué |
+|---|---|---|
+| D-127 | En el teléfono (menos de 900 px de ancho o 500 de alto) el menú es un cajón con el botón «Menú», las columnas se apilan, las tablas se desplazan de lado, los diálogos ocupan toda la pantalla, el calendario marca cada día con rayas de color y la barra no repite el próximo aviso. La app ya no fuerza la orientación horizontal. | Cambia lo que decía la especificación (solo tablet en horizontal), por tu decisión de usarla también en el teléfono. En la tablet en horizontal se ve igual que antes. |
+| D-128 | Se publica en GitHub Pages cada vez que cambia la rama `main`, solo si pasan las pruebas. El trabajo sigue en la rama de desarrollo y pasa a `main` cuando está listo. | Así lo que usas en la mesa no cambia a medias. Resuelve lo pendiente de D-099. |
+
 ## Decisiones tuyas
 
 Estas no se tocan sin preguntarte. El texto completo está en la especificación (`docs/superpowers/specs/2026-09-15-gestion-aldeas-design.md`), marcado «decidido por el usuario».
@@ -194,12 +201,13 @@ Estas no se tocan sin preguntarte. El texto completo está en la especificación
 | 2026-09-17 | «Ingreso o tributo» lleva categoría editable, para que salgan Impuestos, Rentas y Tributos por separado. |
 | 2026-09-18 | La fase 6 se parte en dos: la base de la interfaz (instalación en la tablet, aspecto, componentes, partidas y ajustes) se hace en paralelo con el motor, y las pantallas que usan el motor (Inicio, calendario, avanzar días) llegan al terminar la fase 5. |
 | 2026-11-25 | Un pergamino tiene un valor de mercado, pero no tienes por qué pagar siempre eso, ni te lo compran por un precio fijo. «Lo he comprado» pide el precio pagado aparte del valor; la venta ya pide su propio precio. En el patrimonio cuenta el valor de mercado. |
+| 2026-11-26 | La app se usa en tablet **y en teléfono**. El código puede ser público y se publica en GitHub Pages. Las partidas se guardan en el aparato en el que se juega. |
 
 ## Pendientes
 
 ### Para ti
 
-- **Probar en la tablet** y elegir dónde se publica con HTTPS antes de la primera partida de verdad (D-099). Publicar se te pregunta antes.
+- **Probar en la tablet y en el teléfono** de verdad.
 - **Previsiones:** siguen vigentes los «criterios por defecto; revisables» de la especificación (año 9999 y horizonte de 366 días).
 
 ### Por pulir en la app

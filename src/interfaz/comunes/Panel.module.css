@@ -76,3 +76,30 @@
   font-size: 14px;
   color: var(--tinta-suave);
 }
+
+/* Teléfono, en vertical o en horizontal. */
+@media (max-width: 899px), (max-height: 500px) {
+  .cabecera {
+    flex-wrap: wrap;
+    padding: 6px 10px 4px 12px;
+  }
+  .titulo {
+    font-size: 20px;
+    white-space: normal;
+  }
+  .cuerpo {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+  .cabeceraPantalla {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .tituloPantalla {
+    font-size: 28px;
+  }
+  .acciones {
+    flex-wrap: wrap;
+  }
+}

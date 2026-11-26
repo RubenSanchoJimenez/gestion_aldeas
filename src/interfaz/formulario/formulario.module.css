@@ -12,3 +12,13 @@
   gap: 14px;
   align-items: start;
 }
+
+/* Teléfono, en vertical o en horizontal. */
+@media (max-width: 899px), (max-height: 500px) {
+  .cuerpo {
+    max-height: none;
+  }
+  .dos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

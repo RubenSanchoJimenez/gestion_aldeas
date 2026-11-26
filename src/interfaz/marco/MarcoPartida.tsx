@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { formatearFecha } from '../../dominio/calendario/formatoFecha'
 import { nombreDelDia } from '../../dominio/calendario/textosFecha'
 import type { DocumentoPartida } from '../../dominio/modelo/documento'
@@ -24,9 +24,20 @@ export interface PropsMarcoPartida {
 /** Barra superior, menú lateral y contenido (§5). */
 export function MarcoPartida({ documento, pantalla, alNavegar, extremo, children }: PropsMarcoPartida) {
   const { nombre, fechaActual, edad } = documento.partida
+  // Solo en el teléfono: el menú es un cajón que se abre y se cierra.
+  const [menuAbierto, setMenuAbierto] = useState(false)
   return (
     <div className={estilos.marco}>
       <header className={estilos.barra}>
+        <button
+          type="button"
+          className={estilos.botonMenu}
+          aria-expanded={menuAbierto}
+          onClick={() => setMenuAbierto(!menuAbierto)}
+        >
+          <Icono nombre="resumen" tamano={18} />
+          Menú
+        </button>
         <div className={estilos.marca}>
           <Emblema tamano={22} />
           <span>{nombre}</span>
@@ -37,7 +48,21 @@ export function MarcoPartida({ documento, pantalla, alNavegar, extremo, children
         </div>
         {extremo}
       </header>
-      <MenuLateral dominios={ordenarDominios(documento.dominios)} pantalla={pantalla} alNavegar={alNavegar} />
+      <MenuLateral
+        abierto={menuAbierto}
+        alElegir={() => setMenuAbierto(false)}
+        dominios={ordenarDominios(documento.dominios)}
+        pantalla={pantalla}
+        alNavegar={alNavegar}
+      />
+      {menuAbierto && (
+        <button
+          type="button"
+          className={estilos.velo}
+          aria-label="Cerrar el menú"
+          onClick={() => setMenuAbierto(false)}
+        />
+      )}
       <main className={estilos.contenido}>{children}</main>
     </div>
   )
@@ -66,27 +91,34 @@ function Entrada({ texto, icono, activa, alPulsar, clase = '' }: PropsEntrada) {
 }
 
 interface PropsMenuLateral {
+  abierto: boolean
+  /** Se llama al elegir un destino; desplegar un dominio no cierra el cajón. */
+  alElegir: () => void
   dominios: readonly Dominio[]
   pantalla: Pantalla
   alNavegar: (p: Pantalla) => void
 }
 
-function MenuLateral({ dominios, pantalla, alNavegar }: PropsMenuLateral) {
+function MenuLateral({ abierto: visible, alElegir, dominios, pantalla, alNavegar }: PropsMenuLateral) {
+  const ir = (destino: Pantalla): void => {
+    alNavegar(destino)
+    alElegir()
+  }
   const abierto = pantalla.tipo === 'dominio' ? pantalla.dominioId : null
   return (
-    <nav className={estilos.menu} aria-label="Menú de la partida">
+    <nav className={estilos.menu} data-abierto={visible} aria-label="Menú de la partida">
       <span className={estilos.grupo}>Partida</span>
       <Entrada
         texto="Inicio"
         icono="casa"
         activa={pantalla.tipo === 'inicio'}
-        alPulsar={() => alNavegar({ tipo: 'inicio' })}
+        alPulsar={() => ir({ tipo: 'inicio' })}
       />
       <Entrada
         texto="Calendario"
         icono="calendario"
         activa={pantalla.tipo === 'calendario'}
-        alPulsar={() => alNavegar({ tipo: 'calendario' })}
+        alPulsar={() => ir({ tipo: 'calendario' })}
       />
       <span className={estilos.grupo}>Dominios</span>
       <div className={estilos.dominios}>
@@ -118,7 +150,7 @@ function MenuLateral({ dominios, pantalla, alNavegar }: PropsMenuLateral) {
                     texto={s.texto}
                     icono={s.icono}
                     activa={pantalla.tipo === 'dominio' && pantalla.seccion === s.seccion}
-                    alPulsar={() => alNavegar({ tipo: 'dominio', dominioId: d.id, seccion: s.seccion })}
+                    alPulsar={() => ir({ tipo: 'dominio', dominioId: d.id, seccion: s.seccion })}
                   />
                 ))}
             </div>
@@ -130,14 +162,14 @@ function MenuLateral({ dominios, pantalla, alNavegar }: PropsMenuLateral) {
         texto="Añadir asentamiento"
         icono="mas"
         activa={pantalla.tipo === 'anadirAsentamiento'}
-        alPulsar={() => alNavegar({ tipo: 'anadirAsentamiento' })}
+        alPulsar={() => ir({ tipo: 'anadirAsentamiento' })}
       />
       <span className={estilos.hueco} />
       <Entrada
         texto="Ajustes y copias"
         icono="ajustes"
         activa={pantalla.tipo === 'ajustes' || pantalla.tipo === 'listas'}
-        alPulsar={() => alNavegar({ tipo: 'ajustes' })}
+        alPulsar={() => ir({ tipo: 'ajustes' })}
       />
     </nav>
   )

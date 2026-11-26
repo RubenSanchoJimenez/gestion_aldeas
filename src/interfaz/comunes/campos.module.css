@@ -188,3 +188,45 @@
 .equivale .numero {
   width: 80px;
 }
+
+/* Teléfono, en vertical o en horizontal. */
+@media (max-width: 899px), (max-height: 500px) {
+  .fila {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  /* La cifra en oro pasa a la segunda línea. */
+  .fila > .enOro {
+    grid-column: 1 / -1;
+  }
+  .conQuitar {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 44px;
+  }
+  .conQuitar > .enOro {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .fechaInicial {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+  .fechaInicial > :last-child {
+    grid-column: 1 / -1;
+  }
+  .panel {
+    width: min(340px, calc(100vw - 32px));
+  }
+  .dia {
+    width: 100%;
+    min-width: 36px;
+  }
+  .resumen {
+    flex-wrap: wrap;
+    padding: 10px 14px;
+  }
+  .cifra {
+    font-size: 28px;
+  }
+  .derecha {
+    margin-left: 0;
+    text-align: left;
+  }
+}

@@ -43,6 +43,7 @@ export function Tabla({ etiqueta, columnas, filas, altoFila = 44, total }: Props
                 key={columnas[indiceCelda]?.titulo ?? indiceCelda}
                 className={estilos.celda}
                 data-derecha={columnas[indiceCelda]?.derecha === true ? '' : undefined}
+                data-columna={columnas[indiceCelda]?.titulo.trim()}
               >
                 {celda}
               </td>
@@ -56,6 +57,7 @@ export function Tabla({ etiqueta, columnas, filas, altoFila = 44, total }: Props
                 key={columnas[indiceCelda]?.titulo ?? indiceCelda}
                 className={estilos.celdaTotal}
                 data-derecha={columnas[indiceCelda]?.derecha === true ? '' : undefined}
+                data-columna={columnas[indiceCelda]?.titulo.trim()}
               >
                 {celda}
               </td>

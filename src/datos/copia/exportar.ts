@@ -32,7 +32,7 @@ export async function exportarCopia(db: BaseDeDatos, id: Id, exportadaEl: Instan
     texto: serializarCopia(sobre),
     sobre,
   }
-  // Exportar no cambia el estado: solo la fila del resumen, que es de esta tablet (decisión 9).
+  // Exportar no cambia el estado: solo la fila del resumen, que es de este dispositivo (decisión 9).
   await db.resumenes.update(id, { exportadaEl })
   return archivo
 }

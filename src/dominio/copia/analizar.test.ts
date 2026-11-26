@@ -9,7 +9,7 @@ import { armarCopia, serializarCopia } from './sobre'
 /** El instante de la exportación en las pruebas. */
 const EXPORTADA_EL = '2026-09-17T18:30:00.000Z'
 
-/** El catálogo de esta tablet: las 145 opciones y los 21 recursos de fábrica. */
+/** El catálogo de este dispositivo: las 145 opciones y los 21 recursos de fábrica. */
 function catalogoDeLaTablet(): CatalogoApp {
   return { opciones: [...OPCIONES_INICIALES], recursos: [...RECURSOS_INICIALES] }
 }

@@ -16,7 +16,7 @@ import {
   type RecursoCatalogo,
 } from './catalogos'
 
-/** La categoría «Alojamiento», de la app, tal como vive en esta tablet. */
+/** La categoría «Alojamiento», de la app, tal como vive en este dispositivo. */
 const ALOJAMIENTO: OpcionCatalogo = {
   id: 'cat.alojamiento',
   nombre: 'Alojamiento',

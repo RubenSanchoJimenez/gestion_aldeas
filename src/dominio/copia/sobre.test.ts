@@ -16,7 +16,7 @@ import {
 /** El instante de la exportación en las pruebas: el archivo lleva su fecha, «2026-09-17». */
 const EXPORTADA_EL = '2026-09-17T18:30:00.000Z'
 
-/** El catálogo de esta tablet: las 145 opciones y los 21 recursos de fábrica, con `borrada` y `protegida`. */
+/** El catálogo de este dispositivo: las 145 opciones y los 21 recursos de fábrica, con `borrada` y `protegida`. */
 function catalogoDeLaTablet(): CatalogoApp {
   return { opciones: [...OPCIONES_INICIALES], recursos: [...RECURSOS_INICIALES] }
 }

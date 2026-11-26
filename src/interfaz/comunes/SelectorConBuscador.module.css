@@ -100,3 +100,14 @@
   border-top: 1px solid var(--borde);
   background: var(--papel);
 }
+
+/* Teléfono, en vertical o en horizontal. */
+@media (max-width: 899px), (max-height: 500px) {
+  .panel {
+    min-width: 100%;
+    max-width: calc(100vw - 32px);
+  }
+  .lista {
+    max-height: 264px;
+  }
+}

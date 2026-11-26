@@ -5,7 +5,7 @@ import type { Id, Instante } from './comunes'
 import type { DocumentoPartida } from './documento'
 import { hayAvances } from './partida'
 
-/** Lo que P0 enseña de cada partida sin cargar el documento, más los datos de esta tablet que no viajan (§6.1). */
+/** Lo que P0 enseña de cada partida sin cargar el documento, más los datos de este dispositivo que no viajan (§6.1). */
 export interface ResumenPartida {
   id: Id
   nombre: string
@@ -20,7 +20,7 @@ export interface ResumenPartida {
   hayAvances: boolean
 }
 
-/** Arma la fila de P0 con el documento y los datos de sesión de esta tablet (§6.1, decisión 9). */
+/** Arma la fila de P0 con el documento y los datos de sesión de este dispositivo (§6.1, decisión 9). */
 export function resumenDePartida(
   documento: DocumentoPartida,
   sesion: { abiertaEl: Instante; exportadaEl?: Instante },

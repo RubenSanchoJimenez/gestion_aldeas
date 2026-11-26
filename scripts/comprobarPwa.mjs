@@ -12,7 +12,7 @@ const manifiesto = JSON.parse(readFileSync('dist/manifest.webmanifest', 'utf8'))
 exige(manifiesto.name === 'Gestión de Aldeas', 'name del manifiesto')
 exige(manifiesto.short_name === 'Aldeas', 'short_name del manifiesto')
 exige(manifiesto.display === 'standalone', 'display standalone')
-exige(manifiesto.orientation === 'landscape', 'orientación horizontal')
+exige(manifiesto.orientation === 'any', 'orientación libre')
 exige(manifiesto.lang === 'es', 'idioma es')
 for (const [lado, proposito] of [['192x192', undefined], ['512x512', undefined], ['512x512', 'maskable']]) {
   const icono = manifiesto.icons.find((i) => i.sizes === lado && i.purpose === proposito)

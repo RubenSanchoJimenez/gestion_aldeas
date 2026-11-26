@@ -28,7 +28,7 @@ const BREE = 'dom.bree'
 const BOLSA_THARAN = 4651800
 const CAJA_BREE = 34060000
 
-/** La categoría del jugador que esta tablet ya tiene, con su id de aquí (§6.6, patrón 2, y J2e). */
+/** La categoría del jugador que este dispositivo ya tiene, con su id de aquí (§6.6, patrón 2, y J2e). */
 const MI_CATEGORIA: OpcionCatalogo = {
   id: 'cat.propia-posadas',
   nombre: 'Posadas del camino',
@@ -157,7 +157,7 @@ describe('exportar la copia', () => {
     expect(archivo.texto).toBe(JSON.stringify(JSON.parse(archivo.texto)))
   })
 
-  it('los catálogos de la copia no llevan lo que es de esta tablet', async () => {
+  it('los catálogos de la copia no llevan lo que es de este dispositivo', async () => {
     await guardarEjemplo()
 
     const archivo = await exportarCopia(origen, PARTIDA, EXPORTACION)
@@ -256,7 +256,7 @@ describe('importar la copia', () => {
     expect(saldosPorDominio(documento)[BREE]).toBe(CAJA_BREE)
   })
 
-  it('una categoría tuya de la copia se une a la de esta tablet y su movimiento la sigue', async () => {
+  it('una categoría tuya de la copia se une a la de este dispositivo y su movimiento la sigue', async () => {
     await destino.opcionesCatalogo.add(MI_CATEGORIA)
     const copia = conCategoriaPropia(await copiaDelEjemplo())
     const movimientoId = copia.partida.movimientos[0].id
