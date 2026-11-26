@@ -12,10 +12,10 @@ export interface ArchivoCopia {
 }
 
 /**
- * Lee la partida y el catálogo, arma la copia y anota exportadaEl en el resumen; lanza si la partida no existe
- * (§6.1, P6). Dentro de la transacción solo se lee: armar y serializar se hace fuera (`tecnica.md` §6.2).
+ * Lee la partida y el catálogo y arma la copia, sin anotar nada; lanza si la partida no existe. Dentro de la
+ * transacción solo se lee: armar y serializar se hace fuera (`tecnica.md` §6.2).
  */
-export async function exportarCopia(db: BaseDeDatos, id: Id, exportadaEl: Instante): Promise<ArchivoCopia> {
+export async function prepararCopia(db: BaseDeDatos, id: Id, exportadaEl: Instante): Promise<ArchivoCopia> {
   const leido = await db.transaction('r', db.partidas, db.opcionesCatalogo, db.recursosCatalogo, async () => {
     const documento = await leerPartida(db, id)
     if (documento === undefined) {
@@ -32,6 +32,12 @@ export async function exportarCopia(db: BaseDeDatos, id: Id, exportadaEl: Instan
     texto: serializarCopia(sobre),
     sobre,
   }
+  return archivo
+}
+
+/** La copia que se descarga a mano: la prepara y anota exportadaEl en el resumen (§6.1, P6). */
+export async function exportarCopia(db: BaseDeDatos, id: Id, exportadaEl: Instante): Promise<ArchivoCopia> {
+  const archivo = await prepararCopia(db, id, exportadaEl)
   // Exportar no cambia el estado: solo la fila del resumen, que es de este dispositivo (decisión 9).
   await db.resumenes.update(id, { exportadaEl })
   return archivo

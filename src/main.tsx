@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client'
 import { BaseDeDatos } from './datos/baseDeDatos'
 import { nuevoId } from './datos/ids'
 import App from './interfaz/app/App'
-import { descargarArchivo, pedirAlmacenamientoPersistente } from './interfaz/app/navegador'
+import { descargarArchivo, pedirAlmacenamientoPersistente, selectorDeArchivo } from './interfaz/app/navegador'
 import { ContextoServicios, type Servicios } from './interfaz/app/servicios'
 
 const servicios: Servicios = {
@@ -14,6 +14,7 @@ const servicios: Servicios = {
   ahora: () => new Date().toISOString(),
   nuevoId,
   descargar: descargarArchivo,
+  elegirArchivo: selectorDeArchivo(),
 }
 void pedirAlmacenamientoPersistente()
 

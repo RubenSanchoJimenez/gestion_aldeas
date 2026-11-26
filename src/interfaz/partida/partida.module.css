@@ -233,3 +233,14 @@
 .tarjeta dl > div {
   flex-wrap: wrap;
 }
+
+/* El aviso de que la copia automática no se está escribiendo. */
+.copiaParada {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.copiaParada > :first-child {
+  flex: 1 1 240px;
+}

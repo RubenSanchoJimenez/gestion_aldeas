@@ -19,6 +19,7 @@ import { PantallaAsentamiento } from '../asentamiento/PantallaAsentamiento'
 import { DialogoAsentamiento } from '../asentamiento/DialogoAsentamiento'
 import { Listas } from '../pantallas/Listas'
 import { destinoDeAviso } from './destinos'
+import { useCopiaAutomatica } from './useCopiaAutomatica'
 import { PantallaPersonaje } from '../personaje/PantallaPersonaje'
 import { Inicio } from './Inicio'
 import estilos from './partida.module.css'
@@ -35,6 +36,7 @@ export function PartidaAbierta({ inicial, alSalir }: PropsPartidaAbierta) {
   const [catalogo, setCatalogo] = useState<CatalogosEnCopia | null>(null)
   const [pantalla, setPantalla] = useState<Pantalla>({ tipo: 'inicio' })
   const [dialogo, setDialogo] = useState<'avanzar' | 'resumen' | null>(null)
+  const copia = useCopiaAutomatica(documento)
 
   useEffect(() => {
     void leerCatalogo(db).then(setCatalogo)
@@ -108,6 +110,16 @@ export function PartidaAbierta({ inicial, alSalir }: PropsPartidaAbierta) {
   return (
     <ContextoPartida value={contexto}>
       <MarcoPartida documento={documento} pantalla={pantalla} alNavegar={setPantalla} extremo={extremo}>
+        {(copia.estado?.tipo === 'sinPermiso' || copia.estado?.tipo === 'error') && pantalla.tipo !== 'ajustes' && (
+          <div className={estilos.copiaParada}>
+            <Aviso tono="lacre" icono="alerta">
+              La copia automática está parada y el archivo no se está actualizando.
+            </Aviso>
+            <Boton variante="secundario" alPulsar={() => void copia.reactivar()}>
+              Reactivar la copia
+            </Boton>
+          </div>
+        )}
         {pantalla.tipo === 'inicio' || pantalla.tipo === 'anadirAsentamiento' ? (
           <Inicio alVerResumen={documento.avances.length > 0 ? () => setDialogo('resumen') : undefined} />
         ) : pantalla.tipo === 'calendario' ? (
@@ -126,6 +138,7 @@ export function PartidaAbierta({ inicial, alSalir }: PropsPartidaAbierta) {
             alCambiarDePartida={alSalir}
             alBorrada={alSalir}
             alGestionarListas={() => setPantalla({ tipo: 'listas' })}
+            copiaAutomatica={copia}
           />
         ) : (
           <PantallaPendiente

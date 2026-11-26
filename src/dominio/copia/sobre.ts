@@ -280,12 +280,21 @@ const GUIONES_DE_LOS_EXTREMOS = /^-+|-+$/g
 
 /** Nombre del archivo: «gestion-aldeas-la-sombra-del-este-2026-09-17.json». */
 export function nombreDeArchivo(partida: Partida, exportadaEl: Instante): string {
-  const cuerpo = partida.nombre
+  return `gestion-aldeas-${cuerpoDeNombre(partida.nombre)}-${exportadaEl.slice(0, 10)}.json`
+}
+
+/** El nombre que se propone para el archivo que se reescribe solo: sin fecha. */
+export function nombreDeCopiaAutomatica(nombre: string): string {
+  return `gestion-aldeas-${cuerpoDeNombre(nombre)}.json`
+}
+
+function cuerpoDeNombre(nombre: string): string {
+  const cuerpo = nombre
     .normalize('NFD')
     .replace(MARCAS_DIACRITICAS, '')
     .toLowerCase()
     .replace(TRAMOS_NO_ALFANUMERICOS, '-')
     .replace(GUIONES_DE_LOS_EXTREMOS, '')
   // Un nombre que solo tenga signos deja el cuerpo vacío: el archivo se llama «partida».
-  return `gestion-aldeas-${cuerpo === '' ? 'partida' : cuerpo}-${exportadaEl.slice(0, 10)}.json`
+  return cuerpo === '' ? 'partida' : cuerpo
 }

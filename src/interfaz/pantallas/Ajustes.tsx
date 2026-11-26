@@ -15,6 +15,8 @@ import { TablaMonedas } from '../comunes/TablaMonedas'
 import { fechaRealONunca } from '../formato/fechaReal'
 import { BorrarPartida } from './EditarPartida'
 import { ImportarCopia } from './ImportarCopia'
+import { PanelCopiaAutomatica } from './PanelCopiaAutomatica'
+import type { CopiaAutomatica } from '../partida/useCopiaAutomatica'
 import estilos from './pantallas.module.css'
 
 export interface PropsAjustes {
@@ -24,6 +26,7 @@ export interface PropsAjustes {
   alCambiarDePartida: () => void
   alBorrada: () => void
   alGestionarListas: () => void
+  copiaAutomatica: CopiaAutomatica
 }
 
 /** P6: ajustes y copias (§6.1). */
@@ -109,6 +112,7 @@ export function Ajustes(props: PropsAjustes) {
             </div>
             <Nota icono="alerta">Importar una copia reemplaza la partida actual.</Nota>
           </Panel>
+          <PanelCopiaAutomatica copia={props.copiaAutomatica} />
           <Panel titulo="Partida">
             <div className={estilos.fila}>
               <Boton variante="secundario" icono="cambio" alPulsar={alCambiarDePartida}>

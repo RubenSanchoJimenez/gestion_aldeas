@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react'
 import type { BaseDeDatos } from '../../datos/baseDeDatos'
+import type { ArchivoVinculado } from '../../datos/copia/automatica'
 import type { Id, Instante } from '../../dominio/modelo/comunes'
 
 export interface ArchivoParaDescargar {
@@ -13,6 +14,8 @@ export interface Servicios {
   ahora: () => Instante
   nuevoId: () => Id
   descargar: (archivo: ArchivoParaDescargar) => void
+  /** Falta si el navegador no deja reescribir un archivo. Devuelve null si el usuario lo cancela. */
+  elegirArchivo?: (nombreSugerido: string) => Promise<ArchivoVinculado | null>
 }
 
 export const ContextoServicios = createContext<Servicios | null>(null)
