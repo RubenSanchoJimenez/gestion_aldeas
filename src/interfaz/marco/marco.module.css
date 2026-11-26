@@ -37,7 +37,9 @@
   line-height: 1.2;
 }
 .fecha {
-  flex: 1;
+  /* La fecha no cede sitio: lo que se recorta es el próximo aviso. */
+  flex: 1 0 auto;
+  white-space: nowrap;
   display: flex;
   align-items: baseline;
   gap: 12px;
@@ -153,6 +155,8 @@
     border-radius: var(--radio-control);
   }
   .fecha {
+    flex: 1 1 0;
+    white-space: normal;
     flex-direction: column;
     gap: 0;
     min-width: 0;

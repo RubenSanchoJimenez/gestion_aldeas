@@ -133,6 +133,8 @@
   min-width: 0;
 }
 .proximo {
+  flex: 0 1 380px;
+  min-width: 0;
   max-width: 380px;
   overflow: hidden;
   white-space: nowrap;
@@ -171,4 +173,12 @@
   .proximo {
     display: none;
   }
+}
+
+/* En una tarjeta estrecha, una cifra no se parte de su moneda. */
+.tarjeta dd {
+  white-space: nowrap;
+}
+.tarjeta dl > div {
+  flex-wrap: wrap;
 }
